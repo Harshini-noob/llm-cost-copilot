@@ -1,6 +1,7 @@
 from models import call_model, client
 from router import classify_llm, MODEL_MAP, MAX_TOKENS_BY_TIER
 from test_prompts import TEST_PROMPTS
+from groq import RateLimitError
 import time
 
 REFERENCE_MODEL = "llama-3.3-70b-versatile"
@@ -48,6 +49,7 @@ print(f"{'PROMPT':<45} {'TIER':<10} {'SCORE':<7} {'REASON'}")
 print("-" * 100)
 
 scores = []
+skipped_due_to_rate_limit = 0
 
 for item in TEST_PROMPTS:
     prompt = item["prompt"]
@@ -55,13 +57,20 @@ for item in TEST_PROMPTS:
     routed_model = MODEL_MAP[tier]
     max_tokens = MAX_TOKENS_BY_TIER[tier]
 
-    routed_result = call_model(prompt, model=routed_model, max_tokens=max_tokens)
+    routed_result = call_model(prompt, model=routed_model, max_tokens=max_tokens)  # live-app style, fallback OK
 
     if routed_model == REFERENCE_MODEL:
         print(f"{prompt[:42]:<45} {tier:<10} {'N/A':<7} (same as reference model)")
         continue
 
-    reference_result = call_model(prompt, model=REFERENCE_MODEL, max_tokens=REFERENCE_MAX_TOKENS)
+    try:
+        reference_result = call_model(prompt, model=REFERENCE_MODEL, max_tokens=REFERENCE_MAX_TOKENS,
+                                       allow_fallback=False)  # MUST stay fixed for a valid comparison
+    except RateLimitError:
+        print(f"{prompt[:42]:<45} {tier:<10} {'SKIP':<7} reference model rate-limited, skipping to preserve integrity")
+        skipped_due_to_rate_limit += 1
+        time.sleep(5)
+        continue
 
     judgment = judge_quality(prompt, routed_result["answer"], reference_result["answer"])
     if judgment["score"] is not None:
@@ -75,3 +84,5 @@ if scores:
     avg = sum(scores) / len(scores)
     print(f"Average quality score (routed vs reference): {avg:.2f} / 5")
     print(f"Queries judged: {len(scores)}")
+if skipped_due_to_rate_limit:
+    print(f"Queries skipped due to rate limit (reference model unavailable): {skipped_due_to_rate_limit}")
