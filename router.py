@@ -96,3 +96,32 @@ Respond with only one word, nothing else."""
     if label not in ["simple", "medium", "complex"]:
         label = "medium"
     return label, result["cost_usd"]
+
+NEXT_TIER = {
+    "simple": "medium",
+    "medium": "complex",
+    "complex": "complex"  # nowhere higher to escalate
+}
+
+def get_confidence(prompt: str, answer: str) -> int:
+    confidence_prompt = f"""You just answered this question. Rate your OWN confidence 
+in the correctness and completeness of your answer, from 1-10.
+1 = you're likely missing something or unsure
+10 = you're certain this answer is correct and complete
+
+Question: "{prompt}"
+Your answer: "{answer}"
+
+Respond with ONLY a number from 1-10, nothing else."""
+
+    response = client.chat.completions.create(
+        model="llama-3.1-8b-instant",  # cheap model doing the self-check
+        messages=[{"role": "user", "content": confidence_prompt}],
+        max_tokens=5,
+        temperature=0
+    )
+
+    try:
+        return int("".join(filter(str.isdigit, response.choices[0].message.content.strip())))
+    except:
+        return 10  # if parsing fails, don't force an escalation
