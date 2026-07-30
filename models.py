@@ -1,15 +1,12 @@
 import os, time
 from dotenv import load_dotenv
 from groq import Groq, RateLimitError, APIStatusError
+from model_registry import get_pricing_dict
 
 load_dotenv()
 client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-PRICING = {
-    "llama-3.1-8b-instant": {"input": 0.05, "output": 0.08},
-    "llama-3.3-70b-versatile": {"input": 0.59, "output": 0.79},
-    "openai/gpt-oss-120b": {"input": 0.15, "output": 0.60},
-}
+PRICING = get_pricing_dict()
 
 FALLBACK_MODEL = {
     "llama-3.3-70b-versatile": "openai/gpt-oss-120b",
@@ -48,7 +45,6 @@ def call_model(prompt: str, model: str = "llama-3.1-8b-instant", max_tokens: int
 
     except RateLimitError as e:
         if not allow_fallback:
-            # measurement scripts need a FIXED model — surface the error instead of swapping silently
             raise
 
         fallback = FALLBACK_MODEL.get(model)
