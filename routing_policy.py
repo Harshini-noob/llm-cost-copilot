@@ -1,18 +1,7 @@
 from model_registry import MODELS
 from router import classify_llm, MAX_TOKENS_BY_TIER
 from cost_estimator import estimate_request_cost, estimate_tokens
-
-MODEL_METADATA = {
-    entry["model"]: {
-        "input_price": entry["input_cost_per_million"],
-        "output_price": entry["output_cost_per_million"],
-        "avg_latency_sec": entry["avg_latency_sec"],
-        "expected_quality": entry["quality_tier"],
-        "context_window": entry["context_window"],
-        "available": entry["available"],
-    }
-    for entry in MODELS.values()
-}
+from dynamic_quality import get_live_quality_score
 
 COMPLEXITY_MIN_QUALITY = {"simple": 0.70, "medium": 0.75, "complex": 0.90}
 QUALITY_SAFETY_MARGIN = 0.03
@@ -20,6 +9,29 @@ QUALITY_SAFETY_MARGIN = 0.03
 
 class InvalidConstraintError(Exception):
     pass
+
+
+def build_model_metadata() -> dict:
+    """Builds model metadata fresh each time it's called, checking live quality
+    data per model instead of relying on a fixed dict computed once at import time.
+    Falls back to the registry's hand-set quality_tier if not enough real
+    verification data exists yet for a given model."""
+    metadata = {}
+    for entry in MODELS.values():
+        model_id = entry["model"]
+        quality_info = get_live_quality_score(model_id, fallback_score=entry["quality_tier"])
+
+        metadata[model_id] = {
+            "input_price": entry["input_cost_per_million"],
+            "output_price": entry["output_cost_per_million"],
+            "avg_latency_sec": entry["avg_latency_sec"],
+            "expected_quality": quality_info["quality"],
+            "quality_source": quality_info["source"],
+            "quality_sample_count": quality_info["sample_count"],
+            "context_window": entry["context_window"],
+            "available": entry["available"],
+        }
+    return metadata
 
 
 def validate_constraints(routing_mode: str, max_cost_usd: float = None, min_quality: float = None):
@@ -42,6 +54,8 @@ def select_model(prompt: str, routing_mode: str = "balanced",
 
     validate_constraints(routing_mode, max_cost_usd, min_quality)
 
+    model_metadata = build_model_metadata()
+
     tier = classify_llm(prompt)
     required_quality = min_quality if min_quality is not None else COMPLEXITY_MIN_QUALITY[tier]
     prompt_tokens = estimate_tokens(prompt)
@@ -49,7 +63,7 @@ def select_model(prompt: str, routing_mode: str = "balanced",
     candidates = []
     rejected = []
 
-    for model, meta in MODEL_METADATA.items():
+    for model, meta in model_metadata.items():
         if not meta["available"]:
             rejected.append({"model": model, "reason": "unavailable"})
             continue
@@ -59,38 +73,52 @@ def select_model(prompt: str, routing_mode: str = "balanced",
             continue
 
         if meta["expected_quality"] < required_quality + QUALITY_SAFETY_MARGIN:
-            rejected.append({"model": model, "reason": f"quality {meta['expected_quality']} below required {required_quality}"})
+            rejected.append({
+                "model": model,
+                "reason": f"quality {meta['expected_quality']} below required {required_quality}"
+            })
             continue
 
         cost = estimate_cost(model, prompt, tier)
         if max_cost_usd is not None and cost > max_cost_usd:
-            rejected.append({"model": model, "reason": f"estimated cost {cost} exceeds max_cost_usd {max_cost_usd}"})
+            rejected.append({
+                "model": model,
+                "reason": f"estimated cost {cost} exceeds max_cost_usd {max_cost_usd}"
+            })
             continue
 
         candidates.append({
-            "model": model, "estimated_cost": cost,
+            "model": model,
+            "estimated_cost": cost,
             "expected_quality": meta["expected_quality"],
             "avg_latency_sec": meta["avg_latency_sec"],
+            "quality_source": meta["quality_source"],
+            "quality_sample_count": meta["quality_sample_count"],
         })
 
     if not candidates:
         fallback = "llama-3.3-70b-versatile"
         return {
-            "model": fallback, "tier": tier,
+            "model": fallback,
+            "tier": tier,
             "reason": "No candidate met constraints; defaulted to strongest model.",
-            "candidates_considered": [], "rejected": rejected
+            "candidates_considered": [],
+            "rejected": rejected
         }
 
     if routing_mode == "economy":
         best = min(candidates, key=lambda c: c["estimated_cost"])
         reason = f"Cheapest model meeting quality ≥ {required_quality}"
+
     elif routing_mode == "quality":
         best = max(candidates, key=lambda c: c["expected_quality"])
         reason = "Highest expected quality among eligible models"
+
     elif routing_mode == "latency":
         best = min(candidates, key=lambda c: c["avg_latency_sec"])
         reason = f"Fastest model meeting quality ≥ {required_quality}"
-    else:  # balanced — FIXED: normalize cost/latency before weighting so quality doesn't always dominate
+
+    else:  # balanced — normalized weighting across candidates
         costs = [c["estimated_cost"] for c in candidates]
         latencies = [c["avg_latency_sec"] for c in candidates]
         min_cost, max_cost = min(costs), max(costs)
@@ -105,7 +133,11 @@ def select_model(prompt: str, routing_mode: str = "balanced",
         reason = "Best balance of cost, quality, and latency"
 
     return {
-        "model": best["model"], "tier": tier, "reason": reason,
-        "estimated_cost": best["estimated_cost"], "expected_quality": best["expected_quality"],
-        "candidates_considered": candidates, "rejected": rejected
+        "model": best["model"],
+        "tier": tier,
+        "reason": reason,
+        "estimated_cost": best["estimated_cost"],
+        "expected_quality": best["expected_quality"],
+        "candidates_considered": candidates,
+        "rejected": rejected
     }
