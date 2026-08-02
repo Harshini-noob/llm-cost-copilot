@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from models import call_model, client
 from router import MAX_TOKENS_BY_TIER
 from logger import log_full_request
 from routing_policy import select_model, InvalidConstraintError, build_model_metadata
+from auth import verify_api_key
 
 app = FastAPI()
 
@@ -29,7 +30,8 @@ Respond with ONLY a number 1-5."""
 
 @app.post("/query")
 async def query(prompt: str, routing_mode: str = "balanced",
-                max_cost_usd: float = None, min_quality: float = None):
+                max_cost_usd: float = None, min_quality: float = None,
+                api_key_id: str = Depends(verify_api_key)):
 
     try:
         decision = select_model(prompt, routing_mode=routing_mode,
@@ -58,7 +60,7 @@ async def query(prompt: str, routing_mode: str = "balanced",
     escalated = False
     escalation_reason = None
     model_metadata = build_model_metadata()
-    
+
     if not verification["passed"]:
         remaining_budget = (max_cost_usd - spent_so_far) if max_cost_usd is not None else None
         stronger = [c for c in decision["candidates_considered"]
