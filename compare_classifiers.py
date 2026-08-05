@@ -4,7 +4,8 @@ from test_prompts import TEST_PROMPTS
 print(f"{'PROMPT':<50} {'RULE-BASED':<12} {'LLM-BASED'}")
 print("-" * 80)
 
-for prompt in TEST_PROMPTS:
+for item in TEST_PROMPTS:
+    prompt = item["prompt"]
     rule_tier = classify(prompt)
     llm_tier = classify_llm(prompt)
     match = "✓" if rule_tier == llm_tier else "✗ DIFFERENT"

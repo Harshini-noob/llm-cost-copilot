@@ -1,12 +1,21 @@
 import streamlit as st
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 st.set_page_config(page_title="LLM Cost Autopilot — Query Console", layout="wide", page_icon="🚀")
 
 API_URL = "http://localhost:8000/query"
+DEFAULT_API_KEY = os.getenv("LLM_AUTOPILOT_API_KEY", "")
 
 st.title("🚀 Query Console")
 st.caption("Ask a question, see which model was chosen, and what it would have cost with other options.")
+
+with st.sidebar:
+    st.header("Settings")
+    api_key = st.text_input("API Key", value=DEFAULT_API_KEY, type="password")
 
 with st.form("query_form"):
     prompt = st.text_area("Your prompt", placeholder="e.g. Explain how vaccines work", height=100)
@@ -22,38 +31,27 @@ with st.form("query_form"):
     submitted = st.form_submit_button("Run Query", use_container_width=True)
 
 if submitted and prompt.strip():
+    if not api_key:
+        st.error("Please enter an API key in the sidebar.")
+        st.stop()
+
     params = {"prompt": prompt, "routing_mode": routing_mode}
     if max_cost_usd > 0:
         params["max_cost_usd"] = max_cost_usd
     if min_quality > 0:
         params["min_quality"] = min_quality
 
+    headers = {"X-API-Key": api_key}
+
     with st.spinner("Routing and generating..."):
         try:
-            response = requests.post(API_URL, params=params, timeout=30)
+            response = requests.post(API_URL, params=params, headers=headers, timeout=30)
             response.raise_for_status()
             data = response.json()
         except Exception as e:
             st.error(f"Request failed: {e}")
             st.stop()
 
-    st.divider()
-
-    # --- Answer + key facts ---
-    col_a, col_b = st.columns([2, 1])
-
-    with col_a:
-        st.subheader("💬 Answer")
-        st.write(data["answer"])
-
-    with col_b:
-        st.subheader("📋 Decision Summary")
-        st.metric("Model Used", data["model"])
-        st.metric("Tier", data.get("routing_reason", "—"))
-        st.metric("Cost", f"${data['total_cost_usd']:.6f}")
-        st.metric("Quality Score", f"{data.get('quality_score', '—')}/5")
-        if data.get("escalated"):
-            st.warning(f"⬆️ Escalated: {data.get('escalation_reason')}")
 
     st.divider()
 

@@ -1,32 +1,70 @@
 import streamlit as st
 import pandas as pd
-import json
+import os
+from dotenv import load_dotenv
+from supabase import create_client
 
+load_dotenv()
 st.set_page_config(page_title="LLM Cost Autopilot", layout="wide", page_icon="🧠")
 
-@st.cache_data(ttl=5)
+supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+
+
+@st.cache_data(ttl=10)
 def load_logs():
-    rows = []
     try:
-        with open("data/logs.jsonl", "r") as f:
-            for line in f:
-                if line.strip():
-                    rows.append(json.loads(line))
-    except FileNotFoundError:
+        result = (
+            supabase.table("model_calls")
+            .select("*, requests(prompt, tier, routing_mode), quality_scores(score, passed)")
+            .order("created_at", desc=True)
+            .limit(500)
+            .execute()
+        )
+    except Exception as e:
+        st.error(f"Could not reach Supabase: {e}")
         return pd.DataFrame()
+
+    if not result.data:
+        return pd.DataFrame()
+
+    rows = []
+    for row in result.data:
+        req = row.get("requests") or {}
+        scores = row.get("quality_scores") or []
+        score = scores[0]["score"] if scores else None
+
+        rows.append({
+            "datetime": row["created_at"],
+            "model": row["model"],
+            "tier": req.get("tier"),
+            "routing_mode": req.get("routing_mode"),
+            "prompt": req.get("prompt"),
+            "input_tokens": row["input_tokens"],
+            "output_tokens": row["output_tokens"],
+            "cost_usd": row["cost_usd"],
+            "latency_sec": row["latency_sec"],
+            "fell_back": row["fell_back"],
+            "is_escalation": row["is_escalation"],
+            "quality_score": score,
+        })
+
     df = pd.DataFrame(rows)
-    if not df.empty:
-        df["datetime"] = pd.to_datetime(df["timestamp"], unit="s")
+    df["datetime"] = pd.to_datetime(df["datetime"])
     return df
+
 
 df = load_logs()
 
 st.title("🧠 LLM Cost Autopilot")
-st.caption("Real-time cost, quality, and routing insight across a 3-tier model system")
+st.caption("Real-time cost, quality, and routing insight — live from Supabase")
 
 if df.empty:
-    st.warning("No logs found yet. Run some queries through main.py first.")
+    st.warning("No telemetry found yet. Run some queries through main.py or query_console.py first.")
     st.stop()
+
+# --- everything below is your existing dashboard logic, unchanged ---
+# (sidebar filters, metrics, charts, tables — all operate on df exactly as before,
+#  since df has the same columns your JSONL version produced)
 
 # --- Sidebar filters ---
 with st.sidebar:
