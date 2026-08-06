@@ -1,3 +1,5 @@
+from unittest import result
+
 from fastapi import FastAPI, HTTPException, Depends
 from models import call_model, client
 from router import MAX_TOKENS_BY_TIER
@@ -105,5 +107,8 @@ async def query(prompt: str, routing_mode: str = "balanced",
     result["routing_mode"] = routing_mode
     result["routing_reason"] = decision["reason"]
     result["rejected_candidates"] = decision.get("rejected", [])
+    result["candidates_considered"] = decision.get("candidates_considered", [])
 
     return result
+    
+

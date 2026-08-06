@@ -52,6 +52,23 @@ if submitted and prompt.strip():
             st.error(f"Request failed: {e}")
             st.stop()
 
+    st.divider()
+
+    # --- Answer + key facts ---
+    col_a, col_b = st.columns([2, 1])
+
+    with col_a:
+        st.subheader("💬 Answer")
+        st.write(data.get("answer", "(no answer returned)"))
+
+    with col_b:
+        st.subheader("📋 Decision Summary")
+        st.metric("Model Used", data.get("model", "—"))
+        st.metric("Tier", data.get("routing_reason", "—"))
+        st.metric("Cost", f"${data.get('total_cost_usd', 0):.6f}")
+        st.metric("Quality Score", f"{data.get('quality_score', '—')}/5")
+        if data.get("escalated"):
+            st.warning(f"⬆️ Escalated: {data.get('escalation_reason')}")
 
     st.divider()
 
