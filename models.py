@@ -1,45 +1,44 @@
-import os, time
-from dotenv import load_dotenv
-from groq import Groq, RateLimitError, APIStatusError
-from model_registry import get_pricing_dict
+import time
+from providers.groq_provider import GroqProvider
+from providers.gemini_provider import GeminiProvider
+from model_registry import get_model_by_id
+from groq import RateLimitError, APIStatusError
 
-load_dotenv()
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
-
-PRICING = get_pricing_dict()
-
-FALLBACK_MODEL = {
-    "llama-3.3-70b-versatile": "openai/gpt-oss-120b",
-    "openai/gpt-oss-120b": "llama-3.1-8b-instant",
-    "llama-3.1-8b-instant": "llama-3.1-8b-instant",
+_providers = {
+    "groq": GroqProvider(),
+    "gemini": GeminiProvider(),
 }
 
-def _raw_call(prompt: str, model: str, max_tokens: int):
-    start = time.time()
-    response = client.chat.completions.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        max_tokens=max_tokens
-    )
-    latency = time.time() - start
-    usage = response.usage
+# Fallback only applies within Groq for now — Gemini's free tier isn't
+# rate-limit-fragile in the same way, and cross-provider fallback would
+# need its own careful design (different quality/latency tradeoffs).
+FALLBACK_MODEL = {
+    "openai/gpt-oss-120b": "openai/gpt-oss-20b",
+    "openai/gpt-oss-20b": "openai/gpt-oss-20b",  # nothing cheaper to fall back to on Groq
+}
 
-    input_cost = (usage.prompt_tokens / 1_000_000) * PRICING[model]["input"]
-    output_cost = (usage.completion_tokens / 1_000_000) * PRICING[model]["output"]
 
-    return {
-        "answer": response.choices[0].message.content,
-        "model": model,
-        "input_tokens": usage.prompt_tokens,
-        "output_tokens": usage.completion_tokens,
-        "cost_usd": round(input_cost + output_cost, 8),
-        "latency_sec": round(latency, 3),
-        "fell_back": False
-    }
+def _raw_call(prompt: str, model: str, max_tokens: int) -> dict:
+    """Dispatches to the correct provider based on the model registry,
+    then attaches cost using registry pricing (providers only report
+    raw token counts — cost calculation is a registry concern, not a
+    provider concern, so pricing logic lives here, not duplicated
+    per-provider)."""
+    model_info = get_model_by_id(model)
+    provider = _providers[model_info["provider"]]
+
+    result = provider.generate(prompt, model=model, max_tokens=max_tokens)
+
+    input_cost = (result["input_tokens"] / 1_000_000) * model_info["input_cost_per_million"]
+    output_cost = (result["output_tokens"] / 1_000_000) * model_info["output_cost_per_million"]
+
+    result["cost_usd"] = round(input_cost + output_cost, 8)
+    result["fell_back"] = False
+    return result
 
 
 def call_model(prompt: str, model: str = "llama-3.1-8b-instant", max_tokens: int = 500,
-               allow_fallback: bool = True, _is_retry: bool = False):
+               allow_fallback: bool = True, _is_retry: bool = False) -> dict:
     try:
         return _raw_call(prompt, model, max_tokens)
 
@@ -48,7 +47,7 @@ def call_model(prompt: str, model: str = "llama-3.1-8b-instant", max_tokens: int
             raise
 
         fallback = FALLBACK_MODEL.get(model)
-        if _is_retry or fallback == model:
+        if _is_retry or fallback is None or fallback == model:
             raise
         print(f"⚠️  Rate limit hit on '{model}', falling back to '{fallback}'")
         result = call_model(prompt, model=fallback, max_tokens=max_tokens,

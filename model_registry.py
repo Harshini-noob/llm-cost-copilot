@@ -1,15 +1,12 @@
-# Central registry — the single source of truth for every model's identity,
-# pricing, and quality metadata.
-
 MODELS = {
     "small": {
         "provider": "groq",
-        "model": "llama-3.1-8b-instant",
+        "model": "openai/gpt-oss-20b",
         "quality_tier": 0.75,
-        "input_cost_per_million": 0.05,
-        "output_cost_per_million": 0.08,
+        "input_cost_per_million": 0.075,
+        "output_cost_per_million": 0.30,
         "context_window": 131072,
-        "avg_latency_sec": 0.6,
+        "avg_latency_sec": 0.5,
         "available": True,
     },
     "medium": {
@@ -22,14 +19,14 @@ MODELS = {
         "avg_latency_sec": 1.1,
         "available": True,
     },
-    "large": {
-        "provider": "groq",
-        "model": "llama-3.3-70b-versatile",
-        "quality_tier": 1.0,
-        "input_cost_per_million": 0.59,
-        "output_cost_per_million": 0.79,
-        "context_window": 131072,
-        "avg_latency_sec": 1.4,
+    "gemini_flash": {
+        "provider": "gemini",
+        "model": "gemini-2.5-flash",
+        "quality_tier": 0.90,
+        "input_cost_per_million": 0.0,
+        "output_cost_per_million": 0.0,
+        "context_window": 1000000,
+        "avg_latency_sec": 2.5,
         "available": True,
     },
 }

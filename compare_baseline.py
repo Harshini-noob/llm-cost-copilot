@@ -4,7 +4,7 @@ from test_prompts import TEST_PROMPTS
 from groq import RateLimitError
 import time
 
-BASELINE_MODEL = "llama-3.3-70b-versatile"
+BASELINE_MODEL = "openai/gpt-oss-120b"  # premium comparison point — NOT the free Gemini model
 BASELINE_MAX_TOKENS = 500
 
 router_total_cost = 0
@@ -24,11 +24,16 @@ for item in TEST_PROMPTS:
     routed_model = MODEL_MAP[tier]
     max_tokens = MAX_TOKENS_BY_TIER[tier]
 
-    routed_result = call_model(prompt, model=routed_model, max_tokens=max_tokens)  # fallback OK, this mimics live app
+    # Gemini's free tier is tightly rate-limited (5-15 RPM) — pace requests
+    # if it's the routed model, so this script doesn't blow through quota
+    if routed_model == "gemini-2.5-flash":
+        time.sleep(13)
+
+    routed_result = call_model(prompt, model=routed_model, max_tokens=max_tokens)
 
     try:
         baseline_result = call_model(prompt, model=BASELINE_MODEL, max_tokens=BASELINE_MAX_TOKENS,
-                                      allow_fallback=False)  # MUST stay fixed — this is the baseline
+                                      allow_fallback=False)
     except RateLimitError:
         print(f"{prompt[:47]:<50} {tier:<10} SKIPPED — baseline model rate-limited")
         skipped += 1

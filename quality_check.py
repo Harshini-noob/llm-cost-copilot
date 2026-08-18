@@ -1,11 +1,15 @@
-from models import call_model, client
+from models import call_model
+from providers.groq_provider import GroqProvider
 from router import classify_llm, MODEL_MAP, MAX_TOKENS_BY_TIER
 from test_prompts import TEST_PROMPTS
 from groq import RateLimitError
 import time
 
-REFERENCE_MODEL = "llama-3.3-70b-versatile"
+_groq = GroqProvider()
+
+REFERENCE_MODEL = "openai/gpt-oss-120b"  # premium comparison point — NOT the free Gemini model
 REFERENCE_MAX_TOKENS = 500
+
 
 def judge_quality(prompt: str, routed_answer: str, reference_answer: str) -> dict:
     judge_prompt = f"""You are evaluating two answers to the same question for QUALITY only.
@@ -23,14 +27,9 @@ Respond in exactly this format, nothing else:
 SCORE: <number 1-5, where 5 = fully equivalent quality, 1 = significantly worse>
 REASON: <one short sentence>"""
 
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[{"role": "user", "content": judge_prompt}],
-        max_tokens=60,
-        temperature=0
-    )
+    result = _groq.generate(judge_prompt, model="openai/gpt-oss-20b", max_tokens=60, temperature=0)
+    text = result["answer"].strip()
 
-    text = response.choices[0].message.content.strip()
     score = None
     reason = ""
     for line in text.split("\n"):
@@ -57,15 +56,20 @@ for item in TEST_PROMPTS:
     routed_model = MODEL_MAP[tier]
     max_tokens = MAX_TOKENS_BY_TIER[tier]
 
-    routed_result = call_model(prompt, model=routed_model, max_tokens=max_tokens)  # live-app style, fallback OK
+    routed_result = call_model(prompt, model=routed_model, max_tokens=max_tokens)
 
     if routed_model == REFERENCE_MODEL:
         print(f"{prompt[:42]:<45} {tier:<10} {'N/A':<7} (same as reference model)")
         continue
 
+    # Gemini has a very tight free-tier RPM limit — pace requests if it's ever
+    # the routed model, so this script doesn't blow through quota mid-run
+    if routed_model == "gemini-2.5-flash":
+        time.sleep(13)
+
     try:
         reference_result = call_model(prompt, model=REFERENCE_MODEL, max_tokens=REFERENCE_MAX_TOKENS,
-                                       allow_fallback=False)  # MUST stay fixed for a valid comparison
+                                       allow_fallback=False)
     except RateLimitError:
         print(f"{prompt[:42]:<45} {tier:<10} {'SKIP':<7} reference model rate-limited, skipping to preserve integrity")
         skipped_due_to_rate_limit += 1
