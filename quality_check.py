@@ -27,7 +27,8 @@ Respond in exactly this format, nothing else:
 SCORE: <number 1-5, where 5 = fully equivalent quality, 1 = significantly worse>
 REASON: <one short sentence>"""
 
-    result = _groq.generate(judge_prompt, model="openai/gpt-oss-20b", max_tokens=60, temperature=0)
+    result = _groq.generate(judge_prompt, model="openai/gpt-oss-20b", max_tokens=60,
+                         temperature=0, reasoning_effort="low")
     text = result["answer"].strip()
 
     score = None

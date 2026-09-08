@@ -184,3 +184,23 @@ Headers: X-API-Key: <your-generated-key>
 ```
 
 Returns the answer plus full routing telemetry: chosen model, reasoning, quality score, escalation status, total cost, and every candidate — considered or rejected — with its numbers.
+
+
+## Update: Provider Migration & Multi-Provider Support
+
+Groq deprecated `llama-3.1-8b-instant` and `llama-3.3-70b-versatile` in
+June 2026. This forced a full model-registry migration and, in the process,
+became the trigger for adding genuine multi-provider support.
+
+- **Models now in production:** `openai/gpt-oss-20b`, `openai/gpt-oss-120b`
+  (Groq), `gemini-2.5-flash` (Google, free tier)
+- **New `providers/` interface** — a `ModelProvider` abstract base class
+  each provider implements identically, so routing logic never needs to
+  know or care which company is actually behind a given model call
+- **A real regression, caught and reverted:** the migration silently broke
+  LLM-based classification (100% → 63% accuracy, with run-to-run variance).
+  Root-caused to reasoning-token consumption in the new judge model —
+  confirmed via raw response inspection showing empty outputs even at 150
+  tokens on harder prompts. Reverted to the rule-based classifier as the
+  production default after the evidence showed it was more reliable, not
+  because it's the more novel-sounding choice.

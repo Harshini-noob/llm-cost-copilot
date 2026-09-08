@@ -1,5 +1,5 @@
 from model_registry import MODELS
-from router import classify_llm, MAX_TOKENS_BY_TIER
+from router import classify, MAX_TOKENS_BY_TIER
 from cost_estimator import estimate_request_cost, estimate_tokens
 from dynamic_quality import get_live_quality_score
 
@@ -56,7 +56,7 @@ def select_model(prompt: str, routing_mode: str = "balanced",
 
     model_metadata = build_model_metadata()
 
-    tier = classify_llm(prompt)
+    tier = classify(prompt)
     required_quality = min_quality if min_quality is not None else COMPLEXITY_MIN_QUALITY[tier]
     prompt_tokens = estimate_tokens(prompt)
 
@@ -97,7 +97,7 @@ def select_model(prompt: str, routing_mode: str = "balanced",
         })
 
     if not candidates:
-        fallback = "llama-3.3-70b-versatile"
+        fallback = "openai/gpt-oss-120b"
         return {
             "model": fallback,
             "tier": tier,

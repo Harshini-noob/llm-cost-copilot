@@ -1,3 +1,5 @@
+from unittest import result
+
 from providers.groq_provider import GroqProvider
 from models import call_model
 
@@ -37,10 +39,15 @@ def classify(prompt: str) -> str:
         return "simple"
     return "medium"
 
-
 def classify_llm(prompt: str) -> str:
-    judge_prompt = f"""..."""  # unchanged
-    result = _groq.generate(judge_prompt, model="openai/gpt-oss-20b", max_tokens=5, temperature=0)
+    judge_prompt = f"""Rate this query's complexity as exactly one word: simple, medium, or complex.
+simple = factual lookup, definitions, short direct answers
+medium = explanations, comparisons, writing code, moderate reasoning
+complex = multi-step reasoning, system/architecture design, deep multi-part analysis
+Query: "{prompt}"
+Respond with only one word, nothing else."""
+    result = _groq.generate(judge_prompt, model="openai/gpt-oss-120b", max_tokens=150,
+                             temperature=0)
     label = result["answer"].strip().lower()
     if label not in ["simple", "medium", "complex"]:
         return "medium"
@@ -48,8 +55,15 @@ def classify_llm(prompt: str) -> str:
 
 
 def get_confidence(prompt: str, answer: str) -> int:
-    confidence_prompt = f"""..."""  # unchanged
-    result = _groq.generate(confidence_prompt, model="openai/gpt-oss-20b", max_tokens=5, temperature=0)
+    confidence_prompt = f"""You just answered this question. Rate your OWN confidence
+in the correctness and completeness of your answer, from 1-10.
+1 = you're likely missing something or unsure
+10 = you're certain this answer is correct and complete
+Question: "{prompt}"
+Your answer: "{answer}"
+Respond with ONLY a number from 1-10, nothing else."""
+    result = _groq.generate(confidence_prompt, model="openai/gpt-oss-120b", max_tokens=150,
+                             temperature=0)
     try:
         return int("".join(filter(str.isdigit, result["answer"].strip())))
     except:

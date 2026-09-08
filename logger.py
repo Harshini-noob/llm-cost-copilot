@@ -3,7 +3,21 @@ from dotenv import load_dotenv
 from supabase import create_client
 
 load_dotenv()
-supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
+
+_supabase_client = None
+
+def get_supabase():
+    global _supabase_client
+    if _supabase_client is None:
+        url = os.getenv("SUPABASE_URL")
+        key = os.getenv("SUPABASE_KEY")
+        if not url or not key:
+            raise RuntimeError(
+                "SUPABASE_URL and SUPABASE_KEY must be set in .env — "
+                "Supabase client cannot be initialized."
+            )
+        _supabase_client = create_client(url, key)
+    return _supabase_client
 
 
 def log_full_request(prompt: str, tier: str, routing_mode: str,
@@ -20,6 +34,8 @@ def log_full_request(prompt: str, tier: str, routing_mode: str,
          "latency_sec": ..., "is_escalation": bool, "fell_back": bool,
          "quality_score": int, "quality_passed": bool}
     """
+    supabase = get_supabase()
+
     req = supabase.table("requests").insert({
         "prompt": prompt,
         "tier": tier,

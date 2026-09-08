@@ -1,6 +1,6 @@
 import os, time
 from dotenv import load_dotenv
-from groq import Groq, RateLimitError, APIStatusError
+from groq import Groq
 from .base import ModelProvider
 
 load_dotenv()
@@ -10,8 +10,8 @@ class GroqProvider(ModelProvider):
     def __init__(self):
         self.client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-    
-    def generate(self, prompt: str, model: str, max_tokens: int, temperature: float = None) -> dict:
+    def generate(self, prompt: str, model: str, max_tokens: int,
+                 temperature: float = None, reasoning_effort: str = None) -> dict:
         start = time.time()
         kwargs = {
             "model": model,
@@ -20,6 +20,8 @@ class GroqProvider(ModelProvider):
         }
         if temperature is not None:
             kwargs["temperature"] = temperature
+        if reasoning_effort is not None:
+            kwargs["reasoning_effort"] = reasoning_effort
 
         response = self.client.chat.completions.create(**kwargs)
         latency = time.time() - start

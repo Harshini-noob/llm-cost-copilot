@@ -9,7 +9,8 @@ class ModelProvider(ABC):
     """
 
     @abstractmethod
-    def generate(self, prompt: str, model: str, max_tokens: int, temperature: float = None) -> dict:
+    def generate(self, prompt: str, model: str, max_tokens: int,
+                 temperature: float = None, reasoning_effort: str = None) -> dict:
         """
         Must return a dict shaped like:
         {
@@ -25,5 +26,11 @@ class ModelProvider(ABC):
         temperature is optional — pass 0 for deterministic output
         (e.g. classification, confidence-scoring); leave as None to use
         the provider's own default for normal generation calls.
+
+        reasoning_effort is optional and only meaningful for reasoning-style
+        models (e.g. Groq's gpt-oss family) — pass "low" for fast, direct
+        answers on classification/scoring tasks where internal reasoning
+        would otherwise consume the entire token budget without producing
+        a visible answer.
         """
         raise NotImplementedError

@@ -20,7 +20,7 @@ Answer: "{answer}"
 
 Respond with ONLY a number 1-5."""
     response = client.chat.completions.create(
-        model="llama-3.1-8b-instant", messages=[{"role": "user", "content": judge_prompt}],
+        model="openai/gpt-oss-120b", messages=[{"role": "user", "content": judge_prompt}],
         max_tokens=5, temperature=0
     )
     try:

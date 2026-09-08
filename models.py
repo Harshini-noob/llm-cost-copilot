@@ -37,7 +37,7 @@ def _raw_call(prompt: str, model: str, max_tokens: int) -> dict:
     return result
 
 
-def call_model(prompt: str, model: str = "llama-3.1-8b-instant", max_tokens: int = 500,
+def call_model(prompt: str, model: str = "openai/gpt-oss-20b", max_tokens: int = 500,
                allow_fallback: bool = True, _is_retry: bool = False) -> dict:
     try:
         return _raw_call(prompt, model, max_tokens)

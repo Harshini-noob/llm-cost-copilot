@@ -1,7 +1,7 @@
 from models import call_model
 from logger import log_full_request
 
-result = call_model("What is 2+2?", model="llama-3.1-8b-instant")
+result = call_model("What is 2+2?", model="openai/gpt-oss-20b")
 
 request_id = log_full_request(
     prompt="What is 2+2?",
