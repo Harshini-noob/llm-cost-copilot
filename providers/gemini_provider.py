@@ -1,6 +1,8 @@
-import os, time
-from dotenv import load_dotenv
+import time
 from google import genai
+from google.genai import types
+import os
+from dotenv import load_dotenv
 from .base import ModelProvider
 
 load_dotenv()
@@ -10,13 +12,17 @@ class GeminiProvider(ModelProvider):
     def __init__(self):
         self.client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-    def generate(self, prompt: str, model: str, max_tokens: int, temperature: float = None) -> dict:
+    async def generate(self, prompt: str, model: str, max_tokens: int,
+                        temperature: float = None, reasoning_effort: str = None) -> dict:
         start = time.time()
-        config = {"max_output_tokens": max_tokens}
+        config = types.GenerateContentConfig(
+            max_output_tokens=max_tokens,
+            thinking_config=types.ThinkingConfig(thinking_budget=0),  # disable internal reasoning
+        )
         if temperature is not None:
-            config["temperature"] = temperature
+            config.temperature = temperature
 
-        response = self.client.models.generate_content(
+        response = await self.client.aio.models.generate_content(
             model=model,
             contents=prompt,
             config=config

@@ -1,7 +1,6 @@
-from unittest import result
-
 from fastapi import FastAPI, HTTPException, Depends
-from models import call_model, client
+from models import call_model
+from providers.groq_provider import GroqProvider
 from router import MAX_TOKENS_BY_TIER
 from logger import log_full_request
 from routing_policy import select_model, InvalidConstraintError, build_model_metadata
@@ -10,8 +9,10 @@ from auth import verify_api_key
 app = FastAPI()
 
 QUALITY_PASS_THRESHOLD = 3
+_groq = GroqProvider()
 
-def verify_quality(prompt: str, answer: str) -> dict:
+
+async def verify_quality(prompt: str, answer: str) -> dict:
     judge_prompt = f"""Rate this answer's quality for the given question, 1-5.
 1 = wrong or unhelpful, 5 = correct and complete.
 
@@ -19,12 +20,9 @@ Question: "{prompt}"
 Answer: "{answer}"
 
 Respond with ONLY a number 1-5."""
-    response = client.chat.completions.create(
-        model="openai/gpt-oss-120b", messages=[{"role": "user", "content": judge_prompt}],
-        max_tokens=5, temperature=0
-    )
+    result = await _groq.generate(judge_prompt, model="openai/gpt-oss-120b", max_tokens=60, temperature=0)
     try:
-        score = int("".join(filter(str.isdigit, response.choices[0].message.content.strip())))
+        score = int("".join(filter(str.isdigit, result["answer"].strip())))
     except:
         score = 5
     return {"score": score, "passed": score >= QUALITY_PASS_THRESHOLD}
@@ -36,8 +34,8 @@ async def query(prompt: str, routing_mode: str = "balanced",
                 api_key_id: str = Depends(verify_api_key)):
 
     try:
-        decision = select_model(prompt, routing_mode=routing_mode,
-                                 max_cost_usd=max_cost_usd, min_quality=min_quality)
+        decision = await select_model(prompt, routing_mode=routing_mode,
+                                       max_cost_usd=max_cost_usd, min_quality=min_quality)
     except InvalidConstraintError as e:
         raise HTTPException(status_code=400, detail=str(e))
 
@@ -47,10 +45,10 @@ async def query(prompt: str, routing_mode: str = "balanced",
     spent_so_far = 0.0
     model_calls_log = []
 
-    result = call_model(prompt, model=model, max_tokens=max_tokens)
+    result = await call_model(prompt, model=model, max_tokens=max_tokens)
     spent_so_far += result["cost_usd"]
 
-    verification = verify_quality(prompt, result["answer"])
+    verification = await verify_quality(prompt, result["answer"])
     model_calls_log.append({
         "model": result["model"], "input_tokens": result["input_tokens"],
         "output_tokens": result["output_tokens"], "cost_usd": result["cost_usd"],
@@ -61,7 +59,7 @@ async def query(prompt: str, routing_mode: str = "balanced",
 
     escalated = False
     escalation_reason = None
-    model_metadata = build_model_metadata()
+    model_metadata = await build_model_metadata()
 
     if not verification["passed"]:
         remaining_budget = (max_cost_usd - spent_so_far) if max_cost_usd is not None else None
@@ -76,9 +74,9 @@ async def query(prompt: str, routing_mode: str = "balanced",
             if fits_budget:
                 escalated = True
                 escalation_reason = f"Quality check failed (score {verification['score']}/5); escalated"
-                result = call_model(prompt, model=next_choice["model"], max_tokens=max_tokens)
+                result = await call_model(prompt, model=next_choice["model"], max_tokens=max_tokens)
                 spent_so_far += result["cost_usd"]
-                verification = verify_quality(prompt, result["answer"])
+                verification = await verify_quality(prompt, result["answer"])
 
                 model_calls_log.append({
                     "model": result["model"], "input_tokens": result["input_tokens"],
@@ -107,8 +105,5 @@ async def query(prompt: str, routing_mode: str = "balanced",
     result["routing_mode"] = routing_mode
     result["routing_reason"] = decision["reason"]
     result["rejected_candidates"] = decision.get("rejected", [])
-    result["candidates_considered"] = decision.get("candidates_considered", [])
 
     return result
-    
-

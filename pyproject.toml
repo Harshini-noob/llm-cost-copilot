@@ -10,8 +10,10 @@ authors = [{ name = "Harshini A" }]
 requires-python = ">=3.9"
 dependencies = [
     "google-genai>=1.47.0",
+    "httpx>=0.28.1",
     "requests>=2.28",
     "sentence-transformers>=5.1.2",
+    "supabase[async]>=2.31.0",
 ]
 
 [tool.setuptools.packages.find]

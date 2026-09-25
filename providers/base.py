@@ -34,3 +34,17 @@ class ModelProvider(ABC):
         a visible answer.
         """
         raise NotImplementedError
+
+
+from abc import ABC, abstractmethod
+
+
+class ModelProvider(ABC):
+    @abstractmethod
+    async def generate(self, prompt: str, model: str, max_tokens: int,
+                        temperature: float = None, reasoning_effort: str = None) -> dict:
+        """
+        Same contract as before, but now a coroutine — callers must
+        `await` this instead of calling it directly.
+        """
+        raise NotImplementedError
