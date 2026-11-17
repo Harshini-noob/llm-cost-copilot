@@ -17,6 +17,45 @@ An adaptive LLM routing service that selects models by cost, quality, and latenc
 - Persists request and per-call telemetry to Supabase; the dashboard shows spending, remaining budget, utilization, and latency.
 - Includes a query console and a typed Python SDK.
 
+## Architecture
+
+```text
+Python SDK / Query Console
+          │  POST /query + API key
+          ▼
+       FastAPI ── authenticate and validate request
+          │
+          ├── Classify prompt and load model/quality metadata
+          ├── Filter candidates by quality, context, availability, and budget
+          ├── Rank candidates using the selected routing mode
+          ▼
+   Budget Tracker ── reserve and account for each provider attempt
+          │
+          ▼
+   Groq / Google Gemini ── retry or fallback when configured
+          │
+          ├── LLM quality judge
+          └── Optional budget-checked escalation
+          │
+          ▼
+    Response + Supabase telemetry
+          ├── Streamlit dashboard
+          └── Historical quality feedback
+```
+
+## Routing modes
+
+The router first filters models by availability, context-window fit, required quality, and (if provided) estimated request budget. The mode controls how the remaining candidates are ranked:
+
+| Mode | Selection behavior |
+| --- | --- |
+| `economy` | Lowest estimated cost among eligible candidates |
+| `quality` | Highest expected quality among eligible candidates |
+| `latency` | Lowest configured average latency among eligible candidates |
+| `balanced` (default) | Weighted score: 50% quality, 35% normalized cost, and 15% normalized latency |
+
+If `min_quality` is omitted, the quality floor depends on prompt complexity. A small safety margin is also applied. These modes rank only eligible candidates; they do not override the quality, context, or budget filters.
+
 ## How budget tracking works
 
 For each provider attempt, the service estimates input cost using its prompt-token heuristic and output cost using the model's configured maximum output tokens. It reserves this estimate before dispatch. Successful calls with valid usage metadata are reconciled to reported input/output token costs; failed calls and calls with missing usage retain the conservative estimate.
@@ -78,7 +117,7 @@ The Dockerfile builds the API service. Exclude `.env` and other secrets from the
 curl -X POST "http://localhost:8000/query?prompt=Explain%20LLM%20routing&routing_mode=balanced&max_cost_usd=0.01" -H "X-API-Key: YOUR_API_KEY"
 ```
 
-The response includes the selected model and answer, routing and quality status, per-call records, `estimated_cost_usd`, `actual_total_cost_usd`, `budget_accounted_cost_usd`, `remaining_budget_usd`, `budget_limit_usd`, and `budget_exceeded`. Invalid constraints return HTTP 400; no eligible affordable model returns HTTP 422.
+The response includes the selected model and answer, `candidates_considered`, `rejected_candidates`, routing and quality status, per-call records, `estimated_cost_usd`, `actual_total_cost_usd`, `budget_accounted_cost_usd`, `remaining_budget_usd`, `budget_limit_usd`, and `budget_exceeded`. Invalid constraints return HTTP 400; no eligible affordable model returns HTTP 422.
 
 ## Python SDK
 
@@ -96,9 +135,12 @@ result = client.ask(
 )
 
 print(result.answer, result.model, result.total_cost_usd)
+
+for candidate in client.compare_models("Explain LLM routing"):
+    print(candidate.model, candidate.estimated_cost, candidate.expected_quality)
 ```
 
-`ask()` returns a `RoutingResult` dataclass. The SDK supports older responses by defaulting fields that newer API versions add.
+`ask()` returns a `RoutingResult` dataclass. `compare_models()` returns the eligible candidates supplied by the API. The SDK supports older responses by defaulting fields that newer API versions add.
 
 ## Testing
 
@@ -130,5 +172,4 @@ test_budget_enforcement.py       Mocked regression tests
 - Budget limits are per request, not shared quotas; provider charges cannot be guaranteed from estimates.
 - API-key validation and telemetry persistence use synchronous Supabase calls.
 - The repository's migration is additive but does not include the initial database schema.
-- The API currently does not populate `candidates_considered`, so the SDK's `compare_models()` helper may return an empty list.
 - Provider/classifier evaluation scripts may make live calls and incur charges; their results depend on providers and current model pricing.

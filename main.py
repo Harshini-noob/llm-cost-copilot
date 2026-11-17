@@ -226,6 +226,7 @@ async def query(prompt: str, routing_mode: str = "balanced",
     result["model_calls"] = tracker.model_calls
     result["routing_mode"] = routing_mode
     result["routing_reason"] = decision["reason"]
+    result["candidates_considered"] = decision.get("candidates_considered", [])
     result["estimated_primary_cost_usd"] = decision.get("estimated_cost")
     result["rejected_candidates"] = decision.get("rejected", [])
 

@@ -612,6 +612,10 @@ class BudgetEnforcementTests(unittest.IsolatedAsyncioTestCase):
         self.assertIn("budget_exceeded", body)
         self.assertEqual(body["quality_verification_status"], "verified")
         self.assertEqual(len(body["model_calls"]), 2)
+        self.assertEqual(
+            [candidate["model"] for candidate in body["candidates_considered"]],
+            [PRIMARY_MODEL],
+        )
 
     async def test_zero_and_missing_usage_are_not_confused(self):
         replies = iter([
@@ -794,6 +798,36 @@ class SDKCompatibilityTests(unittest.TestCase):
         self.assertTrue(result.escalation_attempted)
         self.assertEqual(len(result.model_calls), 1)
         self.assertEqual(result.raw["request_id"], "new-id")
+
+    def test_compare_models_returns_candidates_from_api(self):
+        response = Mock()
+        response.json.return_value = {
+            "answer": "answer",
+            "model": PRIMARY_MODEL,
+            "routing_mode": "balanced",
+            "routing_reason": "test",
+            "total_cost_usd": 0.001,
+            "quality_score": 4,
+            "escalated": False,
+            "escalation_reason": None,
+            "request_id": "request-id",
+            "candidates_considered": [{
+                "model": PRIMARY_MODEL,
+                "estimated_cost": 0.001,
+                "expected_quality": 0.75,
+                "avg_latency_sec": 1.0,
+            }],
+        }
+        with patch.object(
+            self.client_module.requests, "post", return_value=response
+        ):
+            candidates = self.sdk.LLMCostAutopilotClient("test-key").compare_models(
+                "prompt"
+            )
+
+        self.assertEqual(len(candidates), 1)
+        self.assertEqual(candidates[0].model, PRIMARY_MODEL)
+        self.assertEqual(candidates[0].estimated_cost, 0.001)
 
 
 if __name__ == "__main__":
