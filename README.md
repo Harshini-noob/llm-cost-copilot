@@ -1,225 +1,375 @@
-# 🚀 LLM Cost Autopilot (Copilot)
+# LLM Cost Autopilot
 
-> **An Adaptive, High-Throughput, Multi-Provider LLM Router & Quality Copilot**
-> *Classifies query complexity, estimates cost/quality/latency pre-call, routes across multi-provider LLMs (Groq & Gemini) with automatic failover, and uses per-request budget preflight/accounting for generation, judges, retries, fallbacks, and escalation.*
+An adaptive, multi-provider LLM gateway that routes each prompt using estimated **quality, cost, and latency**, verifies generated answers with an LLM judge, and tracks request-level expenditure.
 
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)
-[![AsyncIO](https://img.shields.io/badge/AsyncIO-Concurrency-orange.svg)](https://docs.python.org/3/library/asyncio.html)
-[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E.svg)](https://supabase.com/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-Dashboard-FF4B4B.svg)](https://streamlit.io/)
+The project combines a FastAPI service, Groq and Google Gemini providers, a Supabase telemetry store, a Streamlit dashboard, and a Python client SDK.
 
----
+> **Project status:** A feature-rich engineering prototype with budget-aware routing and per-request accounting. It is not an absolute provider-billing cap or a fully production-hardened gateway; see [Current limitations](#current-limitations).
 
-## 📌 Executive Summary & Motivation
+## Why this project?
 
-In enterprise production environments, sending **every query** (from a 5-word factual lookup to a multi-step system design prompt) to a top-tier \$15/M token model incurs massive unnecessary expense. 
+Different prompts have different reasoning requirements. Sending every request to the most capable model can waste tokens and increase latency. LLM Cost Autopilot estimates the requirements of a prompt, filters eligible models, and selects one according to the requested routing strategy.
 
-**LLM Cost Autopilot** solves this \$100B+ over-provisioning problem by dynamically routing prompts to the cheapest, fastest model capable of satisfying user-defined quality thresholds.
+It also records the complete request lifecycle—including generation, judge, retry, fallback, and escalation calls—so cost and quality can be inspected together.
 
-### Key Benchmark Results (Empirically Verified)
+## Features
 
-| Metric | Measured Value | Benefit / Impact |
-| :--- | :--- | :--- |
-| **Simple Query Cost Savings** | **80.3% Savings** | Cuts costs by ~5x for routine, high-volume lookups |
-| **Overall Cost Savings** | **51.1% Savings** | Cut baseline spend in half across mixed workloads |
-| **Quality Retention** | **4.91 / 5.0 Quality Score** | Zero noticeable drop in response quality vs. reference model |
-| **Failover Success Rate** | **100% Resilient (8/8 Calls)** | Zero crashes during cross-provider rate/quota exhaustion |
-| **Classification Accuracy** | **73.3% Accuracy** | 0ms latency, \$0 cost deterministic classifier |
+### Adaptive model routing
 
----
+- Supports Groq-hosted `openai/gpt-oss-20b` and `openai/gpt-oss-120b`, plus Google `gemini-2.5-flash`.
+- Classifies prompts into simple, medium, and complex tiers using a deterministic rule-based classifier.
+- Filters candidates by availability, context window, expected quality, and estimated cost.
+- Supports four routing modes:
+  - **balanced** — weighted quality, cost, and latency score.
+  - **economy** — lowest estimated cost among eligible candidates.
+  - **quality** — highest expected quality among eligible candidates.
+  - **latency** — lowest configured average latency among eligible candidates.
+- Uses live historical quality scores from Supabase when enough samples exist; otherwise falls back to registry quality scores.
+- Keeps LLM-based and embedding-based classifiers as separate experimental alternatives; the production routing path currently uses the rule-based classifier.
 
-## 💡 Key Architectural Innovations
+The balanced score currently uses quality (0.50), normalized cost (0.35), and normalized latency (0.15). The quality floor is derived from the complexity tier or the caller's `min_quality`, with a safety margin.
 
-### 1. 🔀 Multi-Criteria Dynamic Optimization Engine
-Unlike naive routers that only look at model tier, **LLM Cost Autopilot** performs pre-call constraint validation and mathematical normalization across candidate models:
-$$\text{Score} = (W_{\text{quality}} \cdot Q_{\text{exp}}) + (W_{\text{cost}} \cdot (1 - C_{\text{norm}})) + (W_{\text{latency}} \cdot (1 - L_{\text{norm}}))$$
-All candidate metrics (cost, latency, quality) are normalized to $[0, 1]$ before applying routing mode weights (`balanced`, `economy`, `quality`, `latency`).
+### Quality verification and escalation
 
-### 2. 🛡️ Cross-Provider Auto-Failover Circuit Breaker
-Provides high availability across decoupled provider APIs (Groq + Google Gemini). If a model encounters rate-limits, 429 quota exhaustion, or API errors:
-- Catches provider-specific exceptions (`RateLimitError`, `GeminiAPIError`).
-- Intercepts error before response failure and seamlessly re-routes to a fallback model (e.g., Gemini $\rightarrow$ Groq `120b`).
-- Logs `fell_back: True` in telemetry for observability.
+- Runs an LLM-as-a-Judge evaluation after generation, returning a score from 1–5.
+- Uses a configurable pass threshold (currently 3/5).
+- If verification fails, considers stronger eligible candidates and escalates only when the remaining request budget can accommodate the next call.
+- Reports quality verification as unavailable when the judge cannot run or returns an unusable result.
 
-### 3. ⚖️ Post-Generation Quality Verification & Budget-Aware Escalation
-- After answer generation, an independent **LLM-as-a-Judge** scores response quality ($1–5$).
-- Every generation, judge, retry, fallback, and escalation call is checked against the remaining budget using estimated input tokens, its configured output-token limit, and separate registry input/output prices.
-- Returned token usage is priced with decimal arithmetic; judge expenditure is deducted before any escalation decision.
-- **Escalates only if budget permits**, selecting a stronger candidate and re-evaluating.
+### Per-request budget enforcement
 
-### 4. 📈 Self-Correcting Live Quality Feedback Loop
-- Quality tiers are not static dictionary values; they are continuously re-computed live from historical Supabase telemetry (`model_calls` $\rightarrow$ `quality_scores`).
-- If a model's live quality degrades, the router automatically downgrades its expected quality score for future routing decisions.
+- Accepts an optional `max_cost_usd` request limit.
+- Uses `Decimal` for monetary calculations and keeps model pricing in the model registry.
+- Estimates input-token cost and the configured maximum output-token cost before a provider call.
+- Reserves estimated expenditure before dispatch; concurrent calls sharing one request tracker cannot each reserve the same remaining balance.
+- Reconciles reservations against reported token usage after successful calls.
+- Conservatively accounts for failed calls and calls with missing usage metadata using the pre-call estimate.
+- Applies the same budget checks to generation, retries, fallbacks, judge calls, and escalations.
+- Returns actual reported expenditure separately from conservative budget-accounted expenditure.
 
-### 5. ⚡ Fully Asynchronous Concurrency Pipeline
-- Implemented from bottom-up using `AsyncGroq`, `google.genai.Client.aio`, and Supabase `acreate_client`.
-- Non-blocking I/O ensures high throughput under heavy concurrency.
+**Important:** budgets are per request, not shared monthly or account-wide quotas. Actual provider charges can exceed estimates; this is not an absolute billing guarantee. See [Budget model and limitations](#budget-model-and-limitations).
 
----
+### Telemetry and dashboard
 
-## 🏗️ System Architecture
+Supabase stores request-level totals and individual model-call records, including model, token usage, estimated/actual/accounted cost, latency, fallback/escalation flags, call type, success status, and error type.
 
+The Streamlit dashboard currently provides:
+
+- Request volume and spend summaries.
+- Budget remaining and utilization for budgeted requests.
+- Tier and model distributions.
+- Cost contribution and cumulative accounted cost.
+- Average provider-call latency.
+- Fallback counts and recent-call details.
+
+The dashboard reads the latest 500 model-call rows and caches the query for 10 seconds. Its latency metric is based on individual provider calls, not end-to-end request duration.
+
+### API and client
+
+- FastAPI `POST /query` endpoint protected by an `X-API-Key` header.
+- Interactive API documentation at `/docs` when the server is running.
+- Streamlit query console for trying routing modes and request constraints.
+- Synchronous Python SDK returning typed dataclass results.
+
+## Architecture
+
+```text
+Client / Query Console
+        |
+        | POST /query + X-API-Key
+        v
+   FastAPI Gateway
+        |
+        +--> Validate request constraints
+        |
+        +--> Rule-based complexity classification
+        |
+        +--> Read model metadata and recent quality scores
+        |
+        +--> Filter candidates by quality, context, and estimated cost
+        |
+        +--> Select model (balanced / economy / quality / latency)
+        |
+        v
+   Per-request BudgetTracker
+        |
+        +--> Reserve estimated call cost
+        |
+        v
+   Async Provider Dispatcher
+        |
+        +--> Groq
+        |
+        +--> Google Gemini
+        |
+        +--> One configured retry / fallback path where applicable
+        |
+        v
+   LLM-as-a-Judge
+        |
+        +--> Pass: return answer
+        |
+        +--> Fail: check remaining budget, then optionally escalate
+        |
+        v
+   Supabase telemetry
+        |
+        +--> Streamlit dashboard
+        +--> Historical quality feedback for future routing
 ```
-User Query ──[ X-API-Key ]──▶ FastAPI Gateway (main.py)
-                                  │
-                                  ▼
-                     Validate Constraints (max_cost_usd, min_quality)
-                                  │
-                                  ▼
-                     Complexity Classifier (rule-based / LLM / embedding)
-                                  │
-                                  ▼
-                     Fetch Candidate Models & Live Quality Scores (Supabase)
-                                  │
-                                  ▼
-                     Filter Candidates (Context Window, Quality Floor, Budget)
-                                  │
-                                  ▼
-                     Score & Select Best Model (balanced / economy / quality / latency)
-                                  │
-                                  ▼
-                     Async Provider Dispatcher (Groq / Gemini)
-                                  │
-                       ┌──────────┴──────────┐
-                    [ Success ]          [ 429 / Rate Limit ]
-                       │                     │
-                       ▼                     ▼
-             Response Generated     Cross-Provider Failover
-                       │                     │
-                       └──────────┬──────────┘
-                                  ▼
-                    Post-Gen Quality Verification (LLM Judge)
-                                  │
-                      ┌───────────┴───────────┐
-                   [ Pass ]               [ Fail ]
-                      │                      │
-                      │           Check Remaining Budget & Escalate
-                      │                      │
-                      └───────────┬──────────┘
-                                  ▼
-                    Telemetry Persistence (Supabase)
-                                  │
-                      ┌───────────┴───────────┐
-                      ▼                       ▼
-            Streamlit Dashboard     Interactive Query Console
+
+## Routing and model configuration
+
+The model registry is the source of truth for provider mapping, model identifiers, configured prices, context windows, expected quality, availability, and average latency.
+
+| Model | Provider | Registry quality tier | Default role |
+|---|---|---:|---|
+| `openai/gpt-oss-20b` | Groq | 0.75 | Lower-cost candidate |
+| `openai/gpt-oss-120b` | Groq | 0.85 | Higher-quality candidate / judge |
+| `gemini-2.5-flash` | Google Gemini | 0.90 | Higher-complexity candidate |
+
+Default tier output limits are 250 tokens (simple), 600 (medium), and 1,200 (complex). A registry entry may define a lower per-tier output limit; the effective limit is used for routing estimates and provider calls.
+
+Model prices and provider availability can change. Review `model_registry.py` before running cost comparisons or deploying.
+
+## Budget model and limitations
+
+For each provider attempt, the tracker estimates:
+
+```text
+estimated call cost =
+    estimated input tokens × input price
+  + configured maximum output tokens × output price
 ```
 
-### Hard-budget accounting and limitations
+The estimate uses the current word-count heuristic (`1.3 tokens per whitespace-separated word`) for prompt input. It is not provider-tokenizer exact.
 
-Before any generation, judge, retry, fallback, or escalation request, the application checks the call's estimated input cost plus its configured maximum output-token cost against the remaining request budget. Successful responses with token usage are charged using those token counts. A failed provider attempt, or a successful response with missing usage, is conservatively charged against the budget at that call's estimated maximum cost; this reserve is exposed separately from known actual spend in `model_calls`. If the judge cannot fit within the remaining budget, quality verification is reported as unavailable and escalation is skipped.
+When usage metadata is available, the tracker calculates cost from reported input and output tokens. When a call fails or usage is missing, it retains the pre-call estimate as conservative accounted expenditure. Outstanding reservations are included when checking the remaining request budget.
 
-The existing tier limits in `router.py` remain the default. A model may optionally override a tier through `max_output_tokens_by_tier` in its model-registry entry; routing estimates, affordability checks, and provider calls resolve that candidate's effective limit independently.
+The API distinguishes:
 
-This is not an absolute provider-billing guarantee. Prompt token counts use the existing word-count heuristic, provider tokenization may differ, provider billing for failed requests may be unknown, providers may return incomplete/inaccurate usage, and pricing/billing can change. If actual reported usage exceeds the preflight estimate or limit, the response marks `budget_exceeded` and the router will not begin another call when the remaining budget is insufficient. A configured output cap is only as reliable as the provider honoring it. Requests without `max_cost_usd` remain uncapped.
+- `actual_total_cost_usd`: cost calculated from provider-reported token usage.
+- `budget_accounted_cost_usd` / `total_cost_usd`: actual costs plus conservative estimates for calls whose usage is unknown or failed.
+- `remaining_budget_usd`: request limit minus accounted expenditure and any outstanding reservations.
 
-### Database migration
+This design prevents the application from intentionally dispatching a call whose conservative estimate exceeds the currently available request budget. It cannot guarantee the final provider invoice because tokenization, hidden/provider-side usage, failed-request billing, reported usage, price changes, and provider enforcement may differ. If actual reported usage exceeds the reservation, the response marks `budget_exceeded` and further unaffordable calls are blocked.
 
-Apply [`migrations/001_hard_budget_enforcement.sql`](./migrations/001_hard_budget_enforcement.sql) to the existing Supabase database before deploying this version. It adds request totals/status and per-call actual/estimated cost fields with additive changes and backfills existing cost records; no existing table is replaced.
+When `max_cost_usd` is omitted, the request has no budget cap.
 
----
+## API
 
-## 🔬 Empirical Classification Benchmark: Why Rule-Based Beats LLM Classifier
+### `POST /query`
 
-During benchmarking, we discovered a crucial production insight:
-- **LLM-Based Classifier**: Scores dropped from $100\%$ to $56\text{--}67\%$ when models were updated to reasoning-oriented architectures. Reason: **invisible reasoning-token consumption** consumed variable output token budgets before emitting the classification word.
-- **Rule-Based Classifier**: Deterministic, 0ms latency, \$0 execution cost, and stable **73.3% accuracy** against ground truth.
+The endpoint accepts query parameters:
 
-**Engineering Decision**: Rule-based is set as production default; LLM and embedding (KNN) classifiers are preserved as benchmarked alternatives.
+| Parameter | Required | Description |
+|---|---|---|
+| `prompt` | Yes | User prompt |
+| `routing_mode` | No | `balanced`, `economy`, `quality`, or `latency` |
+| `max_cost_usd` | No | Positive per-request budget in USD |
+| `min_quality` | No | Minimum expected quality from 0.0 to 1.0 |
 
----
+Example:
 
-## 🛠️ Real-World Engineering Problems Solved
+```bash
+curl -X POST "http://localhost:8000/query?prompt=Explain%20caching&routing_mode=balanced&max_cost_usd=0.01" \
+  -H "X-API-Key: YOUR_API_KEY"
+```
 
-1. **Reasoning-Token Exhaustion Fix**: Diagnosed empty LLM responses by inspecting raw message objects (`repr()`); solved by configuring token budget headroom (`max_tokens`: 250 simple / 600 medium / 1200 complex).
-2. **Windows Console Encoding Resilience**: Replaced Unicode symbols (e.g. `⚠️`) in logging with ASCII fallbacks (`[WARN]`) to prevent `UnicodeEncodeError` on Windows `cp1252` terminals.
-3. **Evaluation Integrity Protection**: Added `allow_fallback=False` flag during baseline evaluations to prevent reference models from silently evaluating against themselves during rate limits.
-4. **Normalized Weighted Scoring**: Solved cost-weighting imbalance where raw sub-cent costs were dwarfed by quality metrics by scaling all parameters to $[0, 1]$ prior to weighting.
+The response includes the answer, selected model, routing reason, candidate/rejection details, quality result, escalation status, individual `model_calls`, and cost fields such as:
 
----
+- `estimated_cost_usd`
+- `actual_total_cost_usd`
+- `budget_accounted_cost_usd`
+- `remaining_budget_usd`
+- `budget_limit_usd`
+- `budget_exceeded`
+- `quality_verification_status`
+- `escalation_attempted`
+- `escalation_reason`
 
-## 📦 Tech Stack
+Invalid constraints return HTTP 400. If no eligible model fits the constraints/budget, the API returns HTTP 422. Provider failures can return HTTP 502.
 
-- **Language & Runtime**: Python 3.9+, AsyncIO
-- **API Framework**: FastAPI, Pydantic, Uvicorn
-- **LLM Providers**: Groq API (`openai/gpt-oss-20b`, `120b`), Google GenAI SDK (`gemini-2.5-flash`)
-- **Database & Telemetry**: Supabase (PostgreSQL), `postgrest-py`
-- **Embeddings & ML**: `sentence-transformers` (MiniLM-L6-v2)
-- **Frontend / Visualization**: Streamlit (Dashboard & Query Console)
-- **Deployment**: Docker, `uv` package manager
+## Tech stack
 
----
+- **Backend:** Python, FastAPI, Uvicorn, AsyncIO
+- **LLM providers:** Groq SDK, Google GenAI SDK
+- **Routing and accounting:** custom Python policy engine, Decimal, asyncio synchronization
+- **Database:** Supabase / PostgreSQL
+- **Dashboard:** Streamlit, Pandas
+- **Client:** Requests-based Python SDK
+- **Packaging / deployment:** pip, Docker
 
-## ⚙️ Quickstart & Local Setup
+Provider calls are asynchronous. The current authentication lookup and telemetry persistence use the synchronous Supabase client, so the whole request path should not be described as fully non-blocking.
 
-### 1. Environment Setup
-Create a `.env` file in the project root (see `.env.example`):
+## Repository layout
+
+```text
+.
+├── main.py                         # FastAPI query endpoint and request orchestration
+├── router.py                       # Complexity classifier and tier token limits
+├── routing_policy.py               # Candidate filtering and model selection
+├── model_registry.py               # Provider, pricing, quality, and context metadata
+├── models.py                       # Provider dispatch, retry, and fallback
+├── budget.py                       # Decimal budget tracker and reservations
+├── cost_estimator.py               # Prompt token and request cost estimates
+├── dynamic_quality.py              # Historical quality lookup from Supabase
+├── providers/
+│   ├── base.py
+│   ├── groq_provider.py
+│   └── gemini_provider.py
+├── logger.py                       # Request and model-call telemetry persistence
+├── dashboard.py                    # Streamlit telemetry dashboard
+├── query_console.py                # Interactive routing console
+├── llm_cost_autopilot_client/      # Python client SDK
+├── migrations/
+│   └── 001_hard_budget_enforcement.sql
+├── test_budget_enforcement.py      # Mocked budget and SDK regression tests
+├── compare_baseline.py             # Live-provider cost experiment
+├── quality_check.py                # Live-provider judge experiment
+└── classifier_accuracy.py          # Classifier evaluation script
+```
+
+## Setup
+
+### 1. Prerequisites
+
+- Python 3.11 recommended (the CI and Docker image use Python 3.11).
+- A Supabase project with the baseline tables used by the application: `api_keys`, `requests`, `model_calls`, and `quality_scores`.
+- API keys for Groq and Google Gemini.
+
+The repository includes an additive hard-budget migration, but does not include a complete bootstrap schema for creating all baseline Supabase tables from scratch.
+
+### 2. Configure environment variables
+
+Create a `.env` file in the project root:
+
 ```env
 GROQ_API_KEY=your_groq_api_key
 GEMINI_API_KEY=your_gemini_api_key
 SUPABASE_URL=your_supabase_url
-SUPABASE_KEY=your_supabase_service_key
-LLM_AUTOPILOT_API_KEY=your_secret_api_key
+SUPABASE_KEY=your_server_side_supabase_key
+LLM_AUTOPILOT_API_KEY=your_client_api_key
 ```
 
-### 2. Install Dependencies
+Keep this file private. Do not expose server-side Supabase credentials or provider keys in a browser/client application.
+
+### 3. Install dependencies
+
 ```bash
-# Using standard pip
-pip install -r requirements.txt
+python -m venv .venv
 
-# Or using uv (recommended)
-uv sync
+# Windows
+.venv\Scripts\activate
+
+# macOS / Linux
+source .venv/bin/activate
+
+pip install -r requirements.txt
+pip install google-genai
 ```
 
-### 3. Run FastAPI Backend Server
+The current `requirements.txt` does not yet list `google-genai`, although the Gemini provider imports it. Install it explicitly as shown above. The embedding-classifier experiment additionally requires `sentence-transformers`.
+
+The current `pyproject.toml` describes the client package dependencies rather than the complete backend service environment; `uv sync` alone is therefore not the backend installation path.
+
+### 4. Apply the database migration
+
+Apply `migrations/001_hard_budget_enforcement.sql` to the existing Supabase database after the baseline tables have been created. The migration adds budget and per-call accounting columns; it does not create the original tables.
+
+### 5. Start the API
+
 ```bash
 uvicorn main:app --reload --port 8000
 ```
 
-### 4. Run Interactive Dashboards
-```bash
-# Launch Live Query Console (Interactive routing tester)
-streamlit run query_console.py --server.port 8501
+Open [http://localhost:8000/docs](http://localhost:8000/docs) for the interactive API documentation.
 
-# Launch Telemetry Dashboard (Real-time analytics)
+### 6. Start the Streamlit applications
+
+In separate terminals:
+
+```bash
+streamlit run query_console.py --server.port 8501
 streamlit run dashboard.py --server.port 8502
 ```
 
-### 5. Run Verification Benchmarks
-```bash
-python classifier_accuracy.py    # Test classification accuracy
-python compare_baseline.py       # Benchmark cost savings vs always-premium
-python quality_check.py          # Run LLM-as-a-Judge quality verification
-```
+## Python SDK
 
----
-
-## 🐳 Docker Deployment
-
-```bash
-# Build Docker image
-docker build -t llm-cost-autopilot .
-
-# Run container
-docker run -p 8000:8000 --env-file .env llm-cost-autopilot
-```
-
----
-
-## 📄 Client SDK Usage
+The SDK is available from the repository package. It exposes `LLMCostAutopilotClient` and returns a `RoutingResult` dataclass.
 
 ```python
-from llm_cost_autopilot_client import CostAutopilotClient
+from llm_cost_autopilot_client import LLMCostAutopilotClient
 
-client = CostAutopilotClient(api_key="your_secret_api_key")
-
-response = client.query(
-    prompt="Explain quantum entanglement in simple terms",
-    routing_mode="economy",
-    max_cost_usd=0.001
+client = LLMCostAutopilotClient(
+    api_key="YOUR_API_KEY",
+    base_url="http://localhost:8000",
 )
 
-print("Chosen Model:", response.model)
-print("Cost:", response.total_cost_usd)
-print("Answer:", response.answer)
+result = client.ask(
+    "Explain quantum entanglement in simple terms",
+    routing_mode="economy",
+    max_cost_usd=0.001,
+)
+
+print("Answer:", result.answer)
+print("Model:", result.model)
+print("Routing reason:", result.routing_reason)
+print("Accounted cost:", result.total_cost_usd)
+print("Actual cost:", result.actual_total_cost_usd)
+print("Quality:", result.quality_score)
 ```
+
+## Tests and experiments
+
+### Mocked regression tests
+
+The focused budget-enforcement suite uses mocked provider responses:
+
+```bash
+python -m unittest -v test_budget_enforcement
+```
+
+It covers budget preflight, exact-budget eligibility, actual-versus-estimated usage, concurrent reservations, retry/fallback accounting, judge expenditure, escalation limits, cancellation, invalid usage, and SDK compatibility.
+
+**Test-suite note:** Several older files named `test_*.py` are manual smoke scripts that execute provider or Supabase operations at module import time. Do not run unrestricted `unittest discover` until those scripts are moved/renamed and the suite is separated into safe automated tests.
+
+The current GitHub Actions workflow runs a focused Flake8 error check and builds the Docker image; it does not yet execute the mocked unit suite.
+
+### Live-provider experiments
+
+These scripts make real provider calls and may incur API charges:
+
+```bash
+python classifier_accuracy.py
+python compare_baseline.py
+python quality_check.py
+```
+
+They use the prompt set in `test_prompts.py`. Results depend on provider availability, model versions, current registry prices, rate limits, and generated token usage. Treat previously observed savings/quality numbers as experiment results, not guaranteed performance or CI-enforced benchmarks. Re-run experiments and retain their outputs before publishing numerical claims.
+
+## Current limitations
+
+The following are not implemented or not yet validated as production capabilities:
+
+- **No circuit breaker:** the dispatcher has a fixed fallback map and a bounded retry path; it does not implement closed/open/half-open circuit-breaker states or provider health probes.
+- **Per-request, not global, budgets:** reservations coordinate calls within one request tracker. They do not enforce shared user, API-key, daily, or monthly quotas across requests/processes.
+- **Provider billing uncertainty:** estimates cannot guarantee the final invoice, especially for failed requests or incomplete usage metadata.
+- **Synchronous Supabase paths:** API-key validation and request telemetry use synchronous database calls. Telemetry inserts are sequential rather than transactional, so partial persistence is possible if a later insert fails.
+- **Limited tracing and latency analytics:** there is no end-to-end correlation trace, request-duration percentile dashboard (P50/P95/P99), or full provider health history yet.
+- **Dashboard scope:** the dashboard queries a limited recent window (up to 500 model calls); its latency chart is per-call average, not end-to-end request latency.
+- **Schema bootstrap:** the repository contains the budget migration, not the complete initial database schema.
+- **Packaging cleanup:** backend dependencies should be consolidated into the service dependency manifest; in particular, add `google-genai` to `requirements.txt` before relying on the current Docker image.
+
+## Potential next improvements
+
+1. Add a provider circuit breaker and health-aware failover.
+2. Add request/call correlation IDs and structured traces.
+3. Add P50/P95/P99 latency and provider reliability analytics.
+4. Move Supabase auth and telemetry paths to async clients and make lifecycle persistence resilient/transactional.
+5. Separate deterministic unit tests from live-provider smoke scripts and run the safe suite in CI.
+6. Add shared per-user/API-key quotas if multi-tenant usage is required.
+
+---
+
+**LLM Cost Autopilot** explores how routing policy, live quality feedback, budget accounting, and evaluation can work together to make multi-provider LLM applications more cost-aware and observable.
