@@ -6,7 +6,7 @@ from google.genai.errors import APIError as GeminiAPIError
 from groq import APIError as GroqAPIError
 
 from auth import verify_api_key
-from budget import BudgetExceededError, BudgetTracker
+from budget import BudgetExceededError, BudgetTracker, InvalidTokenUsageError
 from logger import log_full_request
 from models import call_model
 from routing_policy import (
@@ -14,7 +14,7 @@ from routing_policy import (
     NoEligibleModelError,
     select_model,
 )
-from router import MAX_TOKENS_BY_TIER
+from router import max_tokens_for_model
 
 app = FastAPI()
 
@@ -41,6 +41,8 @@ Respond with ONLY a number 1-5."""
             call_type="quality_judge",
         )
     except BudgetExceededError:
+        return {"score": None, "passed": None, "status": "unavailable"}
+    except InvalidTokenUsageError:
         return {"score": None, "passed": None, "status": "unavailable"}
     except (GroqAPIError, GeminiAPIError):
         return {"score": None, "passed": None, "status": "unavailable"}
@@ -97,10 +99,12 @@ async def query(prompt: str, routing_mode: str = "balanced",
         raise HTTPException(status_code=422, detail=str(e)) from e
 
     tier = decision["tier"]
-    max_tokens = MAX_TOKENS_BY_TIER[tier]
+    max_tokens = max_tokens_for_model(decision["model"], tier)
     tracker = BudgetTracker(max_cost_usd)
     try:
-        tracker.authorize(prompt, decision["model"], max_tokens)
+        primary_reservation = await tracker.reserve(
+            prompt, decision["model"], max_tokens
+        )
     except BudgetExceededError as e:
         raise HTTPException(status_code=422, detail=f"No eligible model is affordable: {e}") from e
 
@@ -110,6 +114,8 @@ async def query(prompt: str, routing_mode: str = "balanced",
             model=decision["model"],
             max_tokens=max_tokens,
             budget_tracker=tracker,
+            _reservation=primary_reservation,
+            tier=tier,
         )
     except BudgetExceededError as e:
         if tracker.model_calls:
@@ -131,22 +137,38 @@ async def query(prompt: str, routing_mode: str = "balanced",
             status_code=502,
             detail=f"Provider call failed: {type(e).__name__}",
         ) from e
+    except InvalidTokenUsageError as e:
+        if tracker.model_calls:
+            _persist_request(
+                prompt, tier, routing_mode, max_cost_usd, min_quality,
+                tracker, "unavailable", False, "Provider returned invalid token usage",
+            )
+        raise HTTPException(status_code=502, detail=str(e)) from e
     verification = await verify_quality(prompt, result["answer"], tracker)
 
     escalation_attempted = False
     escalation_reason = None
     if verification["status"] == "verified" and not verification["passed"]:
         stronger = [
-            candidate for candidate in decision["candidates_considered"]
+            (candidate, max_tokens_for_model(candidate["model"], tier))
+            for candidate in decision["candidates_considered"]
             if candidate["expected_quality"] > decision["expected_quality"]
         ]
-        stronger.sort(key=lambda candidate: candidate["expected_quality"])
-        next_choice = next((
-            candidate for candidate in stronger
-            if tracker.can_afford(prompt, candidate["model"], max_tokens)
-        ), None)
+        stronger.sort(key=lambda item: item[0]["expected_quality"])
+        next_choice = None
+        for candidate, candidate_max_tokens in stronger:
+            try:
+                reservation = await tracker.reserve(
+                    prompt, candidate["model"], candidate_max_tokens
+                )
+            except BudgetExceededError:
+                continue
+            else:
+                next_choice = candidate, candidate_max_tokens, reservation
+                break
 
         if next_choice is not None:
+            candidate, candidate_max_tokens, reservation = next_choice
             escalation_attempted = True
             escalation_reason = (
                 f"Quality check failed (score {verification['score']}/5); escalated"
@@ -154,10 +176,12 @@ async def query(prompt: str, routing_mode: str = "balanced",
             try:
                 result = await call_model(
                     prompt,
-                    model=next_choice["model"],
-                    max_tokens=max_tokens,
+                    model=candidate["model"],
+                    max_tokens=candidate_max_tokens,
                     budget_tracker=tracker,
                     is_escalation=True,
+                    _reservation=reservation,
+                    tier=tier,
                 )
             except BudgetExceededError as e:
                 escalation_reason = f"Escalation call was blocked by the remaining budget: {e}"

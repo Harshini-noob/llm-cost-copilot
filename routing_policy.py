@@ -1,5 +1,7 @@
+from decimal import InvalidOperation
+
 from model_registry import MODELS
-from router import classify, MAX_TOKENS_BY_TIER
+from router import classify, max_tokens_for_model
 from cost_estimator import estimate_request_cost_decimal, estimate_tokens
 from dynamic_quality import get_live_quality_score
 from budget import decimal_usd
@@ -38,16 +40,21 @@ def validate_constraints(routing_mode: str, max_cost_usd: float = None, min_qual
     valid_modes = {"economy", "balanced", "quality", "latency"}
     if routing_mode not in valid_modes:
         raise InvalidConstraintError(f"routing_mode must be one of {valid_modes}, got '{routing_mode}'")
-    if max_cost_usd is not None and (
-        not decimal_usd(max_cost_usd).is_finite() or decimal_usd(max_cost_usd) <= 0
-    ):
-        raise InvalidConstraintError("max_cost_usd must be positive")
+    if max_cost_usd is not None:
+        try:
+            budget = decimal_usd(max_cost_usd)
+        except (InvalidOperation, TypeError, ValueError) as e:
+            raise InvalidConstraintError(
+                "max_cost_usd must be a finite positive value"
+            ) from e
+        if budget <= 0:
+            raise InvalidConstraintError("max_cost_usd must be positive")
     if min_quality is not None and not (0.0 <= min_quality <= 1.0):
         raise InvalidConstraintError("min_quality must be between 0.0 and 1.0")
 
 
 def estimate_cost(model: str, prompt: str, tier: str) -> float:
-    expected_output = MAX_TOKENS_BY_TIER.get(tier, 300)
+    expected_output = max_tokens_for_model(model, tier)
     return float(estimate_request_cost_decimal(
         prompt, model, expected_output_tokens=expected_output
     ))
@@ -76,8 +83,9 @@ async def select_model(prompt: str, routing_mode: str = "balanced",
         if meta["expected_quality"] < required_quality + QUALITY_SAFETY_MARGIN:
             rejected.append({"model": model, "reason": f"quality {meta['expected_quality']} below required {required_quality}"})
             continue
+        max_tokens = max_tokens_for_model(model, tier)
         cost = estimate_request_cost_decimal(
-            prompt, model, expected_output_tokens=MAX_TOKENS_BY_TIER[tier]
+            prompt, model, expected_output_tokens=max_tokens
         )
         if budget is not None and cost > budget:
             rejected.append({
@@ -87,6 +95,7 @@ async def select_model(prompt: str, routing_mode: str = "balanced",
             continue
         candidates.append({
             "model": model, "estimated_cost": float(cost),
+            "max_tokens": max_tokens,
             "_estimated_cost_decimal": cost,
             "expected_quality": meta["expected_quality"],
             "avg_latency_sec": meta["avg_latency_sec"],

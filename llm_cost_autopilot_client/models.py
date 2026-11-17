@@ -30,7 +30,7 @@ class RoutingResult:
     total_cost_usd: float
     quality_score: Optional[int]
     escalated: bool
-    escalation_reason: str
+    escalation_reason: Optional[str]
     request_id: str
     candidates_considered: list = field(default_factory=list)
     rejected_candidates: list = field(default_factory=list)
@@ -42,7 +42,6 @@ class RoutingResult:
     budget_exceeded: bool = False
     quality_verification_status: str = "unavailable"
     escalation_attempted: bool = False
-    escalation_reason: Optional[str] = None
     model_calls: list = field(default_factory=list)
 
     def __repr__(self):

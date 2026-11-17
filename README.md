@@ -109,6 +109,8 @@ User Query ──[ X-API-Key ]──▶ FastAPI Gateway (main.py)
 
 Before any generation, judge, retry, fallback, or escalation request, the application checks the call's estimated input cost plus its configured maximum output-token cost against the remaining request budget. Successful responses with token usage are charged using those token counts. A failed provider attempt, or a successful response with missing usage, is conservatively charged against the budget at that call's estimated maximum cost; this reserve is exposed separately from known actual spend in `model_calls`. If the judge cannot fit within the remaining budget, quality verification is reported as unavailable and escalation is skipped.
 
+The existing tier limits in `router.py` remain the default. A model may optionally override a tier through `max_output_tokens_by_tier` in its model-registry entry; routing estimates, affordability checks, and provider calls resolve that candidate's effective limit independently.
+
 This is not an absolute provider-billing guarantee. Prompt token counts use the existing word-count heuristic, provider tokenization may differ, provider billing for failed requests may be unknown, providers may return incomplete/inaccurate usage, and pricing/billing can change. If actual reported usage exceeds the preflight estimate or limit, the response marks `budget_exceeded` and the router will not begin another call when the remaining budget is insufficient. A configured output cap is only as reliable as the provider honoring it. Requests without `max_cost_usd` remain uncapped.
 
 ### Database migration

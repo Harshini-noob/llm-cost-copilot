@@ -1,5 +1,6 @@
 from providers.groq_provider import GroqProvider
 from models import call_model
+from model_registry import get_model_by_id
 
 _groq = GroqProvider()
 
@@ -14,6 +15,16 @@ MAX_TOKENS_BY_TIER = {
     "medium": 600,
     "complex":1200
 }
+
+
+def max_tokens_for_model(model: str, tier: str) -> int:
+    tier_limit = MAX_TOKENS_BY_TIER[tier]
+    model_limits = get_model_by_id(model).get("max_output_tokens_by_tier", {})
+    model_limit = model_limits.get(tier, tier_limit)
+    if isinstance(model_limit, bool) or not isinstance(model_limit, int) or model_limit <= 0:
+        raise ValueError(f"Invalid output-token limit configured for model '{model}'")
+    return min(tier_limit, model_limit)
+
 
 NEXT_TIER = {
     "simple": "medium",
