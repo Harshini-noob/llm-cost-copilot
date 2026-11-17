@@ -47,6 +47,16 @@ class LLMCostAutopilotClient:
             request_id=data.get("request_id", ""),
             candidates_considered=candidates,
             rejected_candidates=rejected,
+            estimated_cost_usd=data.get("estimated_cost_usd"),
+            actual_total_cost_usd=data.get("actual_total_cost_usd"),
+            remaining_budget_usd=data.get("remaining_budget_usd"),
+            budget_limit_usd=data.get("budget_limit_usd"),
+            budget_exceeded=data.get("budget_exceeded", False),
+            quality_verification_status=data.get(
+                "quality_verification_status", "unavailable"
+            ),
+            escalation_attempted=data.get("escalation_attempted", False),
+            model_calls=data.get("model_calls", []),
             raw=data,
         )
 

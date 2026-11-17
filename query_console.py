@@ -65,9 +65,20 @@ if submitted and prompt.strip():
         st.subheader("📋 Decision Summary")
         st.metric("Model Used", data.get("model", "—"))
         st.metric("Tier", data.get("routing_reason", "—"))
-        st.metric("Cost", f"${data.get('total_cost_usd', 0):.6f}")
-        st.metric("Quality Score", f"{data.get('quality_score', '—')}/5")
-        if data.get("escalated"):
+        st.metric("Actual Spend", f"${data.get('actual_total_cost_usd', 0):.6f}")
+        remaining = data.get("remaining_budget_usd")
+        st.metric(
+            "Budget Remaining",
+            "—" if remaining is None else f"${remaining:.6f}",
+        )
+        limit = data.get("budget_limit_usd")
+        accounted = data.get("budget_accounted_cost_usd", data.get("total_cost_usd", 0))
+        if limit:
+            st.progress(min(max(accounted / limit, 0.0), 1.0))
+            st.caption(f"Budget utilization: {accounted / limit:.1%}")
+        score = data.get("quality_score")
+        st.metric("Quality Score", f"{score}/5" if score is not None else "Unavailable")
+        if data.get("escalation_attempted"):
             st.warning(f"⬆️ Escalated: {data.get('escalation_reason')}")
 
     st.divider()

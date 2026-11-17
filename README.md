@@ -1,7 +1,7 @@
 # 🚀 LLM Cost Autopilot (Copilot)
 
 > **An Adaptive, High-Throughput, Multi-Provider LLM Router & Quality Copilot**
-> *Classifies query complexity, estimates cost/quality/latency pre-call, routes across multi-provider LLMs (Groq & Gemini) with automatic failover, and enforces post-generation LLM-judge quality verification & budget-aware escalation.*
+> *Classifies query complexity, estimates cost/quality/latency pre-call, routes across multi-provider LLMs (Groq & Gemini) with automatic failover, and uses per-request budget preflight/accounting for generation, judges, retries, fallbacks, and escalation.*
 
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.100%2B-009688.svg)](https://fastapi.tiangolo.com/)
@@ -44,7 +44,8 @@ Provides high availability across decoupled provider APIs (Groq + Google Gemini)
 
 ### 3. ⚖️ Post-Generation Quality Verification & Budget-Aware Escalation
 - After answer generation, an independent **LLM-as-a-Judge** scores response quality ($1–5$).
-- If quality falls below threshold, the router calculates **remaining user budget** ($B_{\text{rem}} = B_{\text{max}} - C_{\text{spent}}$).
+- Every generation, judge, retry, fallback, and escalation call is checked against the remaining budget using estimated input tokens, its configured output-token limit, and separate registry input/output prices.
+- Returned token usage is priced with decimal arithmetic; judge expenditure is deducted before any escalation decision.
 - **Escalates only if budget permits**, selecting a stronger candidate and re-evaluating.
 
 ### 4. 📈 Self-Correcting Live Quality Feedback Loop
@@ -103,6 +104,16 @@ User Query ──[ X-API-Key ]──▶ FastAPI Gateway (main.py)
                       ▼                       ▼
             Streamlit Dashboard     Interactive Query Console
 ```
+
+### Hard-budget accounting and limitations
+
+Before any generation, judge, retry, fallback, or escalation request, the application checks the call's estimated input cost plus its configured maximum output-token cost against the remaining request budget. Successful responses with token usage are charged using those token counts. A failed provider attempt, or a successful response with missing usage, is conservatively charged against the budget at that call's estimated maximum cost; this reserve is exposed separately from known actual spend in `model_calls`. If the judge cannot fit within the remaining budget, quality verification is reported as unavailable and escalation is skipped.
+
+This is not an absolute provider-billing guarantee. Prompt token counts use the existing word-count heuristic, provider tokenization may differ, provider billing for failed requests may be unknown, providers may return incomplete/inaccurate usage, and pricing/billing can change. If actual reported usage exceeds the preflight estimate or limit, the response marks `budget_exceeded` and the router will not begin another call when the remaining budget is insufficient. A configured output cap is only as reliable as the provider honoring it. Requests without `max_cost_usd` remain uncapped.
+
+### Database migration
+
+Apply [`migrations/001_hard_budget_enforcement.sql`](./migrations/001_hard_budget_enforcement.sql) to the existing Supabase database before deploying this version. It adds request totals/status and per-call actual/estimated cost fields with additive changes and backfills existing cost records; no existing table is replaced.
 
 ---
 

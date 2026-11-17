@@ -1,4 +1,5 @@
 from dataclasses import dataclass, field
+from typing import Optional
 
 
 @dataclass
@@ -27,13 +28,22 @@ class RoutingResult:
     routing_mode: str
     routing_reason: str
     total_cost_usd: float
-    quality_score: int
+    quality_score: Optional[int]
     escalated: bool
     escalation_reason: str
     request_id: str
     candidates_considered: list = field(default_factory=list)
     rejected_candidates: list = field(default_factory=list)
     raw: dict = field(default_factory=dict, repr=False)  # full original response, for anything not modeled above
+    estimated_cost_usd: Optional[float] = None
+    actual_total_cost_usd: Optional[float] = None
+    remaining_budget_usd: Optional[float] = None
+    budget_limit_usd: Optional[float] = None
+    budget_exceeded: bool = False
+    quality_verification_status: str = "unavailable"
+    escalation_attempted: bool = False
+    escalation_reason: Optional[str] = None
+    model_calls: list = field(default_factory=list)
 
     def __repr__(self):
         return (f"RoutingResult(model={self.model!r}, cost=${self.total_cost_usd:.6f}, "

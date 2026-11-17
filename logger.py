@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import os
 from dotenv import load_dotenv
 from supabase import create_client
@@ -22,11 +24,16 @@ def get_supabase():
 
 def log_full_request(prompt: str, tier: str, routing_mode: str,
                       max_cost_usd: float, min_quality: float,
-                      model_calls_data: list, quality_data: dict = None) -> str:
+                      model_calls_data: list, quality_data: dict = None,
+                      estimated_cost_usd=None, actual_total_cost_usd=None,
+                      budget_accounted_cost_usd=None, remaining_budget_usd=None,
+                      quality_verification_status=None,
+                      escalation_attempted=None, escalation_reason=None,
+                      budget_exceeded=None) -> str:
     """
     Logs a complete request lifecycle to Supabase:
     - one requests row
-    - one or more model_calls rows (more than one only if escalation happened)
+    - one model_calls row per provider attempt, including judges, retries, and fallbacks
     - one quality_scores row per model_calls row that was verified
 
     model_calls_data: list of dicts, each shaped like:
@@ -36,12 +43,23 @@ def log_full_request(prompt: str, tier: str, routing_mode: str,
     """
     supabase = get_supabase()
 
+    def numeric_value(value):
+        return str(value) if isinstance(value, Decimal) else value
+
     req = supabase.table("requests").insert({
         "prompt": prompt,
         "tier": tier,
         "routing_mode": routing_mode,
-        "max_cost_usd": max_cost_usd,
-        "min_quality": min_quality
+        "max_cost_usd": numeric_value(max_cost_usd),
+        "min_quality": min_quality,
+        "estimated_cost_usd": numeric_value(estimated_cost_usd),
+        "actual_total_cost_usd": numeric_value(actual_total_cost_usd),
+        "budget_accounted_cost_usd": numeric_value(budget_accounted_cost_usd),
+        "remaining_budget_usd": numeric_value(remaining_budget_usd),
+        "quality_verification_status": quality_verification_status,
+        "escalation_attempted": escalation_attempted,
+        "escalation_reason": escalation_reason,
+        "budget_exceeded": budget_exceeded,
     }).execute()
     request_id = req.data[0]["id"]
 
@@ -51,10 +69,16 @@ def log_full_request(prompt: str, tier: str, routing_mode: str,
             "model": call["model"],
             "input_tokens": call.get("input_tokens"),
             "output_tokens": call.get("output_tokens"),
-            "cost_usd": call.get("cost_usd"),
+            "cost_usd": numeric_value(call.get("cost_usd")),
+            "actual_cost_usd": numeric_value(call.get("actual_cost_usd")),
+            "estimated_cost_usd": numeric_value(call.get("estimated_cost_usd")),
+            "cost_is_estimated": call.get("cost_is_estimated", False),
             "latency_sec": call.get("latency_sec"),
             "is_escalation": call.get("is_escalation", False),
-            "fell_back": call.get("fell_back", False)
+            "fell_back": call.get("fell_back", False),
+            "call_type": call.get("call_type", "generation"),
+            "call_succeeded": call.get("call_succeeded", True),
+            "error_type": call.get("error_type"),
         }).execute()
         call_id = call_result.data[0]["id"]
 

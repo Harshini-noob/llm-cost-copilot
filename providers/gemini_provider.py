@@ -33,7 +33,7 @@ class GeminiProvider(ModelProvider):
         return {
             "answer": response.text,
             "model": model,
-            "input_tokens": usage.prompt_token_count,
-            "output_tokens": usage.candidates_token_count,
+            "input_tokens": None if usage is None else usage.prompt_token_count,
+            "output_tokens": None if usage is None else usage.candidates_token_count,
             "latency_sec": round(latency, 3),
         }

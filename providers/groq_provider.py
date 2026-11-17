@@ -31,7 +31,7 @@ class GroqProvider(ModelProvider):
         return {
             "answer": response.choices[0].message.content,
             "model": model,
-            "input_tokens": usage.prompt_tokens,
-            "output_tokens": usage.completion_tokens,
+            "input_tokens": None if usage is None else usage.prompt_tokens,
+            "output_tokens": None if usage is None else usage.completion_tokens,
             "latency_sec": round(latency, 3),
         }

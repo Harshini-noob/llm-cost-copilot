@@ -15,7 +15,11 @@ def load_logs():
     try:
         result = (
             supabase.table("model_calls")
-            .select("*, requests(prompt, tier, routing_mode), quality_scores(score, passed)")
+            .select(
+                "*, requests(prompt, tier, routing_mode, max_cost_usd, "
+                "actual_total_cost_usd, budget_accounted_cost_usd, "
+                "remaining_budget_usd, budget_exceeded), quality_scores(score, passed)"
+            )
             .order("created_at", desc=True)
             .limit(500)
             .execute()
@@ -34,14 +38,21 @@ def load_logs():
         score = scores[0]["score"] if scores else None
 
         rows.append({
+            "request_id": row["request_id"],
             "datetime": row["created_at"],
             "model": row["model"],
             "tier": req.get("tier"),
             "routing_mode": req.get("routing_mode"),
             "prompt": req.get("prompt"),
+            "budget_limit_usd": req.get("max_cost_usd"),
+            "request_actual_cost_usd": req.get("actual_total_cost_usd"),
+            "budget_accounted_cost_usd": req.get("budget_accounted_cost_usd"),
+            "remaining_budget_usd": req.get("remaining_budget_usd"),
+            "budget_exceeded": req.get("budget_exceeded"),
             "input_tokens": row["input_tokens"],
             "output_tokens": row["output_tokens"],
             "cost_usd": row["cost_usd"],
+            "actual_cost_usd": row.get("actual_cost_usd"),
             "latency_sec": row["latency_sec"],
             "fell_back": row["fell_back"],
             "is_escalation": row["is_escalation"],
@@ -81,24 +92,34 @@ with st.sidebar:
 # --- Top metrics ---
 col1, col2, col3, col4, col5 = st.columns(5)
 
-total_requests = len(df)
-total_cost = df["cost_usd"].sum()
+request_df = df.drop_duplicates(subset="request_id").copy()
+legacy_costs = df.groupby("request_id")["cost_usd"].sum()
+request_df["actual_spend_usd"] = request_df["request_actual_cost_usd"].fillna(
+    request_df["request_id"].map(legacy_costs)
+)
+total_requests = len(request_df)
+total_cost = request_df["actual_spend_usd"].sum()
 avg_latency = df["latency_sec"].mean()
 
-MOST_EXPENSIVE_INPUT_PRICE = 0.59 / 1_000_000
-MOST_EXPENSIVE_OUTPUT_PRICE = 0.79 / 1_000_000
-hypothetical_cost = (df["input_tokens"] * MOST_EXPENSIVE_INPUT_PRICE +
-                     df["output_tokens"] * MOST_EXPENSIVE_OUTPUT_PRICE).sum()
-saved = hypothetical_cost - total_cost
-saved_pct = (saved / hypothetical_cost * 100) if hypothetical_cost > 0 else 0
+budgeted_requests = request_df[request_df["budget_limit_usd"].notna()]
+total_budget = budgeted_requests["budget_limit_usd"].sum()
+total_remaining = budgeted_requests["remaining_budget_usd"].sum()
+budget_utilization = (
+    budgeted_requests["budget_accounted_cost_usd"].sum() / total_budget * 100
+    if total_budget > 0 else 0
+)
 
 fallback_count = int(df["fell_back"].sum()) if "fell_back" in df.columns else 0
 
 col1.metric("Total Requests", f"{total_requests:,}")
-col2.metric("Total Cost", f"${total_cost:.5f}")
-col3.metric("Savings vs Always-Premium", f"{saved_pct:.1f}%", f"${saved:.5f} saved")
-col4.metric("Avg Latency", f"{avg_latency:.2f}s")
-col5.metric("Fallback Events", fallback_count, help="Times a rate-limited model auto-downgraded")
+col2.metric("Actual Spend", f"${total_cost:.6f}")
+col3.metric("Budget Remaining", f"${total_remaining:.6f}")
+col4.metric("Budget Utilization", f"{budget_utilization:.1f}%")
+col5.metric("Avg Latency", f"{avg_latency:.2f}s")
+st.caption(
+    f"Fallback events: {fallback_count:,}. Remaining budget/utilization are shown "
+    "for budgeted requests; unknown provider charges are conservatively reserved."
+)
 
 st.divider()
 
@@ -144,7 +165,10 @@ st.divider()
 st.subheader("🕓 Recent Requests")
 search = st.text_input("Search prompts", "")
 
-display_cols = ["datetime", "tier", "model", "prompt", "cost_usd", "latency_sec"]
+display_cols = [
+    "datetime", "tier", "model", "prompt", "actual_cost_usd",
+    "remaining_budget_usd", "latency_sec",
+]
 available_cols = [c for c in display_cols if c in df.columns]
 table_df = df[available_cols].sort_values("datetime", ascending=False)
 

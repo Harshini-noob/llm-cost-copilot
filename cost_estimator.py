@@ -1,4 +1,6 @@
-from model_registry import get_model_by_id
+from decimal import Decimal
+
+from budget import token_cost
 
 TOKENS_PER_WORD = 1.3
 
@@ -9,12 +11,11 @@ def estimate_tokens(text: str) -> int:
 
 
 def estimate_request_cost(prompt: str, model: str, expected_output_tokens: int = 300) -> float:
-    model_info = get_model_by_id(model)
+    return float(estimate_request_cost_decimal(prompt, model, expected_output_tokens))
 
+
+def estimate_request_cost_decimal(
+        prompt: str, model: str, expected_output_tokens: int = 300) -> Decimal:
     estimated_input_tokens = estimate_tokens(prompt)
-
-    input_cost = (estimated_input_tokens / 1_000_000) * model_info["input_cost_per_million"]
-    output_cost = (expected_output_tokens / 1_000_000) * model_info["output_cost_per_million"]
-
-    return round(input_cost + output_cost, 8)
+    return token_cost(model, estimated_input_tokens, expected_output_tokens)
 

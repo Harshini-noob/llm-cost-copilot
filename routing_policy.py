@@ -1,13 +1,18 @@
 from model_registry import MODELS
 from router import classify, MAX_TOKENS_BY_TIER
-from cost_estimator import estimate_request_cost, estimate_tokens
+from cost_estimator import estimate_request_cost_decimal, estimate_tokens
 from dynamic_quality import get_live_quality_score
+from budget import decimal_usd
 
 COMPLEXITY_MIN_QUALITY = {"simple": 0.70, "medium": 0.75, "complex": 0.90}
 QUALITY_SAFETY_MARGIN = 0.03
 
 
 class InvalidConstraintError(Exception):
+    pass
+
+
+class NoEligibleModelError(Exception):
     pass
 
 
@@ -33,7 +38,9 @@ def validate_constraints(routing_mode: str, max_cost_usd: float = None, min_qual
     valid_modes = {"economy", "balanced", "quality", "latency"}
     if routing_mode not in valid_modes:
         raise InvalidConstraintError(f"routing_mode must be one of {valid_modes}, got '{routing_mode}'")
-    if max_cost_usd is not None and max_cost_usd <= 0:
+    if max_cost_usd is not None and (
+        not decimal_usd(max_cost_usd).is_finite() or decimal_usd(max_cost_usd) <= 0
+    ):
         raise InvalidConstraintError("max_cost_usd must be positive")
     if min_quality is not None and not (0.0 <= min_quality <= 1.0):
         raise InvalidConstraintError("min_quality must be between 0.0 and 1.0")
@@ -41,7 +48,9 @@ def validate_constraints(routing_mode: str, max_cost_usd: float = None, min_qual
 
 def estimate_cost(model: str, prompt: str, tier: str) -> float:
     expected_output = MAX_TOKENS_BY_TIER.get(tier, 300)
-    return estimate_request_cost(prompt, model, expected_output_tokens=expected_output)
+    return float(estimate_request_cost_decimal(
+        prompt, model, expected_output_tokens=expected_output
+    ))
 
 
 async def select_model(prompt: str, routing_mode: str = "balanced",
@@ -53,6 +62,7 @@ async def select_model(prompt: str, routing_mode: str = "balanced",
     required_quality = min_quality if min_quality is not None else COMPLEXITY_MIN_QUALITY[tier]
     prompt_tokens = estimate_tokens(prompt)
 
+    budget = None if max_cost_usd is None else decimal_usd(max_cost_usd)
     candidates = []
     rejected = []
 
@@ -66,12 +76,18 @@ async def select_model(prompt: str, routing_mode: str = "balanced",
         if meta["expected_quality"] < required_quality + QUALITY_SAFETY_MARGIN:
             rejected.append({"model": model, "reason": f"quality {meta['expected_quality']} below required {required_quality}"})
             continue
-        cost = estimate_cost(model, prompt, tier)
-        if max_cost_usd is not None and cost > max_cost_usd:
-            rejected.append({"model": model, "reason": f"estimated cost {cost} exceeds max_cost_usd {max_cost_usd}"})
+        cost = estimate_request_cost_decimal(
+            prompt, model, expected_output_tokens=MAX_TOKENS_BY_TIER[tier]
+        )
+        if budget is not None and cost > budget:
+            rejected.append({
+                "model": model,
+                "reason": f"worst-case cost {cost} exceeds max_cost_usd {budget}",
+            })
             continue
         candidates.append({
-            "model": model, "estimated_cost": cost,
+            "model": model, "estimated_cost": float(cost),
+            "_estimated_cost_decimal": cost,
             "expected_quality": meta["expected_quality"],
             "avg_latency_sec": meta["avg_latency_sec"],
             "quality_source": meta["quality_source"],
@@ -79,13 +95,19 @@ async def select_model(prompt: str, routing_mode: str = "balanced",
         })
 
     if not candidates:
-        fallback = "openai/gpt-oss-120b"
-        return {"model": fallback, "tier": tier,
-                "reason": "No candidate met constraints; defaulted to strongest model.",
-                "candidates_considered": [], "rejected": rejected}
+        if budget is not None and any(
+            item.get("reason", "").startswith("worst-case cost")
+            for item in rejected
+        ):
+            raise NoEligibleModelError(
+                f"No eligible model is affordable within max_cost_usd={budget}"
+            )
+        raise NoEligibleModelError(
+            "No model satisfies the availability, context-window, and quality constraints"
+        )
 
     if routing_mode == "economy":
-        best = min(candidates, key=lambda c: c["estimated_cost"])
+        best = min(candidates, key=lambda c: c["_estimated_cost_decimal"])
         reason = f"Cheapest model meeting quality ≥ {required_quality}"
     elif routing_mode == "quality":
         best = max(candidates, key=lambda c: c["expected_quality"])
@@ -105,6 +127,11 @@ async def select_model(prompt: str, routing_mode: str = "balanced",
         best = max(candidates, key=lambda c: c["score"])
         reason = "Best balance of cost, quality, and latency"
 
+    public_candidates = [
+        {key: value for key, value in candidate.items()
+         if key != "_estimated_cost_decimal"}
+        for candidate in candidates
+    ]
     return {"model": best["model"], "tier": tier, "reason": reason,
             "estimated_cost": best["estimated_cost"], "expected_quality": best["expected_quality"],
-            "candidates_considered": candidates, "rejected": rejected}
+            "candidates_considered": public_candidates, "rejected": rejected}
