@@ -1,11 +1,22 @@
 # LLM Cost Autopilot
 
+<<<<<<< HEAD
 An adaptive, multi-provider LLM gateway that routes each prompt using estimated **quality, cost, and latency**, verifies generated answers with an LLM judge, and tracks request-level expenditure.
 
 The project combines a FastAPI service, Groq and Google Gemini providers, a Supabase telemetry store, a Streamlit dashboard, and a Python client SDK.
+=======
+**An adaptive LLM routing service that balances cost, quality, and latency—with request-level budget tracking, quality checks, and multi-provider fallback.**
+
+**Built by Harshini A**
+
+LLM Cost Autopilot is a Python project for choosing an appropriate language model for each request instead of sending every prompt to the same model. It exposes a FastAPI endpoint, records request and per-call telemetry in Supabase, provides a Streamlit dashboard and query console, and includes a small Python client SDK.
+
+The project is designed to make model selection and spending more observable and controllable. Its budget checks use estimates and provider-reported usage; they are not a guarantee of the final amount a provider will bill.
+>>>>>>> 94437ea (Final README)
 
 > **Project status:** A feature-rich engineering prototype with budget-aware routing and per-request accounting. It is not an absolute provider-billing cap or a fully production-hardened gateway; see [Current limitations](#current-limitations).
 
+<<<<<<< HEAD
 ## Why this project?
 
 Different prompts have different reasoning requirements. Sending every request to the most capable model can waste tokens and increase latency. LLM Cost Autopilot estimates the requirements of a prompt, filters eligible models, and selects one according to the requested routing strategy.
@@ -325,11 +336,235 @@ print("Quality:", result.quality_score)
 ### Mocked regression tests
 
 The focused budget-enforcement suite uses mocked provider responses:
+=======
+## What this project does
+
+- **Routes by request complexity.** A deterministic classifier assigns prompts to simple, medium, or complex tiers.
+- **Chooses among configured providers and models.** The current registry includes Groq-hosted GPT OSS models and Google Gemini Flash.
+- **Supports four routing priorities:** `economy`, `balanced`, `quality`, and `latency`.
+- **Applies request constraints.** Callers may set a maximum estimated request budget and a minimum expected quality.
+- **Checks answer quality.** An LLM judge can score a generated answer from 1 to 5; a low score can trigger an affordable escalation to a stronger candidate.
+- **Handles provider failures.** Configured retry and fallback paths are accounted for as separate provider attempts.
+- **Tracks usage and spend.** It records reported token usage, actual and estimated call costs, quality outcomes, fallback and escalation events, and request-level budget totals.
+- **Includes user-facing tools.** A Python SDK, an interactive query console, and a telemetry dashboard make the service easier to exercise and inspect.
+
+## Routing strategy
+
+Each request is classified into a complexity tier. Eligible models are filtered by availability, context-window fit, quality requirements, and (when supplied) estimated cost. The selected routing mode determines how eligible candidates are ranked.
+
+| Mode | Selection priority |
+| --- | --- |
+| `economy` | Lowest estimated cost among candidates that meet the quality requirement |
+| `quality` | Highest expected quality among eligible candidates |
+| `latency` | Lowest configured average latency among eligible candidates |
+| `balanced` | Weighted score across quality, normalized cost, and normalized latency |
+
+The balanced score currently weights quality at 50%, cost at 35%, and latency at 15%. Candidate prices, context windows, static quality estimates, and average latency are maintained in [`model_registry.py`](model_registry.py). Live quality scores can be derived from recent Supabase evaluations after the configured minimum sample count is available; otherwise the registry's static score is used.
+
+## Request lifecycle
+
+```text
+Client
+  │  POST /query + X-API-Key
+  ▼
+FastAPI ── validate routing options
+  │
+  ├── classify prompt and estimate candidate costs
+  ├── filter and rank eligible models
+  ├── reserve budget and call selected provider
+  ├── account for retries/fallback attempts
+  ├── run a budget-checked quality judge
+  ├── optionally escalate if quality is low and budget permits
+  └── persist request and call telemetry to Supabase
+         ├── Streamlit dashboard
+         └── Streamlit query console
+```
+
+The asynchronous provider dispatchers are in [`providers/`](providers/); request orchestration is in [`main.py`](main.py), routing decisions are in [`routing_policy.py`](routing_policy.py), and call-level budgeting is in [`budget.py`](budget.py) and [`models.py`](models.py).
+
+## Budget tracking
+
+When `max_cost_usd` is provided, the service estimates a model call's worst-case cost using an input-token estimate, the model's configured input/output prices, and that candidate's effective output-token limit. The limit is resolved per model and tier, so an escalation candidate does not inherit the primary model's output limit.
+
+Before dispatch, a `BudgetTracker` reserves the estimate. Reservations are coordinated with an asynchronous lock and must be claimed before they can authorize a provider call; a reservation cannot authorize two concurrent calls. On a successful response with valid usage metadata, the reservation is reconciled to the cost calculated from the reported input and output tokens. Failed calls and responses with missing usage metadata retain the conservative estimate. Each retry, fallback, quality-judge call, and escalation is accounted against the same request tracker.
+
+If a judge call cannot be afforded, quality verification is marked unavailable and the service does not treat the answer as verified. If no model is affordable, the API rejects the request rather than silently selecting a model outside the budget.
+
+### Important budget limitations
+
+Budget enforcement is a best-effort control based on available estimates and provider responses—not an absolute billing cap:
+
+- Input tokens are estimated using the project's prompt-token heuristic; provider tokenization may differ.
+- Provider pricing and billing rules can change.
+- A provider may charge for a failed or interrupted request, even when usage details are unavailable.
+- A provider may report incomplete or inaccurate usage, or actual cost may exceed the preflight estimate. In that case the request can be recorded as over budget after the call has completed.
+- The budget is per request and per tracker; it is not a shared account-wide spending limit.
+- Requests without `max_cost_usd` do not have a budget cap.
+
+Treat `actual_total_cost_usd` as the cost calculated from reported token usage, and `budget_accounted_cost_usd` / `total_cost_usd` as the request's accounted amount, including conservative estimates for calls without known usage.
+
+## API
+
+The service exposes `POST /query`. The API key is sent in the `X-API-Key` header. The query options are URL parameters:
+
+| Parameter | Required | Description |
+| --- | --- | --- |
+| `prompt` | Yes | Text to send to the selected model |
+| `routing_mode` | No | `balanced` (default), `economy`, `quality`, or `latency` |
+| `max_cost_usd` | No | Positive finite USD budget for this request |
+| `min_quality` | No | Minimum expected quality from `0.0` to `1.0` |
+
+Example:
+
+```bash
+curl -X POST "http://localhost:8000/query?prompt=Explain%20how%20LLM%20routing%20works&routing_mode=balanced&max_cost_usd=0.01" -H "X-API-Key: your_api_key"
+```
+
+The response includes the answer and chosen model, routing rationale, rejected-candidate details, quality and escalation status, per-call records, and budget fields such as:
+
+- `estimated_cost_usd`
+- `actual_total_cost_usd`
+- `budget_accounted_cost_usd`
+- `remaining_budget_usd`
+- `budget_limit_usd`
+- `budget_exceeded`
+- `quality_verification_status`
+- `escalation_attempted` and `escalation_reason`
+- `model_calls`
+
+Invalid constraints return HTTP 400; a request with no eligible affordable model returns HTTP 422. Provider failures are reported as HTTP 502.
+
+## Python client SDK
+
+The repository includes [`llm_cost_autopilot_client`](llm_cost_autopilot_client/). Its `LLMCostAutopilotClient.ask()` method returns a `RoutingResult` dataclass. The SDK keeps older response fields usable and defaults newer budget/quality fields when talking to an older API response.
+
+```python
+from llm_cost_autopilot_client import LLMCostAutopilotClient
+
+client = LLMCostAutopilotClient(
+    api_key="your_api_key",
+    base_url="http://localhost:8000",
+)
+
+result = client.ask(
+    "Explain how LLM routing works",
+    routing_mode="balanced",
+    max_cost_usd=0.01,
+)
+
+print(result.answer)
+print("Model:", result.model)
+print("Accounted cost:", result.total_cost_usd)
+print("Actual reported-usage cost:", result.actual_total_cost_usd)
+print("Remaining budget:", result.remaining_budget_usd)
+```
+
+The SDK also defines a `compare_models()` convenience method. The current API response does not populate `candidates_considered`, so this method may return an empty list; use `ask()` for the primary SDK workflow. See [`client.py`](llm_cost_autopilot_client/client.py) and [`models.py`](llm_cost_autopilot_client/models.py) for the supported fields and methods.
+
+## Run locally
+
+### 1. Requirements
+
+- Python 3.9 or newer (the included Docker image uses Python 3.11)
+- API credentials for the providers you intend to use
+- A Supabase project with the tables expected by the application
+
+### 2. Install dependencies
+
+From the repository root, create and activate a virtual environment, then install the application requirements:
+
+```bash
+python -m venv .venv
+
+# Windows PowerShell
+.\.venv\Scripts\Activate.ps1
+
+# Install dependencies
+python -m pip install -r requirements.txt
+```
+
+The project also has a `pyproject.toml` for the Python client package. To install the local package in editable mode:
+
+```bash
+python -m pip install -e .
+```
+
+### 3. Configure environment variables
+
+Create a local `.env` file in the project root. Do not commit credentials.
+
+```dotenv
+GROQ_API_KEY=replace_with_groq_key
+GEMINI_API_KEY=replace_with_gemini_key
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_KEY=replace_with_supabase_key
+LLM_AUTOPILOT_API_KEY=replace_with_client_api_key
+```
+
+The API authenticates client requests against active keys in the Supabase `api_keys` table; setting `LLM_AUTOPILOT_API_KEY` does not create or activate a key in that table. The query console uses that variable to prefill its API-key field. `SUPABASE_KEY` is used by this application for its database operations; keep it private and use an appropriately protected server-side key.
+
+### 4. Prepare Supabase
+
+The application expects existing `api_keys`, `requests`, `model_calls`, and `quality_scores` tables with the columns used by the code. The budget-enforcement migration is additive; it does not create the base schema. Apply [`migrations/001_hard_budget_enforcement.sql`](migrations/001_hard_budget_enforcement.sql) to add request-level budget/status fields and per-model-call accounting fields. Review the migration and back up your database according to your deployment process before applying it.
+
+### 5. Start the API
+
+```bash
+uvicorn main:app --reload --host 127.0.0.1 --port 8000
+```
+
+### 6. Start the optional Streamlit tools
+
+In separate terminals:
+
+```bash
+streamlit run query_console.py --server.port 8501
+```
+
+```bash
+streamlit run dashboard.py --server.port 8502
+```
+
+The query console sends requests to `http://localhost:8000/query`. The dashboard reads request and model-call telemetry from Supabase; the migration must be applied before using the new budget metrics.
+
+## Docker
+
+The included [`Dockerfile`](Dockerfile) builds the API service:
+
+```bash
+docker build -t llm-cost-autopilot .
+docker run --env-file .env -p 8000:8000 llm-cost-autopilot
+```
+
+The current Dockerfile copies the build context into the image. Ensure `.env` and all credential files are excluded from that context before building; do not rely on `.gitignore` to protect Docker builds. Provide the required environment variables and a prepared Supabase schema to the container through your deployment's secret-management mechanism. The Docker image runs the API; the Streamlit dashboard and query console are separate processes.
+
+For example, create a `.dockerignore` file before building:
+
+```text
+.env
+.env.*
+.git
+.venv
+__pycache__
+*.py[cod]
+```
+
+## Telemetry and dashboard
+
+The service persists one request record and individual model-call records. Call records include generation, judge, retry, fallback, and escalation attempts, with usage and cost-estimation status where available. The Streamlit dashboard presents actual reported-usage spend, remaining budget, utilization, latency, tier distribution, and fallback activity.
+
+Existing records are preserved by the additive migration. Historical actual totals are backfilled where prior call records contain non-estimated cost values; values that cannot be reconstructed from old telemetry cannot be recovered retroactively.
+
+## Testing and evaluation
+
+The focused budget and SDK regression suite uses mocked provider responses and does not make real provider API calls:
+>>>>>>> 94437ea (Final README)
 
 ```bash
 python -m unittest -v test_budget_enforcement
 ```
 
+<<<<<<< HEAD
 It covers budget preflight, exact-budget eligibility, actual-versus-estimated usage, concurrent reservations, retry/fallback accounting, judge expenditure, escalation limits, cancellation, invalid usage, and SDK compatibility.
 
 **Test-suite note:** Several older files named `test_*.py` are manual smoke scripts that execute provider or Supabase operations at module import time. Do not run unrestricted `unittest discover` until those scripts are moved/renamed and the suite is separated into safe automated tests.
@@ -373,3 +608,41 @@ The following are not implemented or not yet validated as production capabilitie
 ---
 
 **LLM Cost Autopilot** explores how routing policy, live quality feedback, budget accounting, and evaluation can work together to make multi-provider LLM applications more cost-aware and observable.
+=======
+It covers budget preflight and accounting, concurrent reservations, retries/fallbacks, judge and escalation spend, invalid budgets and usage, SDK import/construction, and legacy/new API response deserialization.
+
+The repository also contains exploratory integration and evaluation scripts for providers, classification, quality comparison, and cost comparison. Some execute API/database calls at import or run time and may require valid credentials, network access, and configured services; inspect a script before running it. Do not assume `python -m unittest discover` is safe as a fully isolated test suite.
+
+## Engineering decisions and learnings
+
+- Kept a deterministic, rule-based classifier as the production routing default to avoid classifier API latency, cost, and output-format variability.
+- Normalized cost and latency before combining them with quality in balanced routing, so small dollar values do not dominate the score merely because of their scale.
+- Kept model prices and token limits in shared configuration rather than duplicating prices across routing and accounting logic.
+- Used `Decimal` for cost arithmetic and per-request async reservations to reduce rounding errors and avoid concurrent calls spending the same estimated headroom.
+- Kept telemetry additive so existing request and model-call records can continue to be read.
+- Treats missing usage conservatively rather than recording unknown-cost calls as free.
+
+## Project layout
+
+```text
+.
+├── main.py                         # FastAPI endpoint and request orchestration
+├── routing_policy.py               # Candidate filtering, constraints, and selection
+├── router.py                       # Complexity classifier and tier token limits
+├── model_registry.py               # Configured models, providers, prices, and metadata
+├── budget.py                       # Decimal cost accounting and reservations
+├── models.py                       # Provider dispatch, retries, and fallback
+├── providers/                      # Groq and Gemini provider adapters
+├── dynamic_quality.py              # Supabase-backed live quality lookup
+├── logger.py                       # Request and call telemetry persistence
+├── dashboard.py                    # Streamlit telemetry dashboard
+├── query_console.py                 # Streamlit API client
+├── llm_cost_autopilot_client/       # Python SDK and response models
+├── migrations/                      # Additive Supabase migrations
+└── test_budget_enforcement.py       # Mocked budget and SDK regression tests
+```
+
+## Current scope
+
+This is a per-request routing and cost-observability project. It does not provide account-wide budget coordination, provider-billing reconciliation, guaranteed service availability, or a provider-independent absolute spend cap. Production deployments should monitor provider invoices, secure API and database credentials, configure provider limits where available, and validate the database schema and migration in their own Supabase environment.
+>>>>>>> 94437ea (Final README)
