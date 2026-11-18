@@ -1,0 +1,28 @@
+version: 1
+
+pricing_last_verified: "2026-11-18"
+
+models:
+  - id: gpt_oss_20b
+    provider: groq
+    model_name: openai/gpt-oss-20b
+    input_price_per_1m: 0.075
+    output_price_per_1m: 0.30
+    context_window: 131072
+    enabled: true
+
+  - id: gpt_oss_120b
+    provider: groq
+    model_name: openai/gpt-oss-120b
+    input_price_per_1m: 0.15
+    output_price_per_1m: 0.60
+    context_window: 131072
+    enabled: true
+
+  - id: gemini_3_8_flash
+    provider: google
+    model_name: gemini-3.8-flash
+    input_price_per_1m: 0.75
+    output_price_per_1m: 3.75
+    context_window: 1000000
+    enabled: true

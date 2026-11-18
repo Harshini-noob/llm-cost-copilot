@@ -11,6 +11,8 @@ requires-python = ">=3.9"
 dependencies = [
     "google-genai>=1.47.0",
     "httpx>=0.28.1",
+    "litellm>=1.83.9",
+    "pyyaml>=6.0.3",
     "requests>=2.28",
     "sentence-transformers>=5.1.2",
     "supabase[async]>=2.31.0",
