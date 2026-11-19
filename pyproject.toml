@@ -9,9 +9,13 @@ description = "Python client SDK for the LLM Cost Autopilot adaptive routing API
 authors = [{ name = "Harshini A" }]
 requires-python = ">=3.9"
 dependencies = [
+    "datasets>=4.5.0",
     "google-genai>=1.47.0",
     "httpx>=0.28.1",
     "litellm>=1.83.9",
+    "pandas>=2.3.3",
+    "pyarrow>=21.0.0",
+    "python-dotenv>=1.0.0",
     "pyyaml>=6.0.3",
     "requests>=2.28",
     "sentence-transformers>=5.1.2",

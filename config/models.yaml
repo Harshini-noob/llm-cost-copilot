@@ -1,6 +1,10 @@
 version: 1
 
-pricing_last_verified: "2026-11-18"
+pricing_last_verified: "2026-11-19"
+pricing_sources:
+  groq: "https://console.groq.com/docs/models"
+  google: "https://ai.google.dev/gemini-api/docs/pricing"
+  openrouter: "https://openrouter.ai/api/v1/model/qwen/qwen3-30b-a3b-instruct-2507"
 
 models:
   - id: gpt_oss_20b
@@ -25,4 +29,20 @@ models:
     input_price_per_1m: 0.75
     output_price_per_1m: 3.75
     context_window: 1000000
+    enabled: false
+
+  - id: gemini_3_5_flash_lite
+    provider: google
+    model_name: gemini-3.5-flash-lite
+    input_price_per_1m: 0.30
+    output_price_per_1m: 2.50
+    context_window: 1048576
+    enabled: true
+
+  - id: qwen3_30b_a3b_openrouter
+    provider: openrouter
+    model_name: qwen/qwen3-30b-a3b-instruct-2507
+    input_price_per_1m: 0.10
+    output_price_per_1m: 0.30
+    context_window: 262144
     enabled: true
