@@ -329,6 +329,15 @@ development, prompt tuning, or model selection. This is a workflow safeguard,
 not a technical barrier to downstream manual use of test results. No automatic
 routing or ranking is included.
 
+The external runner is dry-run by default. Use `--split validation` for
+development runs and `--split test` only for the frozen final evaluation.
+`--models` limits the enabled registry models and `--runs` controls repeated
+executions. Validation results append to an existing configuration file;
+final-test results are write-once and cannot overwrite an existing result or
+the custom benchmark matrix. Each result row includes execution telemetry,
+evaluation fields, source provenance, source-file hashes, and the evaluation
+manifest ID when applicable.
+
 Local-only usage after data files have been separately approved and placed on
 disk. Create one manifest JSON per source split with the actual file hash, for
 example:
@@ -449,6 +458,16 @@ dashboard.py / query_console.py  Streamlit dashboard and query UI
 llm_cost_autopilot_client/       Python SDK
 migrations/                      Supabase migrations
 test_budget_enforcement.py       Mocked regression tests
+config/models.yaml               V2 model registry and benchmark pricing
+model_registry_v2.py             Enabled V2 model definitions
+executor_v2.py                   LiteLLM execution and cost/latency telemetry
+eval/runner.py                   Custom benchmark execution
+eval/metrics.py                  Deterministic output evaluation
+eval/integrity.py                Read-only benchmark integrity reports
+eval/external_datasets.py        Approved local external-dataset adapters
+eval/external_runner.py          Separate validation/final-test runner
+eval/routerbench_import.py       Blocked RouterBench normalizer scaffolding
+tests_v2/                        V2, adapter, evaluator, and integrity tests
 ```
 
 ## Current limitations
