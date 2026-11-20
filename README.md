@@ -303,20 +303,23 @@ subject-specific duplicate configs are not included. MBPP uses only the
 official train/validation/test kept distinct. Normalization preserves each
 original source row as JSON, plus its source ID or stable source-row locator,
 question, original reference answer, choices/tests, source revision, and
-attribution. Every source split requires a separate JSON manifest naming the
-dataset, approved revision, source-file SHA-256, source split, format, and
-attribution. The source bytes are hashed and compared before parsing; the hash
-and verified manifest are retained in normalized records and run metadata.
-Arbitrary local files cannot be labeled with an approved revision without a
-matching manifest and byte hash. MBPP normalization appends a versioned code-only response
-instruction to the prompt; it does not rewrite the problem, reference code,
-imports, or test cases. Exact duplicate prompts and same-source-ID
-cross-split matches are hard failures. Token-set near duplicates at Jaccard
-similarity 0.8 or higher produce review warnings containing both source IDs
-and the similarity; records are not removed or modified. Short and entity-
-substitution questions can trigger false-positive warnings, so inspect them
-before deciding whether they represent leakage. This is a lexical check, not
-semantic paraphrase detection.
+attribution.
+
+#### Dataset Provenance & Trusted Approval Registry
+
+Dataset authenticity is enforced via a centralized trusted approval registry
+in [`eval/dataset_registry.py`](eval/dataset_registry.py):
+- Every source manifest must reference an approved registry entry ID.
+- Source bytes are hashed with SHA-256 and verified independently against the
+  trusted registry, preventing self-supplied manifest hash spoofing.
+- Normalized records preserve verified registry entry IDs, publisher metadata,
+  source URLs, and license approval references.
+- `load_normalized_dataset()` independently re-authenticates every record and
+  Parquet file against the trusted registry upon loading before execution.
+- Registry trust overrides are restricted to test-only execution using
+  `assert_test_mode()` guards to prevent production bypass.
+- Frozen final-test manifests capture complete execution environment fingerprints,
+  including Python implementation/version, `pyproject.toml` SHA-256, and `uv.lock` SHA-256.
 
 The external runner validates the complete normalized split set and writes
 validation and final-test results to separate directories. Final-test
@@ -445,6 +448,76 @@ async completion API. It reads reported token usage, computes cost from the
 registry prices, and measures wall-clock latency locally. It does not route,
 retry, or fall back to another model.
 
+## Baseline evaluation (M2)
+
+Phase M2 introduces a reproducible baseline evaluation framework in [`eval/baselines.py`](eval/baselines.py) to benchmark models and routing policies against standard deployable, post-hoc, and theoretical reference baselines.
+
+### Five Baseline Strategies
+
+1. **Always-Cheapest (`deployable_policy`)**:
+   - Identifies the candidate model with the lowest mean cost on the training partition ($m^* = \text{argmin}_m \bar{C}_{\text{train}}$).
+   - Routes all test prompts to $m^*$.
+   - Represents the cost-oriented lower bound.
+2. **Always-Best (`post_hoc_reference`)**:
+   - Evaluates test-set quality across candidate models and selects the single model achieving highest quality ($m^* = \text{argmax}_m Q_{\text{test}}$), breaking ties by lowest test cost.
+   - Strictly declared as a post-hoc reference ceiling, not a deployable train-time selection policy.
+3. **Random at Matched Cost (`deployable_policy`)**:
+   - Solves a convex combination over candidate models to match a configurable target expected cost ($\mathbb{E}[C] = \text{target\_cost}$).
+   - Evaluates across repeated sampling trials ($N=20$) with reproducible seeds to capture empirical sampling variability.
+   - Reports target cost, expected cost, realized mean cost, standard deviation, and relative cost deviation ($38.04\%$).
+4. **Static Task-Type Table (`deployable_policy`)**:
+   - Learns a mapping from prompt `task_type` to best-value model strictly on the training partition.
+   - Default objective: $\text{Quality} / \max(\text{Cost}, 1e-9)$ (alternative objectives: `quality_only`, `cost_only`).
+   - Supports configurable classifier inference cost (defaults to $0.00 when task metadata labels are supplied).
+   - Falls back gracefully to the overall training best-value model when an unseen test category is encountered.
+5. **Oracle (`theoretical_reference`)**:
+   - Per-prompt post-hoc optimal selection: picks the cheapest model that scored correct ($Q \ge 1.0$).
+   - If no model answered correctly, falls back to the cheapest candidate and explicitly records the unanswerable prompt.
+   - Represents the theoretical upper bound.
+
+### Data Partitioning & Leakage Prevention
+
+- Prompts are partitioned deterministically using a fixed random seed (`--seed 42`) and stratified by `task_type`.
+- Partition metadata is saved to `reports/train_test_split.json`.
+- Strict zero-leakage enforcement: deployable policies receive only training prompt records for policy derivation.
+
+### Failure & Evaluation Accounting
+
+- Execution failures (`execution_success == False`) and unscored rows (`evaluation_status != 'scored'`) are preserved and reported separately.
+- Incurred costs are preserved across all candidate executions.
+- Missing evaluations are never coerced to $0.0$ / incorrect. Quality averages reflect scored evaluations, with evaluation coverage tracked per baseline.
+
+### Dual-Engine Visualization (`reports/cost_vs_quality.png`)
+
+- Implements dual rendering engines: uses Matplotlib when available, with an automatic fallback to Pillow (`pillow>=12.0.0`) when running in environments without Matplotlib.
+- **Concentric Markers**: Overlapping / coincident baselines are rendered with concentric multi-shape markers (Oracle star, Always-Best square, Static Table diamond, Always-Cheapest circle) at exact data coordinates without artificial jitter.
+- **Intelligent Callout Cards**: Coincident baselines are grouped into a structured callout card with angled leader lines, eliminating text collisions.
+- **Microdollar Axis Formatting**: X-axis tick marks are formatted to 6 decimal places (e.g. `$0.000010`, `$0.000021`), ensuring microdollar differences are clearly visible.
+- **Exploratory Status Warning**: Prominently displays the red disclaimer banner whenever data coverage is sparse.
+
+### Real-Data Coverage Status (`INSUFFICIENT_DATA`)
+
+The active benchmark configuration (`m1-efa7ec3afd4f`) in `data/processed/matrix.parquet` currently contains runs for only **two prompts** (`math_001` and `math_002`), covering only **1 of 6 task categories** (`math`). A 50/50 partition yields 1 training prompt and 1 test prompt, leaving 5 categories unrepresented. Results on the active matrix are automatically flagged as `INSUFFICIENT_DATA` / `EXPLORATORY`. No statistical claims or 6-category evaluations are asserted until full pilot benchmark runs are authorized.
+
+### CLI Usage & Reproduction
+
+```powershell
+# Run baseline evaluation on active benchmark data
+python -m eval.baselines --config-id m1-efa7ec3afd4f --split-ratio 0.5 --seed 42 --random-repetitions 20 --output-dir reports
+
+# Run dedicated M2 baseline test suite (synthetic fixtures, zero API calls)
+python -m pytest tests_v2/test_baselines.py -v
+
+# Run entire test suite
+python -m pytest tests_v2 -v
+```
+
+Generated artifacts:
+- `reports/train_test_split.json`: Partition metadata and sufficiency status.
+- `reports/baseline_comparison.csv`: Tabular comparison metrics.
+- `reports/baseline_comparison.parquet`: Serialized baseline results.
+- `reports/cost_vs_quality.png`: Visual scatter plot.
+
 ## Project layout
 
 ```text
@@ -461,13 +534,16 @@ test_budget_enforcement.py       Mocked regression tests
 config/models.yaml               V2 model registry and benchmark pricing
 model_registry_v2.py             Enabled V2 model definitions
 executor_v2.py                   LiteLLM execution and cost/latency telemetry
+eval/dataset_registry.py         Trusted dataset approval registry & provenance
 eval/runner.py                   Custom benchmark execution
 eval/metrics.py                  Deterministic output evaluation
 eval/integrity.py                Read-only benchmark integrity reports
 eval/external_datasets.py        Approved local external-dataset adapters
 eval/external_runner.py          Separate validation/final-test runner
 eval/routerbench_import.py       Blocked RouterBench normalizer scaffolding
-tests_v2/                        V2, adapter, evaluator, and integrity tests
+eval/baselines.py                M2 baseline evaluation engine & visualization
+reports/                         M2 baseline comparison reports and plots
+tests_v2/                        V2, adapter, evaluator, baselines, and integrity tests
 ```
 
 ## Current limitations
@@ -476,3 +552,4 @@ tests_v2/                        V2, adapter, evaluator, and integrity tests
 - API-key validation and telemetry persistence use synchronous Supabase calls.
 - The repository's migration is additive but does not include the initial database schema.
 - Provider/classifier evaluation scripts may make live calls and incur charges; their results depend on providers and current model pricing.
+- Benchmark matrix coverage in `data/processed/matrix.parquet` currently contains only two math prompts under the active configuration, leaving 5 of 6 task categories pending authorized live execution. Real-data M2 baseline results are therefore flagged as `INSUFFICIENT_DATA` / `EXPLORATORY`.
