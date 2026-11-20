@@ -1,0 +1,22 @@
+{
+  "train_prompt_ids": [
+    "math_002"
+  ],
+  "test_prompt_ids": [
+    "math_001"
+  ],
+  "split_ratio": 0.5,
+  "seed": 42,
+  "sufficiency_status": "INSUFFICIENT_DATA",
+  "total_prompts": 2,
+  "train_prompt_count": 1,
+  "test_prompt_count": 1,
+  "task_distribution": {
+    "math": 2
+  },
+  "test_categories": [
+    "math"
+  ],
+  "created_at": "2026-11-20T10:49:11.966347+00:00",
+  "notes": "INSUFFICIENT_DATA: Active prompts count is 2 (test count: 1). Only 1 of 6 standard task categories represented in test split. Results are EXPLORATORY and NOT statistically reliable."
+}
