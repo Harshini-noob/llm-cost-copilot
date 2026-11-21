@@ -1,0 +1,1492 @@
+{
+  "evaluation_timestamp": "2026-11-21T09:38:58.849404+00:00",
+  "benchmark_config_id": "m1-efa7ec3afd4f",
+  "sufficiency_status": "INSUFFICIENT_DATA",
+  "is_exploratory": true,
+  "sufficiency_notes": "INSUFFICIENT_DATA: Active prompts count is 2 (test count: 1, val: 0). Only 1 of 6 standard categories in test split. Results are EXPLORATORY and NOT statistically reliable.",
+  "split_info": {
+    "train_prompt_ids": [
+      "math_002"
+    ],
+    "val_prompt_ids": [],
+    "test_prompt_ids": [
+      "math_001"
+    ],
+    "train_ratio": 0.5,
+    "val_ratio": 0.2,
+    "test_ratio": 0.3,
+    "seed": 42,
+    "total_prompts": 2,
+    "train_prompt_count": 1,
+    "val_prompt_count": 0,
+    "test_prompt_count": 1,
+    "sufficiency_status": "INSUFFICIENT_DATA",
+    "task_distribution": {
+      "math": 2
+    },
+    "test_categories": [
+      "math"
+    ],
+    "created_at": "2026-11-21T09:38:49.352435+00:00",
+    "notes": "INSUFFICIENT_DATA: Active prompts count is 2 (test count: 1, val: 0). Only 1 of 6 standard categories in test split. Results are EXPLORATORY and NOT statistically reliable."
+  },
+  "router_hyperparameters_audit": {
+    "knn": {
+      "k": 1,
+      "metric": "cosine",
+      "weights": "distance",
+      "selection_source": "provisional_deterministic_default",
+      "is_empirically_tuned": false,
+      "tuning_reason": "Deterministic defaults retained without claiming empirical optimization (< 3 validation prompts)."
+    },
+    "learned_logistic_regression": {
+      "C": 1.0,
+      "solver": "lbfgs",
+      "selection_source": "provisional_deterministic_default",
+      "is_empirically_tuned": false,
+      "tuning_reason": "Deterministic defaults retained without claiming empirical optimization (< 3 validation prompts)."
+    },
+    "test_data_isolation": "Verified: Zero test labels, test costs, or test outcomes were used in hyperparameter selection."
+  },
+  "preset_tuning": {
+    "is_empirically_tuned": false,
+    "status": "PROVISIONAL",
+    "tuning_reason": "Validation data insufficient (0 validation prompts). Presets remain PROVISIONAL defaults without empirical tuning.",
+    "presets": {
+      "auto:quality": 0.0,
+      "auto:balanced": 0.5,
+      "auto:cheap": 2.0
+    }
+  },
+  "lambda_sweep": [
+    0.0,
+    0.05,
+    0.1,
+    0.25,
+    0.5,
+    0.75,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+    10.0
+  ],
+  "tradeoff_benchmarks": {
+    "methodology": "Exact measured operating points from evaluated strategies. No extrapolated values.",
+    "interpolation_policy": "strictly_within_observed_range_no_extrapolation",
+    "observed_cost_range_usd": [
+      1.71e-05,
+      3.1792500000000004e-05
+    ],
+    "observed_quality_range": [
+      1.0,
+      1.0
+    ],
+    "matched_cost_target_usd": 1.71e-05,
+    "matched_quality_target": 1.0,
+    "deployable_at_matched_cost": [
+      {
+        "strategy": "Always-Cheapest",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Static Task-Type Table",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.05)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.10)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.25)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.75)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=1.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=1.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=2.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=3.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=5.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=10.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.05)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.10)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.25)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.75)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=1.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=1.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=2.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=3.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=5.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=10.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:quality)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:quality)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:balanced)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:balanced)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:cheap)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:cheap)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      }
+    ],
+    "references_at_matched_cost": [
+      {
+        "strategy": "Always-Best",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "post_hoc_reference",
+        "is_reference": true
+      },
+      {
+        "strategy": "Oracle",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "theoretical_reference",
+        "is_reference": true
+      }
+    ],
+    "deployable_at_matched_quality": [
+      {
+        "strategy": "Always-Cheapest",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Random (Matched Cost)",
+        "cost": 3.1792500000000004e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Static Task-Type Table",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.05)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.10)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.25)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.75)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=1.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=1.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=2.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=3.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=5.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=10.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.05)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.10)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.25)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.75)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=1.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=1.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=2.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=3.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=5.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=10.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:quality)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:quality)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:balanced)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:balanced)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:cheap)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:cheap)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      }
+    ],
+    "references_at_matched_quality": [
+      {
+        "strategy": "Always-Best",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "post_hoc_reference",
+        "is_reference": true
+      },
+      {
+        "strategy": "Oracle",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "theoretical_reference",
+        "is_reference": true
+      }
+    ],
+    "quality_at_matched_cost": [
+      {
+        "strategy": "Always-Cheapest",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Always-Best",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "post_hoc_reference",
+        "is_reference": true
+      },
+      {
+        "strategy": "Static Task-Type Table",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Oracle",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "theoretical_reference",
+        "is_reference": true
+      },
+      {
+        "strategy": "kNN Router (lambda=0.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.05)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.10)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.25)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.75)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=1.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=1.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=2.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=3.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=5.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=10.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.05)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.10)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.25)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.75)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=1.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=1.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=2.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=3.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=5.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=10.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:quality)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:quality)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:balanced)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:balanced)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:cheap)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:cheap)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      }
+    ],
+    "cost_at_matched_quality": [
+      {
+        "strategy": "Always-Cheapest",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Always-Best",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "post_hoc_reference",
+        "is_reference": true
+      },
+      {
+        "strategy": "Random (Matched Cost)",
+        "cost": 3.1792500000000004e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Static Task-Type Table",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Oracle",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "theoretical_reference",
+        "is_reference": true
+      },
+      {
+        "strategy": "kNN Router (lambda=0.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.05)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.10)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.25)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=0.75)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=1.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=1.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=2.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=3.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=5.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (lambda=10.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.05)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.10)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.25)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=0.75)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=1.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=1.50)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=2.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=3.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=5.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (lambda=10.00)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:quality)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:quality)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:balanced)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:balanced)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "kNN Router (auto:cheap)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      },
+      {
+        "strategy": "Learned Router (auto:cheap)",
+        "cost": 1.71e-05,
+        "quality": 1.0,
+        "strategy_type": "deployable_policy",
+        "is_reference": false
+      }
+    ],
+    "oracle_cost": 1.71e-05,
+    "oracle_quality": 1.0,
+    "reference_disclaimer": "Reference strategies (Always-Best, Oracle) are post-hoc or theoretical ceilings and are NOT deployable alternatives."
+  },
+  "pareto_deployable_strategies": [
+    "Always-Cheapest",
+    "Static Task-Type Table",
+    "kNN Router (lambda=0.00)",
+    "kNN Router (lambda=0.05)",
+    "kNN Router (lambda=0.10)",
+    "kNN Router (lambda=0.25)",
+    "kNN Router (lambda=0.50)",
+    "kNN Router (lambda=0.75)",
+    "kNN Router (lambda=1.00)",
+    "kNN Router (lambda=1.50)",
+    "kNN Router (lambda=2.00)",
+    "kNN Router (lambda=3.00)",
+    "kNN Router (lambda=5.00)",
+    "kNN Router (lambda=10.00)",
+    "Learned Router (lambda=0.00)",
+    "Learned Router (lambda=0.05)",
+    "Learned Router (lambda=0.10)",
+    "Learned Router (lambda=0.25)",
+    "Learned Router (lambda=0.50)",
+    "Learned Router (lambda=0.75)",
+    "Learned Router (lambda=1.00)",
+    "Learned Router (lambda=1.50)",
+    "Learned Router (lambda=2.00)",
+    "Learned Router (lambda=3.00)",
+    "Learned Router (lambda=5.00)",
+    "Learned Router (lambda=10.00)",
+    "kNN Router (auto:quality)",
+    "Learned Router (auto:quality)",
+    "kNN Router (auto:balanced)",
+    "Learned Router (auto:balanced)",
+    "kNN Router (auto:cheap)",
+    "Learned Router (auto:cheap)"
+  ],
+  "pareto_all_strategies": [
+    "Always-Cheapest",
+    "Always-Best",
+    "Static Task-Type Table",
+    "Oracle",
+    "kNN Router (lambda=0.00)",
+    "kNN Router (lambda=0.05)",
+    "kNN Router (lambda=0.10)",
+    "kNN Router (lambda=0.25)",
+    "kNN Router (lambda=0.50)",
+    "kNN Router (lambda=0.75)",
+    "kNN Router (lambda=1.00)",
+    "kNN Router (lambda=1.50)",
+    "kNN Router (lambda=2.00)",
+    "kNN Router (lambda=3.00)",
+    "kNN Router (lambda=5.00)",
+    "kNN Router (lambda=10.00)",
+    "Learned Router (lambda=0.00)",
+    "Learned Router (lambda=0.05)",
+    "Learned Router (lambda=0.10)",
+    "Learned Router (lambda=0.25)",
+    "Learned Router (lambda=0.50)",
+    "Learned Router (lambda=0.75)",
+    "Learned Router (lambda=1.00)",
+    "Learned Router (lambda=1.50)",
+    "Learned Router (lambda=2.00)",
+    "Learned Router (lambda=3.00)",
+    "Learned Router (lambda=5.00)",
+    "Learned Router (lambda=10.00)",
+    "kNN Router (auto:quality)",
+    "Learned Router (auto:quality)",
+    "kNN Router (auto:balanced)",
+    "Learned Router (auto:balanced)",
+    "kNN Router (auto:cheap)",
+    "Learned Router (auto:cheap)"
+  ],
+  "strategy_summaries": [
+    {
+      "name": "Always-Cheapest",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": null,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Always-Best",
+      "type": "post_hoc_reference",
+      "is_reference": true,
+      "lambda": null,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": false,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Random (Matched Cost)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": null,
+      "mean_cost": 3.1792500000000004e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": false,
+      "is_pareto_all": false
+    },
+    {
+      "name": "Static Task-Type Table",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": null,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Oracle",
+      "type": "theoretical_reference",
+      "is_reference": true,
+      "lambda": null,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": false,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=0.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=0.05)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.05,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=0.10)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.1,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=0.25)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.25,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=0.50)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.5,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=0.75)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.75,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=1.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 1.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=1.50)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 1.5,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=2.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 2.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=3.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 3.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=5.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 5.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (lambda=10.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 10.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=0.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=0.05)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.05,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=0.10)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.1,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=0.25)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.25,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=0.50)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.5,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=0.75)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.75,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=1.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 1.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=1.50)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 1.5,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=2.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 2.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=3.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 3.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=5.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 5.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (lambda=10.00)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 10.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (auto:quality)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (auto:quality)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (auto:balanced)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.5,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (auto:balanced)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 0.5,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "kNN Router (auto:cheap)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 2.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    },
+    {
+      "name": "Learned Router (auto:cheap)",
+      "type": "deployable_policy",
+      "is_reference": false,
+      "lambda": 2.0,
+      "mean_cost": 1.71e-05,
+      "mean_quality": 1.0,
+      "is_pareto_deployable": true,
+      "is_pareto_all": true
+    }
+  ]
+}
