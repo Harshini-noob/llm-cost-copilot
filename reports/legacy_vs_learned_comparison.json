@@ -1,0 +1,263 @@
+{
+  "evaluation_timestamp": "2026-11-21T10:58:45.497391+00:00",
+  "benchmark_config_id": "m1-efa7ec3afd4f",
+  "sufficiency_status": "INSUFFICIENT_DATA",
+  "is_exploratory": true,
+  "split_info": {
+    "train_prompt_ids": [
+      "math_002"
+    ],
+    "val_prompt_ids": [],
+    "test_prompt_ids": [
+      "math_001"
+    ],
+    "train_ratio": 0.5,
+    "val_ratio": 0.2,
+    "test_ratio": 0.3,
+    "seed": 42,
+    "total_prompts": 2,
+    "train_prompt_count": 1,
+    "val_prompt_count": 0,
+    "test_prompt_count": 1,
+    "sufficiency_status": "INSUFFICIENT_DATA",
+    "task_distribution": {
+      "math": 2
+    },
+    "test_categories": [
+      "math"
+    ],
+    "created_at": "2026-11-21T10:58:36.958065+00:00",
+    "notes": "INSUFFICIENT_DATA: Active prompts count is 2 (test count: 1, val: 0). Only 1 of 6 standard categories in test split. Results are EXPLORATORY and NOT statistically reliable."
+  },
+  "primary_baseline": "Legacy Rule-Based Balanced",
+  "strategies_evaluated": [
+    "Legacy Rule-Based Balanced",
+    "Legacy Rule-Based Economy",
+    "Legacy Rule-Based Quality",
+    "Legacy Rule-Based Latency",
+    "M3 kNN Router",
+    "M3 Learned Router",
+    "Always-Cheapest"
+  ],
+  "pairwise_comparison_relative_to_legacy_balanced": {
+    "Legacy Rule-Based Balanced": {
+      "delta_quality": 0.0,
+      "delta_cost_usd": 0.0,
+      "delta_cost_pct": 0.0,
+      "delta_latency_ms": 0.0,
+      "model_selection": {
+        "gpt_oss_120b": 1.0
+      }
+    },
+    "Legacy Rule-Based Economy": {
+      "delta_quality": -1.0,
+      "delta_cost_usd": -3.4349999999999995e-05,
+      "delta_cost_pct": -69.04522613065326,
+      "delta_latency_ms": 838.44,
+      "model_selection": {
+        "qwen3_30b_a3b_openrouter": 1.0
+      }
+    },
+    "Legacy Rule-Based Quality": {
+      "delta_quality": 0.0,
+      "delta_cost_usd": -3.2649999999999994e-05,
+      "delta_cost_pct": -65.62814070351757,
+      "delta_latency_ms": 2314.823333333333,
+      "model_selection": {
+        "gemini_3_5_flash_lite": 1.0
+      }
+    },
+    "Legacy Rule-Based Latency": {
+      "delta_quality": 0.0,
+      "delta_cost_usd": 0.0,
+      "delta_cost_pct": 0.0,
+      "delta_latency_ms": 0.0,
+      "model_selection": {
+        "gpt_oss_120b": 1.0
+      }
+    },
+    "M3 kNN Router": {
+      "delta_quality": 0.0,
+      "delta_cost_usd": -3.2649999999999994e-05,
+      "delta_cost_pct": -65.62814070351757,
+      "delta_latency_ms": 2314.823333333333,
+      "model_selection": {
+        "gemini_3_5_flash_lite": 1.0
+      }
+    },
+    "M3 Learned Router": {
+      "delta_quality": 0.0,
+      "delta_cost_usd": -3.2649999999999994e-05,
+      "delta_cost_pct": -65.62814070351757,
+      "delta_latency_ms": 2314.823333333333,
+      "model_selection": {
+        "gemini_3_5_flash_lite": 1.0
+      }
+    },
+    "Always-Cheapest": {
+      "delta_quality": 0.0,
+      "delta_cost_usd": -3.2649999999999994e-05,
+      "delta_cost_pct": -65.62814070351757,
+      "delta_latency_ms": 2314.823333333333,
+      "model_selection": {
+        "gemini_3_5_flash_lite": 1.0
+      }
+    }
+  },
+  "results": [
+    {
+      "strategy_name": "Legacy Rule-Based Balanced",
+      "strategy_type": "deployable_policy",
+      "router_family": "legacy_rule_based",
+      "test_prompt_count": 1,
+      "successful_evaluations": 1,
+      "correct_outcomes": 1,
+      "mean_quality": 1.0,
+      "quality_denominator": 1,
+      "evaluation_coverage": 1.0,
+      "execution_failure_count": 0,
+      "unscored_count": 0,
+      "mean_cost": 4.9749999999999996e-05,
+      "total_cost": 4.9749999999999996e-05,
+      "mean_latency_ms": 466.85999999999996,
+      "delta_quality_vs_legacy_balanced": 0.0,
+      "delta_cost_usd_vs_legacy_balanced": 0.0,
+      "delta_cost_pct_vs_legacy_balanced": 0.0,
+      "delta_latency_ms_vs_legacy_balanced": 0.0,
+      "model_selection_distribution": "{\"gpt_oss_120b\": 1.0}",
+      "notes": "Legacy M0 rule-based mode 'balanced'."
+    },
+    {
+      "strategy_name": "Legacy Rule-Based Economy",
+      "strategy_type": "deployable_policy",
+      "router_family": "legacy_rule_based",
+      "test_prompt_count": 1,
+      "successful_evaluations": 1,
+      "correct_outcomes": 0,
+      "mean_quality": 0.0,
+      "quality_denominator": 1,
+      "evaluation_coverage": 1.0,
+      "execution_failure_count": 1,
+      "unscored_count": 0,
+      "mean_cost": 1.5399999999999998e-05,
+      "total_cost": 1.5399999999999998e-05,
+      "mean_latency_ms": 1305.3,
+      "delta_quality_vs_legacy_balanced": -1.0,
+      "delta_cost_usd_vs_legacy_balanced": -3.4349999999999995e-05,
+      "delta_cost_pct_vs_legacy_balanced": -69.04522613065326,
+      "delta_latency_ms_vs_legacy_balanced": 838.44,
+      "model_selection_distribution": "{\"qwen3_30b_a3b_openrouter\": 1.0}",
+      "notes": "Legacy M0 rule-based mode 'economy'."
+    },
+    {
+      "strategy_name": "Legacy Rule-Based Quality",
+      "strategy_type": "deployable_policy",
+      "router_family": "legacy_rule_based",
+      "test_prompt_count": 1,
+      "successful_evaluations": 1,
+      "correct_outcomes": 1,
+      "mean_quality": 1.0,
+      "quality_denominator": 1,
+      "evaluation_coverage": 1.0,
+      "execution_failure_count": 0,
+      "unscored_count": 0,
+      "mean_cost": 1.71e-05,
+      "total_cost": 1.71e-05,
+      "mean_latency_ms": 2781.683333333333,
+      "delta_quality_vs_legacy_balanced": 0.0,
+      "delta_cost_usd_vs_legacy_balanced": -3.2649999999999994e-05,
+      "delta_cost_pct_vs_legacy_balanced": -65.62814070351757,
+      "delta_latency_ms_vs_legacy_balanced": 2314.823333333333,
+      "model_selection_distribution": "{\"gemini_3_5_flash_lite\": 1.0}",
+      "notes": "Legacy M0 rule-based mode 'quality'."
+    },
+    {
+      "strategy_name": "Legacy Rule-Based Latency",
+      "strategy_type": "deployable_policy",
+      "router_family": "legacy_rule_based",
+      "test_prompt_count": 1,
+      "successful_evaluations": 1,
+      "correct_outcomes": 1,
+      "mean_quality": 1.0,
+      "quality_denominator": 1,
+      "evaluation_coverage": 1.0,
+      "execution_failure_count": 0,
+      "unscored_count": 0,
+      "mean_cost": 4.9749999999999996e-05,
+      "total_cost": 4.9749999999999996e-05,
+      "mean_latency_ms": 466.85999999999996,
+      "delta_quality_vs_legacy_balanced": 0.0,
+      "delta_cost_usd_vs_legacy_balanced": 0.0,
+      "delta_cost_pct_vs_legacy_balanced": 0.0,
+      "delta_latency_ms_vs_legacy_balanced": 0.0,
+      "model_selection_distribution": "{\"gpt_oss_120b\": 1.0}",
+      "notes": "Legacy M0 rule-based mode 'latency'."
+    },
+    {
+      "strategy_name": "M3 kNN Router",
+      "strategy_type": "deployable_policy",
+      "router_family": "knn",
+      "test_prompt_count": 1,
+      "successful_evaluations": 1,
+      "correct_outcomes": 1,
+      "mean_quality": 1.0,
+      "quality_denominator": 1,
+      "evaluation_coverage": 1.0,
+      "execution_failure_count": 0,
+      "unscored_count": 0,
+      "mean_cost": 1.71e-05,
+      "total_cost": 1.71e-05,
+      "mean_latency_ms": 2781.683333333333,
+      "delta_quality_vs_legacy_balanced": 0.0,
+      "delta_cost_usd_vs_legacy_balanced": -3.2649999999999994e-05,
+      "delta_cost_pct_vs_legacy_balanced": -65.62814070351757,
+      "delta_latency_ms_vs_legacy_balanced": 2314.823333333333,
+      "model_selection_distribution": "{\"gemini_3_5_flash_lite\": 1.0}",
+      "notes": "M3 knn router + LambdaDecisionEngine (lambda=0.50)."
+    },
+    {
+      "strategy_name": "M3 Learned Router",
+      "strategy_type": "deployable_policy",
+      "router_family": "learned",
+      "test_prompt_count": 1,
+      "successful_evaluations": 1,
+      "correct_outcomes": 1,
+      "mean_quality": 1.0,
+      "quality_denominator": 1,
+      "evaluation_coverage": 1.0,
+      "execution_failure_count": 0,
+      "unscored_count": 0,
+      "mean_cost": 1.71e-05,
+      "total_cost": 1.71e-05,
+      "mean_latency_ms": 2781.683333333333,
+      "delta_quality_vs_legacy_balanced": 0.0,
+      "delta_cost_usd_vs_legacy_balanced": -3.2649999999999994e-05,
+      "delta_cost_pct_vs_legacy_balanced": -65.62814070351757,
+      "delta_latency_ms_vs_legacy_balanced": 2314.823333333333,
+      "model_selection_distribution": "{\"gemini_3_5_flash_lite\": 1.0}",
+      "notes": "M3 learned router + LambdaDecisionEngine (lambda=0.50)."
+    },
+    {
+      "strategy_name": "Always-Cheapest",
+      "strategy_type": "deployable_policy",
+      "router_family": "baseline",
+      "test_prompt_count": 1,
+      "successful_evaluations": 1,
+      "correct_outcomes": 1,
+      "mean_quality": 1.0,
+      "quality_denominator": 1,
+      "evaluation_coverage": 1.0,
+      "execution_failure_count": 0,
+      "unscored_count": 0,
+      "mean_cost": 1.71e-05,
+      "total_cost": 1.71e-05,
+      "mean_latency_ms": 2781.683333333333,
+      "delta_quality_vs_legacy_balanced": 0.0,
+      "delta_cost_usd_vs_legacy_balanced": -3.2649999999999994e-05,
+      "delta_cost_pct_vs_legacy_balanced": -65.62814070351757,
+      "delta_latency_ms_vs_legacy_balanced": 2314.823333333333,
+      "model_selection_distribution": "{\"gemini_3_5_flash_lite\": 1.0}",
+      "notes": "Always-Cheapest baseline derived strictly from training data (gemini_3_5_flash_lite)."
+    }
+  ]
+}
