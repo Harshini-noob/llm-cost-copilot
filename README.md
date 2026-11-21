@@ -518,32 +518,173 @@ Generated artifacts:
 - `reports/baseline_comparison.parquet`: Serialized baseline results.
 - `reports/cost_vs_quality.png`: Visual scatter plot.
 
+## Intelligent routing & empirical decision engine (M3)
+
+Phase M3 develops an offline-trained, empirical ML routing system that dynamically predicts model correctness and selects optimal candidate models under configurable cost-quality preferences. It introduces two machine-learning routers, a mathematical utility decision engine, comparative Pareto evaluation against all five M2 baselines, and comprehensive operational robustness stress testing.
+
+### Architecture Overview
+
+```text
+Input Prompt ───────────────────────────────────────────────┐
+  │                                                         │
+  ▼                                                         ▼
+[Embedding Encoder] (all-MiniLM-L6-v2)            [Feature Extraction]
+  │  Dense 384-d semantic vector                    │  Prompt length, code indicator,
+  │                                                 │  one-hot task category
+  ├─────────────────────────────────────────────────┘
+  │
+  ├──► kNN Router (k=3, cosine similarity, distance weighting)
+  │      └── P(correct | prompt, m) for each candidate model
+  │
+  └──► Learned Router (L2 Logistic Regression per model)
+         └── P(correct | prompt, m) with Beta-smoothed empirical fallback
+  │
+  ▼
+[Lambda Utility Decision Engine]
+  │  Expected Cost Estimand: attempted-call expenditures per model
+  │  Cost Normalizer: Candidate-set-relative min-max, max-scale, or raw USD
+  │  Utility Rule: U(m, x) = P(correct | m, x) - lambda * C_norm(m)
+  ▼
+Optimal Candidate Model Selection (argmax_m U(m, x))
+```
+
+### 1. Embedding & Feature Architecture (Step 1)
+
+Implemented in [`eval/routers/encoders.py`](eval/routers/encoders.py):
+- **`BaseEncoder`**: Extensible abstract base class enforcing `encode_queries(texts)` and `encode_prompts(prompts)`.
+- **`SentenceTransformerEncoder`**: Local offline encoder using `all-MiniLM-L6-v2` with strict local cache validation (`local_files_only=True`). Fails gracefully if weights are missing, preventing silent network calls.
+- **`DeterministicTestEncoder`**: Lightweight, reproducible offline encoder projecting text via SHA-256 into arbitrary-dimension unit vectors for testing.
+
+### 2. Dataset Preparation & Repeated-Run Handling (Step 2)
+
+Implemented in [`eval/routers/data_prep.py`](eval/routers/data_prep.py):
+- **`prepare_routing_dataset()`**: Extracts structured `PromptRecord` and `ModelOutcomeRecord` objects from the benchmark matrix.
+- **Empirical Probability Formulation**: Preserves individual run-level observations and estimates empirical quality as:
+  $$q(\text{prompt}, m) = \frac{\text{correct\_runs}}{\text{evaluated\_runs}}$$
+  Prevents majority-voting collapse or arbitrary binary thresholding.
+- **Prompt-Level Isolation**: Prompts are split deterministically across train/val/test partitions. All candidate runs for a given prompt remain strictly in the same split.
+- **Status Preservation**: Failed (`execution_success == False`) and unscored (`evaluation_status != 'scored'`) records are preserved as unavailable labels (`label=None`), never coerced to incorrect or zero.
+- **Data Sufficiency Assessment**: Identifies small matrices (< 10 prompts or < 2 categories) and tags them as `INSUFFICIENT_DATA`.
+
+### 3. kNN Correctness Predictor (Step 3)
+
+Implemented in [`eval/routers/knn_router.py`](eval/routers/knn_router.py):
+- Non-parametric correctness predictor estimating $P(\text{correct} \mid \text{prompt}, m)$ from the $k$ nearest historical training prompts in embedding space.
+- Supports `cosine` or `euclidean` distance metrics, with configurable weighting (`distance` or `uniform`).
+- Distance weighting handles exact matches ($d \to 0$) safely with numerical epsilon offsets.
+- Fallback mechanism defaults to global empirical model accuracy when historical coverage is limited.
+
+### 4. Learned Router with Beta-Smoothed Fallback (Step 4)
+
+Implemented in [`eval/routers/learned_router.py`](eval/routers/learned_router.py):
+- Feature representation concatenates prompt embeddings, normalized prompt length, code-presence indicator, and one-hot task categories.
+- Fits independent, L2-regularized Logistic Regression classifiers per candidate model using `scikit-learn`.
+- `StandardScaler` transformations are fit strictly on training data.
+- Handles fractional empirical quality $q(\text{prompt}, m) \in [0, 1]$ via sample-weighted binary cross-entropy.
+- **Beta-Smoothed Empirical Fallback**:
+  When training data for a model contains single-class outcomes or insufficient diversity, applies a Bayesian Beta-smoothed fallback:
+  $$P(\text{correct}) = \frac{\text{successes} + \alpha}{\text{evaluated\_observations} + \alpha + \beta} \quad (\alpha=1.0, \beta=1.0)$$
+  Eliminates unjustified certainty from small samples (e.g. 1 success / 0 failures yields 0.667 rather than 1.0; 0 successes / 1 failure yields 0.333 rather than 0.0).
+
+### 5. Lambda Utility Decision Engine (Step 5)
+
+Implemented in [`eval/routers/decision.py`](eval/routers/decision.py):
+- Combines predicted correctness with normalized expected model costs via the utility rule:
+  $$U(m, x) = \hat{Q}(m, x) - \lambda \cdot c_{\text{norm}}(m)$$
+  $$\text{selected\_model} = \arg\max_{m \in \mathcal{M}} U(m, x)$$
+- **Provisional Presets**: `auto:quality` ($\lambda=0.0$), `auto:balanced` ($\lambda=0.5$), and `auto:cheap` ($\lambda=2.0$).
+- **Expected-Cost Estimand**: Models expected expenditure per attempted call. Includes valid observed costs across all attempted calls (including execution failures and unscored runs that incur provider charges).
+- **Equal Prompt Weighting**: Computes average cost per unique prompt-model pair first, then averages across unique prompts, preventing heavily repeated prompts from distorting cost estimates.
+- **Cost Normalization Strategies**:
+  - `min_max`: $(c - \min c) / (\max c - \min c)$ (strictly candidate-set-relative).
+  - `max_scale`: $c / \max c$.
+  - `raw`: Preserves unscaled USD values (effective cost penalty $\lambda \cdot c$).
+
+### 6. Comparative Evaluation & Pareto Sweeps (Step 6)
+
+Implemented in [`eval/router_evaluation.py`](eval/router_evaluation.py):
+- Rigorous head-to-head comparison across all seven strategies on the exact same held-out test prompts:
+  1. *Always-Cheapest* (M2 Deployable Baseline)
+  2. *Static Task-Type Table* (M2 Deployable Baseline)
+  3. *Random at Matched Cost* (M2 Deployable Baseline)
+  4. *kNN Router* (M3 Deployable Router)
+  5. *Learned Logistic Regression Router* (M3 Deployable Router)
+  6. *Always-Best* (M2 Post-Hoc Reference)
+  7. *Oracle* (M2 Theoretical Upper Bound)
+- **Lambda Sweeps**: Sweeps $\lambda \in [0.0, 10.0]$ across 21 points to map the empirical Pareto efficiency frontier (Cost vs. Quality).
+- **Evaluation Integrity**: Quality denominators reflect actual evaluated/scored attempts; missing outcomes and execution failures are tracked via coverage metrics without imputation.
+
+### 7. Router Robustness & Generalization Evaluation (Step 7)
+
+Implemented in [`eval/router_robustness.py`](eval/router_robustness.py):
+- Reproducible offline stress-testing framework investigating operational edge cases:
+  - **Model Availability Stress**: Simulates provider outages, partial availability pools, single-candidate fallback, and graceful handling of empty candidate sets.
+  - **Cost Sensitivity**: Evaluates decision-time cost multipliers ($0.5\times$ to $3.0\times$) and non-uniform single-candidate cost shocks. Mathematically proves and tests uniform cost invariance under `min_max` and `max_scale`.
+  - **Lambda Sensitivity**: Measures transition stability and adjacent-lambda selection shifts.
+  - **Distribution Shift Methodology**: Static dataset audit on benchmark data transparently reports `INSUFFICIENT_DATA` / `EXPLORATORY`. Offline controlled simulation (`simulate_controlled_distribution_shift`) tests synthetic prompt length shifts and unseen task categories.
+  - **Granular Accounting**: Distinctly tallies `deliberately_unavailable`, `missing_prediction`, `execution_failure`, `unscored`, and `valid_prediction` events.
+- **Dual-Panel Visualization**: Generates `reports/router_robustness.png` illustrating cost sensitivity and availability resilience.
+
+### Verification & Reproduction
+
+```powershell
+# Run M3 router unit and integration tests
+python -m pytest tests_v2/test_encoders.py tests_v2/test_data_prep.py `
+  tests_v2/test_knn_router.py tests_v2/test_learned_router.py `
+  tests_v2/test_router_decision.py tests_v2/test_router_evaluation.py `
+  tests_v2/test_router_robustness.py -v
+
+# Run comparative Pareto sweep evaluation
+python -m eval.router_evaluation --config-id m1-efa7ec3afd4f
+
+# Run operational robustness evaluation
+python -m eval.router_robustness --config-id m1-efa7ec3afd4f
+
+# Run full test suite (226 tests, 100% offline, zero network calls)
+python -m pytest tests_v2 -v
+```
+
+Generated artifacts:
+- `reports/router_comparison.csv` & `reports/router_comparison.parquet`: Multi-strategy comparative evaluation data.
+- `reports/router_evaluation_summary.json`: Strategy summary, Pareto status, and data sufficiency audit.
+- `reports/router_pareto_curve.png`: High-resolution dual-engine Pareto frontier curve.
+- `reports/router_robustness.csv` & `reports/router_robustness.parquet`: Operational stress-test scenario logs (68 scenarios).
+- `reports/router_robustness_summary.json`: Detailed robustness audit and stability metrics.
+- `reports/router_robustness.png`: Two-panel cost sensitivity and availability resilience plot.
+
 ## Project layout
 
 ```text
-main.py                         FastAPI endpoint and request orchestration
-routing_policy.py               Candidate filtering and routing decisions
-router.py / model_registry.py   Complexity classification and model configuration
-budget.py / models.py            Cost tracking, reservations, and provider dispatch
-providers/                       Groq and Gemini adapters
-dynamic_quality.py / logger.py   Supabase quality lookup and telemetry
-dashboard.py / query_console.py  Streamlit dashboard and query UI
-llm_cost_autopilot_client/       Python SDK
-migrations/                      Supabase migrations
-test_budget_enforcement.py       Mocked regression tests
-config/models.yaml               V2 model registry and benchmark pricing
-model_registry_v2.py             Enabled V2 model definitions
-executor_v2.py                   LiteLLM execution and cost/latency telemetry
-eval/dataset_registry.py         Trusted dataset approval registry & provenance
-eval/runner.py                   Custom benchmark execution
-eval/metrics.py                  Deterministic output evaluation
-eval/integrity.py                Read-only benchmark integrity reports
-eval/external_datasets.py        Approved local external-dataset adapters
-eval/external_runner.py          Separate validation/final-test runner
-eval/routerbench_import.py       Blocked RouterBench normalizer scaffolding
-eval/baselines.py                M2 baseline evaluation engine & visualization
-reports/                         M2 baseline comparison reports and plots
-tests_v2/                        V2, adapter, evaluator, baselines, and integrity tests
+main.py                          FastAPI endpoint and request orchestration
+routing_policy.py                Candidate filtering and routing decisions
+router.py / model_registry.py    Complexity classification and model configuration
+budget.py / models.py             Cost tracking, reservations, and provider dispatch
+providers/                        Groq and Gemini adapters
+dynamic_quality.py / logger.py    Supabase quality lookup and telemetry
+dashboard.py / query_console.py   Streamlit dashboard and query UI
+llm_cost_autopilot_client/        Python SDK
+migrations/                       Supabase migrations
+test_budget_enforcement.py        Mocked regression tests
+config/models.yaml                V2 model registry and benchmark pricing
+model_registry_v2.py              Enabled V2 model definitions
+executor_v2.py                    LiteLLM execution and cost/latency telemetry
+eval/dataset_registry.py          Trusted dataset approval registry & provenance
+eval/runner.py                    Custom benchmark execution
+eval/metrics.py                   Deterministic output evaluation
+eval/integrity.py                 Read-only benchmark integrity reports
+eval/external_datasets.py         Approved local external-dataset adapters
+eval/external_runner.py           Separate validation/final-test runner
+eval/routerbench_import.py        Blocked RouterBench normalizer scaffolding
+eval/baselines.py                 M2 baseline evaluation engine & visualization
+eval/routers/encoders.py          M3 BaseEncoder, SentenceTransformer & deterministic encoders
+eval/routers/data_prep.py         M3 dataset preparation and repeated-run handling
+eval/routers/knn_router.py        M3 kNN correctness predictor
+eval/routers/learned_router.py    M3 Learned Logistic Regression router with Beta fallback
+eval/routers/decision.py          M3 Lambda utility decision engine & cost normalizers
+eval/router_evaluation.py         M3 7-strategy comparative evaluation & Pareto sweeps
+eval/router_robustness.py         M3 router robustness & operational stress testing
+reports/                          M2 and M3 comparison reports, Pareto curves, and plots
+tests_v2/                         Full test suite (226 tests, offline and zero provider spend)
 ```
 
 ## Current limitations
@@ -552,4 +693,4 @@ tests_v2/                        V2, adapter, evaluator, baselines, and integrit
 - API-key validation and telemetry persistence use synchronous Supabase calls.
 - The repository's migration is additive but does not include the initial database schema.
 - Provider/classifier evaluation scripts may make live calls and incur charges; their results depend on providers and current model pricing.
-- Benchmark matrix coverage in `data/processed/matrix.parquet` currently contains only two math prompts under the active configuration, leaving 5 of 6 task categories pending authorized live execution. Real-data M2 baseline results are therefore flagged as `INSUFFICIENT_DATA` / `EXPLORATORY`.
+- Benchmark matrix coverage in `data/processed/matrix.parquet` currently contains only two math prompts under the active configuration, leaving 5 of 6 task categories pending authorized live execution. Real-data M2 baseline and M3 router evaluations are therefore automatically flagged as `INSUFFICIENT_DATA` / `EXPLORATORY`. Statistical claims on out-of-domain generalization require broader benchmark collection.
