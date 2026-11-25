@@ -1,16 +1,21 @@
 # LLM Cost Autopilot
 
-**Built by Harshini A**
+**Adaptive, Cost-Aware LLM Routing & Production Serving Framework** · *Built by Harshini A*
 
-An adaptive, cost-aware LLM routing service and offline evaluation framework. It combines a FastAPI routing API (Groq & Google Gemini), per-request `Decimal` budget tracking, Supabase telemetry, a Streamlit dashboard, a Python SDK, and a leakage-safe empirical evaluation suite.
+An end-to-end ML systems project combining a **research-validated routing engine** (evaluated offline on 18 LLMs / 13 tasks / 3,729 held-out prompts) with a **FastAPI OpenAI-compatible serving layer** (`POST /v1/chat/completions`), `Decimal` budget enforcement, ranked fallback, SQLite decision telemetry, and fail-closed model promotion.
 
-> Engineering prototype, not an absolute provider-billing cap. Reconstructed benchmark costs and estimates may differ from live provider invoices.
+> **Key Highlights (Verified Offline on xRouteBench, Zero Live API Spend)**
+> - **92.2% Cost Reduction at Quality Parity:** `Learned LR (λ=0.75)` matches the post-hoc Best Single Model (`0.6533` vs. `0.6536` Macro Quality) at **\$0.036 vs. \$0.458 per 1k queries**.
+> - **+6.72 pts Macro Quality at 38.3% Lower Cost:** `Learned LR (λ=0.00)` achieves **0.7208 Macro Quality** (`0.7994` Micro) at **\$0.283/1k**.
+> - **Well-Calibrated Uncertainty:** `Learned LR` achieves **0.0389 raw ECE** (**0.0283 ECE** after out-of-fold Platt scaling) with negligible ranking drift.
+> - **59.06% Two-Model APGR (RouteLLM-Inspired):** Hybrid Ensemble cuts strong-model cost by **60.1%** at $\theta=0.30$ and beats the 0.50 random boundary (null-centered bootstrap $p = 1/1001 \approx 0.0010$).
+> - **Production-Grade Engineering Rigor:** **309/309** offline unit & integration tests passing (M0–M5), atomic router promotion/rollback, and strict train/val/test leakage prevention.
 
 ---
 
-## Benchmark Results (M4 — xRouteBench)
+## Cost vs. Quality Pareto Frontier (M4 — xRouteBench)
 
-Evaluated offline on **xRouteBench** (`ulab-ai/xRouteBench`, **3,729** held-out test prompts, **18** candidate LLMs, **13** tasks, zero live API calls; CC BY-NC-SA 4.0). Learned routers are swept over cost penalty $\lambda \in [0.00, 5.00]$ with **95% prompt-cluster bootstrap confidence intervals**; baselines are single operating points and the Oracle marks the theoretical ceiling.
+Evaluated offline on **xRouteBench** (`ulab-ai/xRouteBench`, **3,729** held-out test prompts, **18** candidate LLMs, **13** tasks; CC BY-NC-SA 4.0). Routers are swept over cost penalty $\lambda \in [0.00, 5.00]$ with **95% prompt-cluster bootstrap confidence intervals**; baselines are single operating points and the Oracle marks the theoretical ceiling.
 
 ![Cost vs quality — routers as λ-sweep curves, baselines as points](reports/m4/hero_cost_vs_quality.svg)
 
@@ -25,26 +30,29 @@ Evaluated offline on **xRouteBench** (`ulab-ai/xRouteBench`, **3,729** held-out 
 | **Best Single Model** (`qwen3-next-80b-a3b-instruct`) | Post-hoc test reference | 0.6536 [0.6368, 0.6650] | 0.8054 [0.7931, 0.8188] | \$0.458 | 2.52s |
 | **Oracle ($\lambda = 0.00$)** | Theoretical upper bound | 0.8533 [0.8325, 0.8760] | 0.9293 [0.9218, 0.9377] | \$0.032 | 2.64s |
 
-\* *Historical LLM Latency is the downstream provider response time recorded in xRouteBench, distinct from local router CPU overhead (<1 ms).*
+\* *Historical LLM Latency is the downstream provider response time recorded in xRouteBench, distinct from local router CPU overhead (<1 ms without embedding, ~43 ms p50 with live MiniLM embedding).*
 
-- **Full Research Report:** [`reports/m4/M4_FINAL_RESEARCH_REPORT.md`](reports/m4/M4_FINAL_RESEARCH_REPORT.md)
+- **Full Research Report:** [`reports/m4/M4_FINAL_RESEARCH_REPORT.md`](reports/m4/M4_FINAL_RESEARCH_REPORT.md) · **M5 Serving Report:** [`reports/m5/M5_SERVING_REPORT.md`](reports/m5/M5_SERVING_REPORT.md)
 
 ---
 
-## Milestones
+## Key Research Findings & Engineering Achievements
 
-- **M1 — Benchmark & Evaluation Infrastructure:** Unified LiteLLM execution harness (`eval/runner.py`), deterministic task evaluators (`eval/metrics.py`), read-only integrity checks (`eval/integrity.py`), and provenance-verified dataset adapters (`eval/dataset_registry.py`, `eval/external_datasets.py`).
-- **M2 — Baseline Evaluation:** Leakage-safe prompt-level partitioning and five reference baselines (`Always-Cheapest`, `Static-Task-Table`, `Random-Uniform`, `Best Single Model`, `Oracle`) implemented in `eval/baselines.py`.
-- **M3 — Learned Cost-Aware Routers:** Pre-inference MiniLM embeddings (`eval/routers/encoders.py`), distance-weighted `kNN` (`eval/routers/knn_router.py`), L2-regularized Logistic Regression (`eval/routers/learned_router.py`), utility engine $U(m,x) = \hat{Q}(m,x) - \lambda c_{\text{norm}}(m,x)$ (`eval/routers/decision.py`), and operational robustness stress-testing (`eval/router_robustness.py`).
-- **M4 — Rigorous Offline Evaluation (xRouteBench):**
-  - **Multi-Model Routing:** `Learned LR` ($\lambda=0.75$) matches `Best Single Model` quality at **92.2% lower cost** (\$0.036 vs. \$0.458/1k), and at $\lambda=0.00$ gains **+0.0672 Macro Quality** at **38.3% lower cost**.
-  - **Calibration:** `Learned LR` achieves **0.0389 raw ECE** (**0.0283** after out-of-fold Platt scaling) with negligible downstream ranking drift; `kNN` improves from **0.1123** to **0.0490 ECE** via isotonic regression.
-  - **OOD Generalization:** Leave-one-task-out across 6 unseen tasks yields a 3–3 split (`LR` leads on `gsm8k`, `mmlu`, `aime_2020_2024`; `kNN` leads on `mbpp`, `human_eval`, `squad`), with calibration degrading sharply on novel task shifts.
-  - **Two-Model APGR (RouteLLM-Inspired):** On `cogito-v2-1-671b` vs. `llama-3-8b-instruct-lite`, Hybrid Ensemble achieves **0.5906** Micro APGR `[0.5761, 0.6058]` (**0.5904** Macro APGR, null-centered bootstrap $p = 1/1001 \approx 0.000999$, rounded to `0.0010` vs. 0.50 random boundary; overlapping CIs with `kNN` `0.5818` and `LR` `0.5810` do not establish between-router superiority).
-- **M5 — Production Serving & Runtime Routing:**
-  - Unified `RuntimeRouter.route(prompt, lam) -> RouteDecision` adapters (`routers/knn_runtime.py`, `routers/lr_runtime.py`) using cached local MiniLM weights.
-  - OpenAI-compatible `POST /v1/chat/completions` (`auto`, `auto:quality`, `auto:balanced`, `auto:cheap`, or explicit live model) with ranked fallback, `BudgetTracker` enforcement, SQLite decision logging (`telemetry/decision_log.py`), `POST /v1/feedback`, and leakage-safe retraining/shadow-eval/atomic promotion (`routers/lifecycle.py`, `docs/adding-a-model.md`).
-  - **M5 Serving Report:** [`reports/m5/M5_SERVING_REPORT.md`](reports/m5/M5_SERVING_REPORT.md)
+- **1. Learned Routing Beats Static Model Selection Across Budgets:** `Learned LR` forms a smooth cost-quality Pareto frontier, matching the test-set Best Single Model at **92.2% lower cost** ($\lambda=0.75$) and exceeding Always-Cheapest by **+6.04 Macro pts** even at $\lambda=5.00$ (`$0.0136/1k`).
+- **2. No Universal OOD Winner — Domain Dichotomy Identified:** Leave-one-task-out evaluation across 6 unseen tasks (`gsm8k`, `mmlu`, `mbpp`, `human_eval`, `squad`, `aime_2020_2024`) revealed a **3–3 split**: `Learned LR` transfers better on math/knowledge, while `kNN` transfers better on code synthesis/reading comprehension. Small-$N$ tasks (`human_eval` $N=16$, `aime` $N=13$) are reported honestly with exact **Clopper-Pearson & Wilson binomial CIs**.
+- **3. Calibration Reliability & Shift Detection:** `Learned LR` is inherently calibrated (**0.0389 raw ECE**, **0.0283 Platt ECE**), whereas `kNN` requires isotonic calibration (**0.1123 $\rightarrow$ 0.0490 ECE**). Under novel OOD task shifts, calibration degrades sharply (+0.20 to +0.40 ECE), highlighting why OOD confidence thresholds must be guarded.
+- **4. Statistical & Methodological Rigor:** Replaced uncalibrated bootstrap checks with a **null-centered prompt-cluster bootstrap** ($B=1,000$, Davison & Hinkley plus-one correction: $p = 1/1001 \approx 0.0010$ vs. 0.50 random boundary) and **paired prompt-level difference CIs** for OOD degradation, while explicitly noting overlapping CIs do not rank Hybrid, kNN, and LR above one another.
+- **5. Research-to-Serving Architecture (M5):** Built a unified `RuntimeRouter` (`kNN` & `LR` versioned bundles), OpenAI-compatible `POST /v1/chat/completions`, `Decimal` per-attempt `BudgetTracker`, ranked fallback, privacy-preserving SQLite decision logging + 3-type outcome feedback, leakage-checked retraining, shadow evaluation, and atomic promotion/rollback.
+
+---
+
+## Milestones (M1 – M5)
+
+- **M1 — Benchmark & Evaluation Infrastructure:** Unified LiteLLM runner (`eval/runner.py`), deterministic task evaluators (`eval/metrics.py`), read-only integrity checks (`eval/integrity.py`), and provenance-verified dataset adapters (`eval/dataset_registry.py`, `eval/external_datasets.py`).
+- **M2 — Baseline Evaluation:** Leakage-safe prompt-level partitioning and five reference baselines (`Always-Cheapest`, `Static-Task-Table`, `Random-Uniform`, `Best Single Model`, `Oracle`) in `eval/baselines.py`.
+- **M3 — Learned Cost-Aware Routers:** Cached MiniLM embeddings (`eval/routers/encoders.py`), distance-weighted `kNN` (`eval/routers/knn_router.py`), L2-regularized Logistic Regression (`eval/routers/learned_router.py`), utility engine $U(m,x) = \hat{Q}(m,x) - \lambda c_{\text{norm}}(m,x)$ (`eval/routers/decision.py`), and stress-testing (`eval/router_robustness.py`).
+- **M4 — Rigorous Offline Evaluation (xRouteBench):** Multi-model Pareto sweeps, probability calibration, 6-task leave-one-task-out OOD generalization, RouteLLM-inspired two-model APGR (`0.5906` Hybrid Ensemble), and independent statistical audits.
+- **M5 — Production Serving & Lifecycle:** `RuntimeRouter` adapters (`routers/`), `POST /v1/chat/completions` with ranked fallback (`serving/`), SQLite decision logging + `POST /v1/feedback` (`telemetry/`), retraining/shadow-eval/atomic promotion (`routers/lifecycle.py`), cold-start guide (`docs/adding-a-model.md`), and 50-prompt offline demo (`scripts/demo_m5.py`).
 
 ---
 
@@ -100,15 +108,17 @@ Evaluated offline on **xRouteBench** (`ulab-ai/xRouteBench`, **3,729** held-out 
 - **Ranked Fallback:** On timeout, rate limit, or provider error, `serving/chat_completions.py` iterates through `ranked_candidates` in `model_registry.MODELS`, enforcing `BudgetTracker` per attempt without double-counting failures and reporting every failed attempt in `routing.fallback_attempts`.
 - **Feedback & Lifecycle:** `POST /v1/feedback` logs `judge_score`, `user_feedback`, or `downstream_task_success` to SQLite (`prompt_hash` only; raw prompts are not stored by default). `routers/lifecycle.py` handles leakage-checked retraining, `shadow_evaluate`, fail-closed `promote_router`, and `rollback()`. See [`docs/adding-a-model.md`](docs/adding-a-model.md).
 
-## Architecture & Routing Modes
+---
+
+## Architecture
 
 ```text
-Python SDK / Query Console ──▶ FastAPI (/query) ──▶ Classifier + Candidate Filter + Mode Ranker
-                                                            │
-Supabase Telemetry ◀── Judge / Escalation ◀── Groq / Gemini ◀── Decimal Budget Tracker
+OpenAI Client / SDK ──▶ FastAPI (/v1/chat/completions, /query, /v1/feedback)
+                              │
+                              ├── RuntimeRouter (kNN / LR + cached MiniLM) + BudgetTracker (Decimal)
+                              ├── Ranked Fallback ──▶ Groq / Gemini Providers
+                              └── SQLite DecisionLogger & Supabase Telemetry ──▶ Streamlit Dashboard
 ```
-
-- **Modes:** `balanced` (default: 50% quality, 35% cost, 15% latency), `economy`, `quality`, and `latency` after filtering by availability, context window, quality floor, and per-request `max_cost_usd`.
 
 ---
 
@@ -140,7 +150,7 @@ $env:PYTHONPATH="."
 .venv\Scripts\python -m eval.m4_routellm_baseline
 .venv\Scripts\python scripts/demo_m5.py --lam auto:balanced --prompts 50
 .venv\Scripts\pytest tests_v2/test_m5_serving.py -v
-.venv\Scripts\pytest tests_v2 -v
+.venv\Scripts\pytest tests_v2 -v   # 309 passed (M0–M5)
 ```
 
 ---
@@ -158,7 +168,7 @@ eval/                                     M1–M4 benchmark, baseline, router, c
 scripts/demo_m5.py                        50-prompt offline replay demonstration
 docs/adding-a-model.md                    Cold-start model onboarding procedure
 reports/m4/ & reports/m5/                 M4 & M5 research/serving reports, CSV/JSON results & SVG plots
-tests_v2/                                 Offline unit & integration test suite (M0–M5)
+tests_v2/                                 Offline unit & integration test suite (309 tests, M0–M5)
 ```
 
 ## Limitations
