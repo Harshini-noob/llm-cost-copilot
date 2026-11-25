@@ -1,0 +1,500 @@
+{
+  "audit_metadata": {
+    "version": "M4.1",
+    "benchmark_name": "xRouteBench",
+    "dataset_source": "ulab-ai/xRouteBench (Hugging Face)",
+    "paper": "LLMRouter: A Multi-Task Benchmark and Framework for LLM Routing (arXiv:2608.06867)",
+    "license": "Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0)",
+    "timestamp": "2026-11-24T18:25:00Z"
+  },
+  "raw_files": {
+    "train.parquet": {
+      "path": "data\\external\\xroutebench\\train.parquet",
+      "size_bytes": 17092011,
+      "sha256": "9307e40bd27737592f25677f3a7e58a8712181b08fe435b82c2943d7b49105c2",
+      "hash_verified": true
+    },
+    "test.parquet": {
+      "path": "data\\external\\xroutebench\\test.parquet",
+      "size_bytes": 15629470,
+      "sha256": "e7ce786054bcf1b81f4da32243d4d6414f4d94d9b5729ebd8b239f289b6dabe9",
+      "hash_verified": true
+    },
+    "llm_candidates.parquet": {
+      "path": "data\\external\\xroutebench\\llm_candidates.parquet",
+      "size_bytes": 8081,
+      "sha256": "5131134ed46c9ff68c0744fb90556714e99cbabd3ab0541778929bae9a91f23f",
+      "hash_verified": true
+    }
+  },
+  "splits": {
+    "train": {
+      "total_rows": 80802,
+      "unique_queries": 4487,
+      "models_evaluated": 18,
+      "tasks_evaluated": 13,
+      "macro_score": 0.5556664807472314,
+      "micro_score": 0.6218997176838759,
+      "mean_cost_usd": 0.0001673418791614069,
+      "total_cost_usd": 13.52155852
+    },
+    "test": {
+      "total_rows": 67122,
+      "unique_queries": 3729,
+      "models_evaluated": 18,
+      "tasks_evaluated": 13,
+      "macro_score": 0.5335868657088947,
+      "micro_score": 0.6212148284230126,
+      "mean_cost_usd": 0.00017953657221179346,
+      "total_cost_usd": 12.0508538
+    }
+  },
+  "train_test_leakage": {
+    "has_leakage": false,
+    "train_unique_queries": 4487,
+    "test_unique_queries": 3729,
+    "overlap_count": 0,
+    "overlap_sample": []
+  },
+  "cross_task_preserved_records": [
+    {
+      "query_snippet": "[System Instruction]\nAnswer the following math question. Make sure to put the answer (and only answe...",
+      "tasks": [
+        "math",
+        "aime_2020_2024"
+      ],
+      "row_count": 36,
+      "embedding_ids": [
+        1649,
+        2403
+      ]
+    },
+    {
+      "query_snippet": "[System Instruction]\nAnswer the following multiple-choice question by selecting the correct option (...",
+      "tasks": [
+        "arc_challenge (multiple embeddings)"
+      ],
+      "row_count": 36,
+      "embedding_ids": [
+        320,
+        4190
+      ]
+    }
+  ],
+  "token_statistics": {
+    "input_tokens": {
+      "min": 32,
+      "max": 1047,
+      "mean": 160.0846513700156,
+      "median": 114.0,
+      "p95": 430.0
+    },
+    "output_tokens": {
+      "min": 0,
+      "max": 901,
+      "mean": 114.54965223633079,
+      "median": 44.0,
+      "p95": 470.0
+    },
+    "token_num": {
+      "min": 38,
+      "max": 1638,
+      "mean": 274.63430360634635,
+      "median": 234.0,
+      "p95": 639.0
+    }
+  },
+  "tasks": {
+    "aime_2020_2024": {
+      "metric": "GSM8K",
+      "is_binary": true,
+      "description": "American Invitational Mathematics Exam",
+      "train_unique_queries": 107,
+      "test_unique_queries": 13,
+      "train_observations": 1926,
+      "test_observations": 234,
+      "train_mean_performance": 0.021287642782969886,
+      "test_mean_performance": 0.017094017094017096
+    },
+    "arc_challenge": {
+      "metric": "em_mc",
+      "is_binary": true,
+      "description": "AI2 Reasoning Challenge (Challenge Set)",
+      "train_unique_queries": 449,
+      "test_unique_queries": 500,
+      "train_observations": 8100,
+      "test_observations": 9000,
+      "train_mean_performance": 0.885679012345679,
+      "test_mean_performance": 0.8708888888888889
+    },
+    "boolq": {
+      "metric": "em_mc",
+      "is_binary": true,
+      "description": "BoolQ Yes/No Question Answering",
+      "train_unique_queries": 400,
+      "test_unique_queries": 50,
+      "train_observations": 7200,
+      "test_observations": 900,
+      "train_mean_performance": 0.6576388888888889,
+      "test_mean_performance": 0.6455555555555555
+    },
+    "commonsense_qa": {
+      "metric": "em_mc",
+      "is_binary": true,
+      "description": "CommonsenseQA Multiple-Choice",
+      "train_unique_queries": 400,
+      "test_unique_queries": 50,
+      "train_observations": 7200,
+      "test_observations": 900,
+      "train_mean_performance": 0.7493055555555556,
+      "test_mean_performance": 0.8088888888888889
+    },
+    "gsm8k": {
+      "metric": "GSM8K",
+      "is_binary": true,
+      "description": "Grade School Math 8K Word Problems",
+      "train_unique_queries": 450,
+      "test_unique_queries": 500,
+      "train_observations": 8100,
+      "test_observations": 9000,
+      "train_mean_performance": 0.7955555555555556,
+      "test_mean_performance": 0.7521111111111111
+    },
+    "hellaswag": {
+      "metric": "em_mc",
+      "is_binary": true,
+      "description": "HellaSwag Commonsense Reasoning",
+      "train_unique_queries": 400,
+      "test_unique_queries": 50,
+      "train_observations": 7200,
+      "test_observations": 900,
+      "train_mean_performance": 0.6558333333333334,
+      "test_mean_performance": 0.6788888888888889
+    },
+    "human_eval": {
+      "metric": "code_eval",
+      "is_binary": true,
+      "description": "HumanEval Python Coding Benchmark",
+      "train_unique_queries": 132,
+      "test_unique_queries": 16,
+      "train_observations": 2376,
+      "test_observations": 288,
+      "train_mean_performance": 0.17803030303030304,
+      "test_mean_performance": 0.18055555555555555
+    },
+    "math": {
+      "metric": "MATH",
+      "is_binary": true,
+      "description": "MATH Competition Level Mathematics",
+      "train_unique_queries": 450,
+      "test_unique_queries": 500,
+      "train_observations": 8100,
+      "test_observations": 9000,
+      "train_mean_performance": 0.4533333333333333,
+      "test_mean_performance": 0.40044444444444444
+    },
+    "mbpp": {
+      "metric": "code_eval",
+      "is_binary": true,
+      "description": "Mostly Basic Python Problems",
+      "train_unique_queries": 337,
+      "test_unique_queries": 500,
+      "train_observations": 6066,
+      "test_observations": 9000,
+      "train_mean_performance": 0.5438509726343554,
+      "test_mean_performance": 0.5092222222222222
+    },
+    "mmlu": {
+      "metric": "em_mc",
+      "is_binary": true,
+      "description": "Massive Multitask Language Understanding",
+      "train_unique_queries": 450,
+      "test_unique_queries": 500,
+      "train_observations": 8100,
+      "test_observations": 9000,
+      "train_mean_performance": 0.6380246913580246,
+      "test_mean_performance": 0.591
+    },
+    "mmlu_pro": {
+      "metric": "em_mc",
+      "is_binary": true,
+      "description": "MMLU-Pro High-Difficulty Multitask Benchmark",
+      "train_unique_queries": 63,
+      "test_unique_queries": 500,
+      "train_observations": 1134,
+      "test_observations": 9000,
+      "train_mean_performance": 0.564373897707231,
+      "test_mean_performance": 0.4141111111111111
+    },
+    "openbook_qa": {
+      "metric": "em_mc",
+      "is_binary": true,
+      "description": "OpenBookQA Question Answering",
+      "train_unique_queries": 450,
+      "test_unique_queries": 500,
+      "train_observations": 8100,
+      "test_observations": 9000,
+      "train_mean_performance": 0.8403703703703703,
+      "test_mean_performance": 0.8543333333333333
+    },
+    "squad": {
+      "metric": "f1_score",
+      "is_binary": false,
+      "description": "Stanford Question Answering Dataset (F1 score)",
+      "train_unique_queries": 400,
+      "test_unique_queries": 50,
+      "train_observations": 7200,
+      "test_observations": 900,
+      "train_mean_performance": 0.24038069281840718,
+      "test_mean_performance": 0.2135352371216138
+    }
+  },
+  "candidates": {
+    "qwen2.5-7b-instruct": {
+      "size": "7B",
+      "service": "NVIDIA",
+      "input_price_per_1m": 0.2,
+      "output_price_per_1m": 0.2,
+      "train_mean_accuracy": 0.546452961451562,
+      "test_mean_accuracy": 0.5754722487178283,
+      "train_mean_cost_usd": 4.1253775896636226e-05,
+      "test_mean_cost_usd": 3.936733708769107e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 46.18422811316552,
+      "mean_latency_sec": 1.5553234573401649
+    },
+    "gemma-2-9b-it": {
+      "size": "9B",
+      "service": "NVIDIA",
+      "input_price_per_1m": 0.1,
+      "output_price_per_1m": 0.1,
+      "train_mean_accuracy": 0.6758329211739039,
+      "test_mean_accuracy": 0.6236944594420665,
+      "train_mean_cost_usd": 2.205025618177768e-05,
+      "test_mean_cost_usd": 2.188774470367391e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 60.417910447761194,
+      "mean_latency_sec": 2.025756070394297
+    },
+    "llama-3-8b-instruct-lite": {
+      "size": "8B",
+      "service": "Together",
+      "input_price_per_1m": 0.1,
+      "output_price_per_1m": 0.1,
+      "train_mean_accuracy": 0.5558189413344288,
+      "test_mean_accuracy": 0.49323871872935315,
+      "train_mean_cost_usd": 1.941490309645801e-05,
+      "test_mean_cost_usd": 1.704513274336283e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 34.06437959456449,
+      "mean_latency_sec": 1.157042548451771
+    },
+    "qwen2.5-7b-instruct-turbo": {
+      "size": "7B",
+      "service": "Together",
+      "input_price_per_1m": 0.3,
+      "output_price_per_1m": 0.3,
+      "train_mean_accuracy": 0.5406439477682256,
+      "test_mean_accuracy": 0.5712794492940586,
+      "train_mean_cost_usd": 6.197295611494765e-05,
+      "test_mean_cost_usd": 5.910265486725664e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 46.49186901314324,
+      "mean_latency_sec": 1.0306718645578081
+    },
+    "mistral-7b-instruct-v0.3": {
+      "size": "7B",
+      "service": "NVIDIA",
+      "input_price_per_1m": 0.2,
+      "output_price_per_1m": 0.2,
+      "train_mean_accuracy": 0.37248521572043164,
+      "test_mean_accuracy": 0.3671026025695619,
+      "train_mean_cost_usd": 4.997086210737358e-05,
+      "test_mean_cost_usd": 5.0397264682220435e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 89.7696591668523,
+      "mean_latency_sec": 2.2772980619291605
+    },
+    "qwen3-next-80b-a3b-instruct": {
+      "size": "80B",
+      "service": "Together",
+      "input_price_per_1m": 0.15,
+      "output_price_per_1m": 1.5,
+      "train_mean_accuracy": 0.7239271008389903,
+      "test_mean_accuracy": 0.7251205839450072,
+      "train_mean_cost_usd": 0.00039424103363778124,
+      "test_mean_cost_usd": 0.00045804207562349155,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 246.81889062151927,
+      "mean_latency_sec": 2.7550737357986192
+    },
+    "llama3-70b-instruct": {
+      "size": "70B",
+      "service": "NVIDIA",
+      "input_price_per_1m": 0.9,
+      "output_price_per_1m": 0.9,
+      "train_mean_accuracy": 0.6865770991262029,
+      "test_mean_accuracy": 0.6449846791339983,
+      "train_mean_cost_usd": 0.00017570429939852973,
+      "test_mean_cost_usd": 0.0001581912308930008,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 35.142347961684116,
+      "mean_latency_sec": 1.1490472265537983
+    },
+    "mixtral-8x7b-instruct-v0.1": {
+      "size": "46.7B",
+      "service": "NVIDIA",
+      "input_price_per_1m": 0.6,
+      "output_price_per_1m": 0.6,
+      "train_mean_accuracy": 0.37092484376830387,
+      "test_mean_accuracy": 0.40582378054744234,
+      "train_mean_cost_usd": 0.00016670937848073066,
+      "test_mean_cost_usd": 0.00016722316975060337,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 117.76431276453553,
+      "mean_latency_sec": 2.615065938961907
+    },
+    "mixtral-8x22b-instruct-v0.1": {
+      "size": "140.6B",
+      "service": "NVIDIA",
+      "input_price_per_1m": 1.2,
+      "output_price_per_1m": 1.2,
+      "train_mean_accuracy": 0.5923362723231338,
+      "test_mean_accuracy": 0.6189297852420648,
+      "train_mean_cost_usd": 0.0003336636221875696,
+      "test_mean_cost_usd": 0.00033765374094931616,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 117.96836711962575,
+      "mean_latency_sec": 1.4055807529516595
+    },
+    "gpt-oss-20b": {
+      "size": "20B",
+      "service": "Together",
+      "input_price_per_1m": 0.05,
+      "output_price_per_1m": 0.2,
+      "train_mean_accuracy": 0.6756967997163708,
+      "test_mean_accuracy": 0.6975916538413446,
+      "train_mean_cost_usd": 1.4777277790153711e-05,
+      "test_mean_cost_usd": 1.4489487798337357e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 33.86522610826465,
+      "mean_latency_sec": 2.9499948763644466
+    },
+    "mistral-small-3-24b-instruct": {
+      "size": "24B",
+      "service": "Together",
+      "input_price_per_1m": 0.1,
+      "output_price_per_1m": 0.3,
+      "train_mean_accuracy": 0.703319840608879,
+      "test_mean_accuracy": 0.6784973925076073,
+      "train_mean_cost_usd": 5.212548451770996e-05,
+      "test_mean_cost_usd": 6.348104049342988e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 120.39006460236133,
+      "mean_latency_sec": 2.48713856092671
+    },
+    "llama-4-maverick": {
+      "size": "402B",
+      "service": "Together",
+      "input_price_per_1m": 0.27,
+      "output_price_per_1m": 0.85,
+      "train_mean_accuracy": 0.6985995496569202,
+      "test_mean_accuracy": 0.6415386766597134,
+      "train_mean_cost_usd": 0.0003000402539541101,
+      "test_mean_cost_usd": 0.00032568788415124697,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 302.13811539318334,
+      "mean_latency_sec": 5.014642904878591
+    },
+    "rnj-1-instruct": {
+      "size": "15B",
+      "service": "Together",
+      "input_price_per_1m": 0.15,
+      "output_price_per_1m": 0.15,
+      "train_mean_accuracy": 0.46694413918526945,
+      "test_mean_accuracy": 0.5133549461487511,
+      "train_mean_cost_usd": 4.596342169748273e-05,
+      "test_mean_cost_usd": 4.97971842316975e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 146.33815994653597,
+      "mean_latency_sec": 1.6121456894631323
+    },
+    "gpt-oss-120b": {
+      "size": "120B",
+      "service": "Together",
+      "input_price_per_1m": 0.15,
+      "output_price_per_1m": 0.6,
+      "train_mean_accuracy": 0.7167667738755212,
+      "test_mean_accuracy": 0.7444287028803445,
+      "train_mean_cost_usd": 5.036591668523056e-05,
+      "test_mean_cost_usd": 5.2596862429605794e-05,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 43.922031632880376,
+      "mean_latency_sec": 3.4614174649142346
+    },
+    "qwen3-coder-next": {
+      "size": "200B",
+      "service": "Together",
+      "input_price_per_1m": 0.5,
+      "output_price_per_1m": 1.2,
+      "train_mean_accuracy": 0.6937612450748825,
+      "test_mean_accuracy": 0.6597285608091471,
+      "train_mean_cost_usd": 0.0003211345956783248,
+      "test_mean_cost_usd": 0.0003695196031107535,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 200.91022499443082,
+      "mean_latency_sec": 3.132405212742259
+    },
+    "deepseek-v3.1": {
+      "size": "671B",
+      "service": "Together",
+      "input_price_per_1m": 0.6,
+      "output_price_per_1m": 1.7,
+      "train_mean_accuracy": 0.687670898705872,
+      "test_mean_accuracy": 0.7028947449740197,
+      "train_mean_cost_usd": 0.0002646113388282468,
+      "test_mean_cost_usd": 0.00031410297666934834,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 99.15326353308086,
+      "mean_latency_sec": 3.6311875696146134
+    },
+    "llama-3.3-70b-instruct-turbo": {
+      "size": "70B",
+      "service": "Together",
+      "input_price_per_1m": 0.88,
+      "output_price_per_1m": 0.88,
+      "train_mean_accuracy": 0.7393917101613486,
+      "test_mean_accuracy": 0.7127928007448152,
+      "train_mean_cost_usd": 0.0002443796658498552,
+      "test_mean_cost_usd": 0.0002753925663716814,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 117.61951436845622,
+      "mean_latency_sec": 2.3611853419469817
+    },
+    "cogito-v2-1-671b": {
+      "size": "671B",
+      "service": "Together",
+      "input_price_per_1m": 1.25,
+      "output_price_per_1m": 1.25,
+      "train_mean_accuracy": 0.7470446578195179,
+      "test_mean_accuracy": 0.805393125427103,
+      "train_mean_cost_usd": 0.0004537747828024059,
+      "test_mean_cost_usd": 0.0004576803432555645,
+      "mean_input_tokens": 160.0846513700156,
+      "mean_output_tokens": 202.9351748719091,
+      "mean_latency_sec": 2.189340387614168
+    }
+  },
+  "verification_checks": {
+    "all_files_sha256_match": true,
+    "zero_train_test_leakage": true,
+    "token_equality_exact": true,
+    "all_tokens_non_negative": true,
+    "all_response_times_non_negative": true,
+    "all_performance_bounded_0_1": true,
+    "squad_is_continuous_f1": true,
+    "remaining_12_tasks_binary": true,
+    "candidate_coverage_100_percent": true,
+    "reconstructed_costs_verified": true
+  }
+}

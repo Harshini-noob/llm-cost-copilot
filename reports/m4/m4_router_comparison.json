@@ -1,0 +1,1471 @@
+[
+  {
+    "name": "Always-Cheapest",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "baseline",
+    "lambda_value": null,
+    "macro_quality": 0.580645041806729,
+    "macro_quality_ci": [
+      0.5626967367726418,
+      0.5965104582161571
+    ],
+    "micro_quality": 0.6975916538413446,
+    "micro_quality_ci": [
+      0.680982630697274,
+      0.7113408988696641
+    ],
+    "mean_cost_usd": 1.4489487798337357e-05,
+    "cost_per_1k_usd": 0.014489487798337357,
+    "mean_cost_ci": [
+      1.3981980088495576e-05,
+      1.4995395883614911e-05
+    ],
+    "mean_latency_sec": 3.205390721373022,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.934,
+      "boolq": 0.86,
+      "commonsense_qa": 0.76,
+      "gsm8k": 0.65,
+      "hellaswag": 0.74,
+      "human_eval": 0.0,
+      "math": 0.568,
+      "mbpp": 0.624,
+      "mmlu": 0.738,
+      "mmlu_pro": 0.506,
+      "openbook_qa": 0.922,
+      "squad": 0.2463855434874771
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 1.0
+    },
+    "notes": "Routes 100% of queries to training-cheapest model (gpt-oss-20b)."
+  },
+  {
+    "name": "Best Single Model (Test-Set Reference)",
+    "strategy_type": "post_hoc_reference",
+    "is_reference": true,
+    "router_family": "baseline",
+    "lambda_value": null,
+    "macro_quality": 0.6535553303348726,
+    "macro_quality_ci": [
+      0.6368012671071336,
+      0.6650459615012131
+    ],
+    "micro_quality": 0.805393125427103,
+    "micro_quality_ci": [
+      0.7931219167470307,
+      0.8188300434866476
+    ],
+    "mean_cost_usd": 0.0004576803432555645,
+    "cost_per_1k_usd": 0.4576803432555645,
+    "mean_cost_ci": [
+      0.000451319338294449,
+      0.0004647231496379727
+    ],
+    "mean_latency_sec": 2.5210632877447043,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.964,
+      "boolq": 0.84,
+      "commonsense_qa": 0.86,
+      "gsm8k": 0.82,
+      "hellaswag": 0.9,
+      "human_eval": 0.0,
+      "math": 0.678,
+      "mbpp": 0.71,
+      "mmlu": 0.87,
+      "mmlu_pro": 0.74,
+      "openbook_qa": 0.948,
+      "squad": 0.16621929435334398
+    },
+    "model_selection_distribution": {
+      "cogito-v2-1-671b": 1.0
+    },
+    "notes": "Post-hoc test reference routing all queries to test-best model (qwen3-next-80b-a3b-instruct). Not deployable."
+  },
+  {
+    "name": "Random-Uniform",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "baseline",
+    "lambda_value": null,
+    "macro_quality": 0.5108832350218033,
+    "macro_quality_ci": [
+      0.489671599226797,
+      0.5292073157923125
+    ],
+    "micro_quality": 0.6172832133988125,
+    "micro_quality_ci": [
+      0.6004474828836154,
+      0.6342939615958942
+    ],
+    "mean_cost_usd": 0.00018092331724322872,
+    "cost_per_1k_usd": 0.18092331724322872,
+    "mean_cost_ci": [
+      0.00017418501743094665,
+      0.00018818714769375166
+    ],
+    "mean_latency_sec": 2.7624813622955213,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.858,
+      "boolq": 0.64,
+      "commonsense_qa": 0.82,
+      "gsm8k": 0.77,
+      "hellaswag": 0.52,
+      "human_eval": 0.0625,
+      "math": 0.4,
+      "mbpp": 0.522,
+      "mmlu": 0.566,
+      "mmlu_pro": 0.41,
+      "openbook_qa": 0.856,
+      "squad": 0.21698205528344322
+    },
+    "model_selection_distribution": {
+      "deepseek-v3.1": 0.062215071064628584,
+      "mixtral-8x22b-instruct-v0.1": 0.060874229015821936,
+      "rnj-1-instruct": 0.057656208098685977,
+      "gpt-oss-20b": 0.057656208098685977,
+      "qwen2.5-7b-instruct-turbo": 0.05738803968892464,
+      "cogito-v2-1-671b": 0.05604719764011799,
+      "llama-3.3-70b-instruct-turbo": 0.055779029230356665,
+      "mixtral-8x7b-instruct-v0.1": 0.055779029230356665,
+      "qwen2.5-7b-instruct": 0.05551086082059534,
+      "gemma-2-9b-it": 0.05551086082059534,
+      "mistral-7b-instruct-v0.3": 0.05551086082059534,
+      "qwen3-coder-next": 0.055242692410834,
+      "gpt-oss-120b": 0.053633681952266025,
+      "mistral-small-3-24b-instruct": 0.05336551354250469,
+      "llama-4-maverick": 0.05309734513274336,
+      "llama3-70b-instruct": 0.051756503083936714,
+      "llama-3-8b-instruct-lite": 0.05148833467417538,
+      "qwen3-next-80b-a3b-instruct": 0.05148833467417538
+    },
+    "notes": "Deterministic uniform random selection across candidate pool."
+  },
+  {
+    "name": "Static-Task-Table",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "baseline",
+    "lambda_value": null,
+    "macro_quality": 0.7320838305139469,
+    "macro_quality_ci": [
+      0.7040626312511781,
+      0.7569898884041433
+    ],
+    "micro_quality": 0.8136999683941426,
+    "micro_quality_ci": [
+      0.8020178036096912,
+      0.8258452889195363
+    ],
+    "mean_cost_usd": 0.0003145918637704478,
+    "cost_per_1k_usd": 0.31459186377044784,
+    "mean_cost_ci": [
+      0.00030616374497184233,
+      0.000322415120340574
+    ],
+    "mean_latency_sec": 3.1471700187717886,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.15384615384615385,
+      "arc_challenge": 0.96,
+      "boolq": 0.88,
+      "commonsense_qa": 0.86,
+      "gsm8k": 0.938,
+      "hellaswag": 0.9,
+      "human_eval": 0.6875,
+      "math": 0.576,
+      "mbpp": 0.71,
+      "mmlu": 0.87,
+      "mmlu_pro": 0.74,
+      "openbook_qa": 0.956,
+      "squad": 0.2857436428351567
+    },
+    "model_selection_distribution": {
+      "cogito-v2-1-671b": 0.4156610351300617,
+      "gpt-oss-120b": 0.14749262536873156,
+      "qwen3-next-80b-a3b-instruct": 0.14749262536873156,
+      "llama-4-maverick": 0.13408420488066505,
+      "mistral-small-3-24b-instruct": 0.13408420488066505,
+      "llama-3-8b-instruct-lite": 0.013408420488066506,
+      "qwen2.5-7b-instruct-turbo": 0.004290694556181282,
+      "llama-3.3-70b-instruct-turbo": 0.0034861893268972916
+    },
+    "notes": "Static lookup selecting the best training model per benchmark task category."
+  },
+  {
+    "name": "Oracle (lambda=0.00)",
+    "strategy_type": "theoretical_reference",
+    "is_reference": true,
+    "router_family": "baseline",
+    "lambda_value": 0.0,
+    "macro_quality": 0.8532747553548466,
+    "macro_quality_ci": [
+      0.8325198881326222,
+      0.8759862343669291
+    ],
+    "micro_quality": 0.9292880475843895,
+    "micro_quality_ci": [
+      0.9217837073629767,
+      0.9376717796047428
+    ],
+    "mean_cost_usd": 3.234866988468758e-05,
+    "cost_per_1k_usd": 0.03234866988468758,
+    "mean_cost_ci": [
+      2.9719036739072137e-05,
+      3.5797950455886293e-05
+    ],
+    "mean_latency_sec": 2.6366173236792707,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.23076923076923078,
+      "arc_challenge": 0.992,
+      "boolq": 0.98,
+      "commonsense_qa": 1.0,
+      "gsm8k": 0.982,
+      "hellaswag": 0.98,
+      "human_eval": 0.9375,
+      "math": 0.836,
+      "mbpp": 0.874,
+      "mmlu": 0.972,
+      "mmlu_pro": 0.904,
+      "openbook_qa": 0.998,
+      "squad": 0.40630258884377546
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.6492357200321802,
+      "gemma-2-9b-it": 0.1300616787342451,
+      "llama-3-8b-instruct-lite": 0.08313220702601233,
+      "gpt-oss-120b": 0.03459372485921158,
+      "rnj-1-instruct": 0.02333065164923572,
+      "qwen2.5-7b-instruct": 0.018235451863770447,
+      "mistral-small-3-24b-instruct": 0.012603915258782515,
+      "cogito-v2-1-671b": 0.011531241619737195,
+      "llama-4-maverick": 0.008313220702601234,
+      "llama3-70b-instruct": 0.006972378653794583,
+      "deepseek-v3.1": 0.0056315366049879325,
+      "llama-3.3-70b-instruct-turbo": 0.0053633681952266025,
+      "mistral-7b-instruct-v0.3": 0.004022526146419952,
+      "qwen3-next-80b-a3b-instruct": 0.002413515687851971,
+      "mixtral-8x22b-instruct-v0.1": 0.0013408420488066506,
+      "mixtral-8x7b-instruct-v0.1": 0.0013408420488066506,
+      "qwen2.5-7b-instruct-turbo": 0.0010726736390453205,
+      "qwen3-coder-next": 0.0008045052292839903
+    },
+    "notes": "Theoretical ceiling selecting observed best candidate per query under U(m,x) = Q(m,x) - lambda * c_norm(m) with lambda=0.00. Not deployable."
+  },
+  {
+    "name": "KNN (lambda=0.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 0.0,
+    "macro_quality": 0.6508191241368843,
+    "macro_quality_ci": [
+      0.6243552888514671,
+      0.6753043938603733
+    ],
+    "micro_quality": 0.7114806320307914,
+    "micro_quality_ci": [
+      0.6959473413366898,
+      0.7251298643442827
+    ],
+    "mean_cost_usd": 7.855787610619469e-05,
+    "cost_per_1k_usd": 0.07855787610619469,
+    "mean_cost_ci": [
+      7.411231798069186e-05,
+      8.305212013944757e-05
+    ],
+    "mean_latency_sec": 2.9243188522392063,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.07692307692307693,
+      "arc_challenge": 0.926,
+      "boolq": 0.82,
+      "commonsense_qa": 0.84,
+      "gsm8k": 0.808,
+      "hellaswag": 0.78,
+      "human_eval": 0.6875,
+      "math": 0.556,
+      "mbpp": 0.634,
+      "mmlu": 0.69,
+      "mmlu_pro": 0.5,
+      "openbook_qa": 0.9,
+      "squad": 0.24222553685641826
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.4194153928667203,
+      "gemma-2-9b-it": 0.10592652185572539,
+      "qwen2.5-7b-instruct": 0.07320997586484312,
+      "llama-3-8b-instruct-lite": 0.06382408152319657,
+      "rnj-1-instruct": 0.059801555376776616,
+      "mistral-small-3-24b-instruct": 0.050683829444891394,
+      "gpt-oss-120b": 0.045588629659426116,
+      "llama-4-maverick": 0.031375703942075624,
+      "llama3-70b-instruct": 0.027353177795655673,
+      "llama-3.3-70b-instruct-turbo": 0.02708500938589434,
+      "cogito-v2-1-671b": 0.02386698846875838,
+      "qwen3-coder-next": 0.02359882005899705,
+      "deepseek-v3.1": 0.02145347278090641,
+      "qwen3-next-80b-a3b-instruct": 0.008045052292839904,
+      "mixtral-8x22b-instruct-v0.1": 0.006167873424510592,
+      "mistral-7b-instruct-v0.3": 0.0058997050147492625,
+      "qwen2.5-7b-instruct-turbo": 0.0034861893268972916,
+      "mixtral-8x7b-instruct-v0.1": 0.003218020917135961
+    },
+    "notes": "KNN deployable router with lambda=0.00."
+  },
+  {
+    "name": "KNN (lambda=0.05)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 0.05,
+    "macro_quality": 0.6519939906690978,
+    "macro_quality_ci": [
+      0.6237301454965913,
+      0.6729607842621561
+    ],
+    "micro_quality": 0.7103915098119495,
+    "micro_quality_ci": [
+      0.6945981127756764,
+      0.7237841581758396
+    ],
+    "mean_cost_usd": 7.295446768570662e-05,
+    "cost_per_1k_usd": 0.07295446768570661,
+    "mean_cost_ci": [
+      6.863519133816036e-05,
+      7.707847995441136e-05
+    ],
+    "mean_latency_sec": 2.953410297666935,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.07692307692307693,
+      "arc_challenge": 0.926,
+      "boolq": 0.8,
+      "commonsense_qa": 0.84,
+      "gsm8k": 0.806,
+      "hellaswag": 0.76,
+      "human_eval": 0.75,
+      "math": 0.558,
+      "mbpp": 0.636,
+      "mmlu": 0.684,
+      "mmlu_pro": 0.498,
+      "openbook_qa": 0.9,
+      "squad": 0.24099880177519403
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.4239742558326629,
+      "gemma-2-9b-it": 0.11075355323142934,
+      "qwen2.5-7b-instruct": 0.0756234915526951,
+      "llama-3-8b-instruct-lite": 0.06623759721104854,
+      "rnj-1-instruct": 0.061142397425583264,
+      "mistral-small-3-24b-instruct": 0.05229283990345937,
+      "gpt-oss-120b": 0.04800214534727809,
+      "llama-4-maverick": 0.02869401984446232,
+      "llama3-70b-instruct": 0.02574416733708769,
+      "llama-3.3-70b-instruct-turbo": 0.02440332528828104,
+      "qwen3-coder-next": 0.02064896755162242,
+      "cogito-v2-1-671b": 0.02064896755162242,
+      "deepseek-v3.1": 0.017699115044247787,
+      "qwen3-next-80b-a3b-instruct": 0.006704210244033253,
+      "mixtral-8x22b-instruct-v0.1": 0.0056315366049879325,
+      "mistral-7b-instruct-v0.3": 0.0053633681952266025,
+      "qwen2.5-7b-instruct-turbo": 0.0034861893268972916,
+      "mixtral-8x7b-instruct-v0.1": 0.0029498525073746312
+    },
+    "notes": "KNN deployable router with lambda=0.05."
+  },
+  {
+    "name": "KNN (lambda=0.10)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 0.1,
+    "macro_quality": 0.652850090544561,
+    "macro_quality_ci": [
+      0.625143793281366,
+      0.673891982148337
+    ],
+    "micro_quality": 0.7115061423995201,
+    "micro_quality_ci": [
+      0.6955746615980855,
+      0.7245932495027481
+    ],
+    "mean_cost_usd": 7.182198712791633e-05,
+    "cost_per_1k_usd": 0.07182198712791633,
+    "mean_cost_ci": [
+      6.750023136229553e-05,
+      7.560698156342183e-05
+    ],
+    "mean_latency_sec": 2.9450670421024405,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.07692307692307693,
+      "arc_challenge": 0.926,
+      "boolq": 0.8,
+      "commonsense_qa": 0.84,
+      "gsm8k": 0.806,
+      "hellaswag": 0.76,
+      "human_eval": 0.75,
+      "math": 0.56,
+      "mbpp": 0.636,
+      "mmlu": 0.686,
+      "mmlu_pro": 0.502,
+      "openbook_qa": 0.9,
+      "squad": 0.24412810015621653
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.42504692947170825,
+      "gemma-2-9b-it": 0.11236256368999732,
+      "qwen2.5-7b-instruct": 0.07642799678197908,
+      "llama-3-8b-instruct-lite": 0.06811477607937785,
+      "rnj-1-instruct": 0.0614105658353446,
+      "mistral-small-3-24b-instruct": 0.05148833467417538,
+      "gpt-oss-120b": 0.04773397693751676,
+      "llama-4-maverick": 0.02708500938589434,
+      "llama-3.3-70b-instruct-turbo": 0.02467149369804237,
+      "llama3-70b-instruct": 0.02413515687851971,
+      "qwen3-coder-next": 0.02038079914186109,
+      "cogito-v2-1-671b": 0.02038079914186109,
+      "deepseek-v3.1": 0.017162778224725127,
+      "qwen3-next-80b-a3b-instruct": 0.006704210244033253,
+      "mixtral-8x22b-instruct-v0.1": 0.0056315366049879325,
+      "mistral-7b-instruct-v0.3": 0.005095199785465273,
+      "qwen2.5-7b-instruct-turbo": 0.0037543577366586215,
+      "mixtral-8x7b-instruct-v0.1": 0.002413515687851971
+    },
+    "notes": "KNN deployable router with lambda=0.10."
+  },
+  {
+    "name": "KNN (lambda=0.25)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 0.25,
+    "macro_quality": 0.6495188497706208,
+    "macro_quality_ci": [
+      0.6220899833111303,
+      0.6703982904467242
+    ],
+    "micro_quality": 0.7056157410846741,
+    "micro_quality_ci": [
+      0.6897794286732227,
+      0.7187136653138746
+    ],
+    "mean_cost_usd": 6.0077894877983375e-05,
+    "cost_per_1k_usd": 0.06007789487798337,
+    "mean_cost_ci": [
+      5.649476756503084e-05,
+      6.312105329847144e-05
+    ],
+    "mean_latency_sec": 2.946805041566104,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.07692307692307693,
+      "arc_challenge": 0.926,
+      "boolq": 0.8,
+      "commonsense_qa": 0.84,
+      "gsm8k": 0.806,
+      "hellaswag": 0.76,
+      "human_eval": 0.75,
+      "math": 0.55,
+      "mbpp": 0.62,
+      "mmlu": 0.682,
+      "mmlu_pro": 0.49,
+      "openbook_qa": 0.898,
+      "squad": 0.2448219700949931
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.43872351836953605,
+      "gemma-2-9b-it": 0.11504424778761062,
+      "qwen2.5-7b-instruct": 0.07964601769911504,
+      "llama-3-8b-instruct-lite": 0.06999195494770716,
+      "rnj-1-instruct": 0.0632877447036739,
+      "mistral-small-3-24b-instruct": 0.052561008313220706,
+      "gpt-oss-120b": 0.04800214534727809,
+      "llama-4-maverick": 0.02708500938589434,
+      "llama-3.3-70b-instruct-turbo": 0.02547599892732636,
+      "llama3-70b-instruct": 0.02386698846875838,
+      "qwen3-coder-next": 0.019308125502815767,
+      "deepseek-v3.1": 0.015553767766157146,
+      "mistral-7b-instruct-v0.3": 0.0058997050147492625,
+      "mixtral-8x22b-instruct-v0.1": 0.004558862965942612,
+      "qwen2.5-7b-instruct-turbo": 0.0037543577366586215,
+      "cogito-v2-1-671b": 0.002413515687851971,
+      "mixtral-8x7b-instruct-v0.1": 0.002413515687851971,
+      "qwen3-next-80b-a3b-instruct": 0.002413515687851971
+    },
+    "notes": "KNN deployable router with lambda=0.25."
+  },
+  {
+    "name": "KNN (lambda=0.50)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 0.5,
+    "macro_quality": 0.6365060762986903,
+    "macro_quality_ci": [
+      0.6112627069076987,
+      0.6578705742967227
+    ],
+    "micro_quality": 0.6971115445412037,
+    "micro_quality_ci": [
+      0.6824349411439194,
+      0.7091695442817213
+    ],
+    "mean_cost_usd": 3.351713327969965e-05,
+    "cost_per_1k_usd": 0.03351713327969965,
+    "mean_cost_ci": [
+      3.16721316706892e-05,
+      3.567800268168409e-05
+    ],
+    "mean_latency_sec": 2.8790530973451327,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.922,
+      "boolq": 0.82,
+      "commonsense_qa": 0.8,
+      "gsm8k": 0.768,
+      "hellaswag": 0.74,
+      "human_eval": 0.75,
+      "math": 0.566,
+      "mbpp": 0.616,
+      "mmlu": 0.672,
+      "mmlu_pro": 0.474,
+      "openbook_qa": 0.896,
+      "squad": 0.2505789918829746
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.48136229552158755,
+      "gemma-2-9b-it": 0.1308661839635291,
+      "qwen2.5-7b-instruct": 0.0863502279431483,
+      "llama-3-8b-instruct-lite": 0.08420488066505766,
+      "rnj-1-instruct": 0.07026012335746849,
+      "mistral-small-3-24b-instruct": 0.052561008313220706,
+      "gpt-oss-120b": 0.051756503083936714,
+      "llama3-70b-instruct": 0.02011263073209976,
+      "mistral-7b-instruct-v0.3": 0.006167873424510592,
+      "llama-3.3-70b-instruct-turbo": 0.004290694556181282,
+      "qwen2.5-7b-instruct-turbo": 0.004022526146419952,
+      "llama-4-maverick": 0.0029498525073746312,
+      "mixtral-8x7b-instruct-v0.1": 0.002145347278090641,
+      "qwen3-coder-next": 0.0018771788683293108,
+      "deepseek-v3.1": 0.0008045052292839903,
+      "qwen3-next-80b-a3b-instruct": 0.0002681684097613301
+    },
+    "notes": "KNN deployable router with lambda=0.50."
+  },
+  {
+    "name": "KNN (lambda=0.75)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 0.75,
+    "macro_quality": 0.6372841679253736,
+    "macro_quality_ci": [
+      0.6126374296663988,
+      0.6584739180030158
+    ],
+    "micro_quality": 0.698212579552559,
+    "micro_quality_ci": [
+      0.6834797529767126,
+      0.711610096560344
+    ],
+    "mean_cost_usd": 2.7800863502279434e-05,
+    "cost_per_1k_usd": 0.027800863502279435,
+    "mean_cost_ci": [
+      2.6406945897023334e-05,
+      2.9472384084204876e-05
+    ],
+    "mean_latency_sec": 2.90217967283454,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.922,
+      "boolq": 0.82,
+      "commonsense_qa": 0.8,
+      "gsm8k": 0.764,
+      "hellaswag": 0.74,
+      "human_eval": 0.75,
+      "math": 0.576,
+      "mbpp": 0.618,
+      "mmlu": 0.67,
+      "mmlu_pro": 0.474,
+      "openbook_qa": 0.898,
+      "squad": 0.2526941830298559
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.49557522123893805,
+      "gemma-2-9b-it": 0.13488871010994904,
+      "llama-3-8b-instruct-lite": 0.08930008045052293,
+      "qwen2.5-7b-instruct": 0.0855457227138643,
+      "rnj-1-instruct": 0.07186913381603648,
+      "gpt-oss-120b": 0.05417001877178868,
+      "mistral-small-3-24b-instruct": 0.05229283990345937,
+      "mistral-7b-instruct-v0.3": 0.006436041834271922,
+      "qwen2.5-7b-instruct-turbo": 0.004022526146419952,
+      "llama-3.3-70b-instruct-turbo": 0.0029498525073746312,
+      "llama3-70b-instruct": 0.0016090104585679806,
+      "llama-4-maverick": 0.0002681684097613301,
+      "mixtral-8x7b-instruct-v0.1": 0.0002681684097613301,
+      "qwen3-coder-next": 0.0002681684097613301,
+      "deepseek-v3.1": 0.0002681684097613301,
+      "qwen3-next-80b-a3b-instruct": 0.0002681684097613301
+    },
+    "notes": "KNN deployable router with lambda=0.75."
+  },
+  {
+    "name": "KNN (lambda=1.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 1.0,
+    "macro_quality": 0.6396944243356301,
+    "macro_quality_ci": [
+      0.6130021650500951,
+      0.659578941088464
+    ],
+    "micro_quality": 0.6976673037860444,
+    "micro_quality_ci": [
+      0.6827238205323511,
+      0.7113070662573137
+    ],
+    "mean_cost_usd": 2.6254658085277552e-05,
+    "cost_per_1k_usd": 0.026254658085277553,
+    "mean_cost_ci": [
+      2.519400965406275e-05,
+      2.7424651917404137e-05
+    ],
+    "mean_latency_sec": 2.9105768302493966,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.922,
+      "boolq": 0.82,
+      "commonsense_qa": 0.8,
+      "gsm8k": 0.764,
+      "hellaswag": 0.76,
+      "human_eval": 0.75,
+      "math": 0.572,
+      "mbpp": 0.614,
+      "mmlu": 0.67,
+      "mmlu_pro": 0.474,
+      "openbook_qa": 0.898,
+      "squad": 0.2720275163631892
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.5017430946634487,
+      "gemma-2-9b-it": 0.13462054170018772,
+      "llama-3-8b-instruct-lite": 0.08930008045052293,
+      "qwen2.5-7b-instruct": 0.08527755430410297,
+      "rnj-1-instruct": 0.07160096540627514,
+      "gpt-oss-120b": 0.05336551354250469,
+      "mistral-small-3-24b-instruct": 0.05229283990345937,
+      "mistral-7b-instruct-v0.3": 0.006436041834271922,
+      "qwen2.5-7b-instruct-turbo": 0.004022526146419952,
+      "llama-3.3-70b-instruct-turbo": 0.0005363368195226602,
+      "llama3-70b-instruct": 0.0002681684097613301,
+      "deepseek-v3.1": 0.0002681684097613301,
+      "qwen3-next-80b-a3b-instruct": 0.0002681684097613301
+    },
+    "notes": "KNN deployable router with lambda=1.00."
+  },
+  {
+    "name": "KNN (lambda=1.50)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 1.5,
+    "macro_quality": 0.6394206980619038,
+    "macro_quality_ci": [
+      0.6133298046050946,
+      0.6591096035328771
+    ],
+    "micro_quality": 0.6973782391365614,
+    "micro_quality_ci": [
+      0.682703707901619,
+      0.7106187954355133
+    ],
+    "mean_cost_usd": 2.551173236792706e-05,
+    "cost_per_1k_usd": 0.02551173236792706,
+    "mean_cost_ci": [
+      2.4625463260927865e-05,
+      2.6535205819254495e-05
+    ],
+    "mean_latency_sec": 2.92457334406007,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.922,
+      "boolq": 0.82,
+      "commonsense_qa": 0.8,
+      "gsm8k": 0.762,
+      "hellaswag": 0.76,
+      "human_eval": 0.75,
+      "math": 0.572,
+      "mbpp": 0.614,
+      "mmlu": 0.672,
+      "mmlu_pro": 0.474,
+      "openbook_qa": 0.896,
+      "squad": 0.27046907480474763
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.5054974524001072,
+      "gemma-2-9b-it": 0.13462054170018772,
+      "llama-3-8b-instruct-lite": 0.0890319120407616,
+      "qwen2.5-7b-instruct": 0.08474121748458031,
+      "rnj-1-instruct": 0.07160096540627514,
+      "gpt-oss-120b": 0.05309734513274336,
+      "mistral-small-3-24b-instruct": 0.05122016626441405,
+      "mistral-7b-instruct-v0.3": 0.006436041834271922,
+      "qwen2.5-7b-instruct-turbo": 0.0037543577366586215
+    },
+    "notes": "KNN deployable router with lambda=1.50."
+  },
+  {
+    "name": "KNN (lambda=2.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 2.0,
+    "macro_quality": 0.6392554272634671,
+    "macro_quality_ci": [
+      0.6123325883081523,
+      0.6590547386492381
+    ],
+    "micro_quality": 0.6973494308718835,
+    "micro_quality_ci": [
+      0.6827664265465351,
+      0.7108757134344589
+    ],
+    "mean_cost_usd": 2.5311356932153395e-05,
+    "cost_per_1k_usd": 0.025311356932153396,
+    "mean_cost_ci": [
+      2.439073142933762e-05,
+      2.6370859144542774e-05
+    ],
+    "mean_latency_sec": 2.929296594261196,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.922,
+      "boolq": 0.82,
+      "commonsense_qa": 0.8,
+      "gsm8k": 0.76,
+      "hellaswag": 0.76,
+      "human_eval": 0.75,
+      "math": 0.574,
+      "mbpp": 0.616,
+      "mmlu": 0.67,
+      "mmlu_pro": 0.474,
+      "openbook_qa": 0.896,
+      "squad": 0.26832055442507147
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.5127379994636632,
+      "gemma-2-9b-it": 0.1335478680611424,
+      "llama-3-8b-instruct-lite": 0.0890319120407616,
+      "qwen2.5-7b-instruct": 0.08447304907481899,
+      "rnj-1-instruct": 0.0713327969965138,
+      "gpt-oss-120b": 0.051756503083936714,
+      "mistral-small-3-24b-instruct": 0.04880665057656208,
+      "mistral-7b-instruct-v0.3": 0.006436041834271922,
+      "qwen2.5-7b-instruct-turbo": 0.0018771788683293108
+    },
+    "notes": "KNN deployable router with lambda=2.00."
+  },
+  {
+    "name": "KNN (lambda=3.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 3.0,
+    "macro_quality": 0.6299453233735343,
+    "macro_quality_ci": [
+      0.603322283349896,
+      0.653156306604986
+    ],
+    "micro_quality": 0.6965378010707421,
+    "micro_quality_ci": [
+      0.6809757557594175,
+      0.7092277246983275
+    ],
+    "mean_cost_usd": 2.0600911772593186e-05,
+    "cost_per_1k_usd": 0.020600911772593187,
+    "mean_cost_ci": [
+      1.9697580115312417e-05,
+      2.1436154800214537e-05
+    ],
+    "mean_latency_sec": 2.916087691069992,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.92,
+      "boolq": 0.8,
+      "commonsense_qa": 0.78,
+      "gsm8k": 0.754,
+      "hellaswag": 0.76,
+      "human_eval": 0.6875,
+      "math": 0.56,
+      "mbpp": 0.61,
+      "mmlu": 0.692,
+      "mmlu_pro": 0.476,
+      "openbook_qa": 0.902,
+      "squad": 0.2477892038559447
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.6162510056315366,
+      "gemma-2-9b-it": 0.138106731027085,
+      "llama-3-8b-instruct-lite": 0.09519978546527219,
+      "qwen2.5-7b-instruct": 0.0775006704210244,
+      "rnj-1-instruct": 0.04237060874229016,
+      "mistral-small-3-24b-instruct": 0.02011263073209976,
+      "gpt-oss-120b": 0.008581389112362564,
+      "mistral-7b-instruct-v0.3": 0.0013408420488066506,
+      "qwen2.5-7b-instruct-turbo": 0.0005363368195226602
+    },
+    "notes": "KNN deployable router with lambda=3.00."
+  },
+  {
+    "name": "KNN (lambda=5.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "knn",
+    "lambda_value": 5.0,
+    "macro_quality": 0.6152119485498682,
+    "macro_quality_ci": [
+      0.5874848615879088,
+      0.6406217715830236
+    ],
+    "micro_quality": 0.6936612406965444,
+    "micro_quality_ci": [
+      0.6773303077549842,
+      0.707807763255516
+    ],
+    "mean_cost_usd": 1.700749530705283e-05,
+    "cost_per_1k_usd": 0.017007495307052832,
+    "mean_cost_ci": [
+      1.630600697237865e-05,
+      1.7768003150978817e-05
+    ],
+    "mean_latency_sec": 2.9594939662107804,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.924,
+      "boolq": 0.8,
+      "commonsense_qa": 0.74,
+      "gsm8k": 0.718,
+      "hellaswag": 0.76,
+      "human_eval": 0.5625,
+      "math": 0.558,
+      "mbpp": 0.602,
+      "mmlu": 0.718,
+      "mmlu_pro": 0.484,
+      "openbook_qa": 0.898,
+      "squad": 0.2332553311482856
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.6790024135156878,
+      "gemma-2-9b-it": 0.1638508983641727,
+      "llama-3-8b-instruct-lite": 0.11209439528023599,
+      "rnj-1-instruct": 0.016358272995441136,
+      "qwen2.5-7b-instruct": 0.015285599356395816,
+      "mistral-small-3-24b-instruct": 0.010458567980691875,
+      "gpt-oss-120b": 0.002413515687851971,
+      "mistral-7b-instruct-v0.3": 0.0005363368195226602
+    },
+    "notes": "KNN deployable router with lambda=5.00."
+  },
+  {
+    "name": "LEARNED_LR (lambda=0.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 0.0,
+    "macro_quality": 0.7207502653620601,
+    "macro_quality_ci": [
+      0.6993643242466895,
+      0.747769682174487
+    ],
+    "micro_quality": 0.7993675298040186,
+    "micro_quality_ci": [
+      0.7848195825668268,
+      0.8121282774063591
+    ],
+    "mean_cost_usd": 0.0002825526039152587,
+    "cost_per_1k_usd": 0.2825526039152587,
+    "mean_cost_ci": [
+      0.00027477651005631534,
+      0.0002894314369804237
+    ],
+    "mean_latency_sec": 3.437155805846071,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.07692307692307693,
+      "arc_challenge": 0.96,
+      "boolq": 0.88,
+      "commonsense_qa": 0.84,
+      "gsm8k": 0.93,
+      "hellaswag": 0.92,
+      "human_eval": 0.75,
+      "math": 0.614,
+      "mbpp": 0.702,
+      "mmlu": 0.806,
+      "mmlu_pro": 0.682,
+      "openbook_qa": 0.952,
+      "squad": 0.2568303727837057
+    },
+    "model_selection_distribution": {
+      "cogito-v2-1-671b": 0.2378653794582998,
+      "gpt-oss-120b": 0.22043443282381336,
+      "llama-4-maverick": 0.19522660230624833,
+      "qwen3-next-80b-a3b-instruct": 0.16224188790560473,
+      "mistral-small-3-24b-instruct": 0.0694556181281845,
+      "llama-3.3-70b-instruct-turbo": 0.037275408956824886,
+      "llama3-70b-instruct": 0.017162778224725127,
+      "qwen3-coder-next": 0.015553767766157146,
+      "gpt-oss-20b": 0.008045052292839904,
+      "gemma-2-9b-it": 0.007508715473317243,
+      "deepseek-v3.1": 0.006972378653794583,
+      "rnj-1-instruct": 0.006436041834271922,
+      "qwen2.5-7b-instruct-turbo": 0.006167873424510592,
+      "qwen2.5-7b-instruct": 0.0053633681952266025,
+      "llama-3-8b-instruct-lite": 0.004290694556181282
+    },
+    "notes": "LEARNED_LR deployable router with lambda=0.00."
+  },
+  {
+    "name": "LEARNED_LR (lambda=0.05)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 0.05,
+    "macro_quality": 0.7044163892409075,
+    "macro_quality_ci": [
+      0.680804722972714,
+      0.728601813111211
+    ],
+    "micro_quality": 0.7830918474551987,
+    "micro_quality_ci": [
+      0.7684233680709583,
+      0.7964512587018658
+    ],
+    "mean_cost_usd": 0.0001483032796996514,
+    "cost_per_1k_usd": 0.1483032796996514,
+    "mean_cost_ci": [
+      0.00014172696104853847,
+      0.00015493987268704745
+    ],
+    "mean_latency_sec": 3.437088227406812,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.07692307692307693,
+      "arc_challenge": 0.956,
+      "boolq": 0.88,
+      "commonsense_qa": 0.8,
+      "gsm8k": 0.92,
+      "hellaswag": 0.92,
+      "human_eval": 0.6875,
+      "math": 0.598,
+      "mbpp": 0.692,
+      "mmlu": 0.798,
+      "mmlu_pro": 0.63,
+      "openbook_qa": 0.936,
+      "squad": 0.2629899832087217
+    },
+    "model_selection_distribution": {
+      "gpt-oss-120b": 0.48726200053633684,
+      "llama-4-maverick": 0.12764816304639315,
+      "mistral-small-3-24b-instruct": 0.1005631536604988,
+      "cogito-v2-1-671b": 0.08071869133816037,
+      "llama-3.3-70b-instruct-turbo": 0.036202735317779566,
+      "qwen3-next-80b-a3b-instruct": 0.03352105122016626,
+      "rnj-1-instruct": 0.031107535532314292,
+      "gpt-oss-20b": 0.026816840976133013,
+      "llama3-70b-instruct": 0.02306248323947439,
+      "gemma-2-9b-it": 0.013676588897827836,
+      "qwen2.5-7b-instruct-turbo": 0.011263073209975865,
+      "qwen2.5-7b-instruct": 0.010726736390453205,
+      "qwen3-coder-next": 0.007508715473317243,
+      "deepseek-v3.1": 0.005095199785465273,
+      "llama-3-8b-instruct-lite": 0.004827031375703942
+    },
+    "notes": "LEARNED_LR deployable router with lambda=0.05."
+  },
+  {
+    "name": "LEARNED_LR (lambda=0.10)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 0.1,
+    "macro_quality": 0.6906313494943295,
+    "macro_quality_ci": [
+      0.6690855526042414,
+      0.71682732391304
+    ],
+    "micro_quality": 0.7728115374966908,
+    "micro_quality_ci": [
+      0.7580561386483126,
+      0.7858445464967272
+    ],
+    "mean_cost_usd": 9.223115580584607e-05,
+    "cost_per_1k_usd": 0.09223115580584607,
+    "mean_cost_ci": [
+      8.732093537141323e-05,
+      9.690995876910698e-05
+    ],
+    "mean_latency_sec": 3.4416454813622956,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.07692307692307693,
+      "arc_challenge": 0.956,
+      "boolq": 0.88,
+      "commonsense_qa": 0.8,
+      "gsm8k": 0.888,
+      "hellaswag": 0.88,
+      "human_eval": 0.625,
+      "math": 0.594,
+      "mbpp": 0.676,
+      "mmlu": 0.798,
+      "mmlu_pro": 0.612,
+      "openbook_qa": 0.936,
+      "squad": 0.25628446650320497
+    },
+    "model_selection_distribution": {
+      "gpt-oss-120b": 0.5492089031912041,
+      "mistral-small-3-24b-instruct": 0.11745776347546259,
+      "rnj-1-instruct": 0.07347814427460445,
+      "llama-4-maverick": 0.06784660766961652,
+      "gpt-oss-20b": 0.04585679806918745,
+      "llama-3.3-70b-instruct-turbo": 0.028425851434700992,
+      "cogito-v2-1-671b": 0.0222579780101904,
+      "qwen2.5-7b-instruct": 0.02145347278090641,
+      "llama3-70b-instruct": 0.02064896755162242,
+      "gemma-2-9b-it": 0.0195762939125771,
+      "qwen2.5-7b-instruct-turbo": 0.016090104585679808,
+      "llama-3-8b-instruct-lite": 0.0056315366049879325,
+      "qwen3-next-80b-a3b-instruct": 0.005095199785465273,
+      "deepseek-v3.1": 0.004022526146419952,
+      "qwen3-coder-next": 0.0029498525073746312
+    },
+    "notes": "LEARNED_LR deployable router with lambda=0.10."
+  },
+  {
+    "name": "LEARNED_LR (lambda=0.25)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 0.25,
+    "macro_quality": 0.6709693097442003,
+    "macro_quality_ci": [
+      0.6472461764224169,
+      0.6941558377541281
+    ],
+    "micro_quality": 0.7538227544472326,
+    "micro_quality_ci": [
+      0.7387680014885806,
+      0.7679480042078637
+    ],
+    "mean_cost_usd": 4.891785197103781e-05,
+    "cost_per_1k_usd": 0.04891785197103781,
+    "mean_cost_ci": [
+      4.664457803700724e-05,
+      5.158045903727541e-05
+    ],
+    "mean_latency_sec": 3.3710327165459906,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.946,
+      "boolq": 0.88,
+      "commonsense_qa": 0.82,
+      "gsm8k": 0.816,
+      "hellaswag": 0.88,
+      "human_eval": 0.5625,
+      "math": 0.586,
+      "mbpp": 0.662,
+      "mmlu": 0.8,
+      "mmlu_pro": 0.578,
+      "openbook_qa": 0.932,
+      "squad": 0.26010102667460383
+    },
+    "model_selection_distribution": {
+      "gpt-oss-120b": 0.49477071600965405,
+      "gpt-oss-20b": 0.14481094127111827,
+      "mistral-small-3-24b-instruct": 0.1246983105390185,
+      "rnj-1-instruct": 0.1185304371145079,
+      "gemma-2-9b-it": 0.04237060874229016,
+      "qwen2.5-7b-instruct": 0.039688924644676854,
+      "qwen2.5-7b-instruct-turbo": 0.012335746849021185,
+      "llama3-70b-instruct": 0.007776883883078573,
+      "llama-3-8b-instruct-lite": 0.006972378653794583,
+      "llama-3.3-70b-instruct-turbo": 0.006704210244033253,
+      "llama-4-maverick": 0.0008045052292839903,
+      "qwen3-coder-next": 0.0002681684097613301,
+      "deepseek-v3.1": 0.0002681684097613301
+    },
+    "notes": "LEARNED_LR deployable router with lambda=0.25."
+  },
+  {
+    "name": "LEARNED_LR (lambda=0.50)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 0.5,
+    "macro_quality": 0.6664223011971918,
+    "macro_quality_ci": [
+      0.6431918762425393,
+      0.6894643180649062
+    ],
+    "micro_quality": 0.7462723238879524,
+    "micro_quality_ci": [
+      0.732304356349475,
+      0.7598871188349278
+    ],
+    "mean_cost_usd": 4.015733708769107e-05,
+    "cost_per_1k_usd": 0.04015733708769107,
+    "mean_cost_ci": [
+      3.856700181013677e-05,
+      4.215251193349424e-05
+    ],
+    "mean_latency_sec": 3.2841212121212124,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.936,
+      "boolq": 0.88,
+      "commonsense_qa": 0.82,
+      "gsm8k": 0.814,
+      "hellaswag": 0.88,
+      "human_eval": 0.5625,
+      "math": 0.58,
+      "mbpp": 0.652,
+      "mmlu": 0.796,
+      "mmlu_pro": 0.558,
+      "openbook_qa": 0.928,
+      "squad": 0.2569899155634927
+    },
+    "model_selection_distribution": {
+      "gpt-oss-120b": 0.3341378385626173,
+      "gpt-oss-20b": 0.308661839635291,
+      "mistral-small-3-24b-instruct": 0.11638508983641727,
+      "rnj-1-instruct": 0.11558058460713327,
+      "gemma-2-9b-it": 0.0640922499329579,
+      "qwen2.5-7b-instruct": 0.04827031375703942,
+      "llama-3-8b-instruct-lite": 0.007776883883078573,
+      "qwen2.5-7b-instruct-turbo": 0.004022526146419952,
+      "llama-3.3-70b-instruct-turbo": 0.0010726736390453205
+    },
+    "notes": "LEARNED_LR deployable router with lambda=0.50."
+  },
+  {
+    "name": "LEARNED_LR (lambda=0.75)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 0.75,
+    "macro_quality": 0.6532969792297647,
+    "macro_quality_ci": [
+      0.630536448646934,
+      0.6760540919114608
+    ],
+    "micro_quality": 0.7379506668005757,
+    "micro_quality_ci": [
+      0.7234139373730347,
+      0.7517623234629385
+    ],
+    "mean_cost_usd": 3.554541432019308e-05,
+    "cost_per_1k_usd": 0.035545414320193085,
+    "mean_cost_ci": [
+      3.404020112630732e-05,
+      3.6951333467417544e-05
+    ],
+    "mean_latency_sec": 3.2150571198712794,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.934,
+      "boolq": 0.84,
+      "commonsense_qa": 0.78,
+      "gsm8k": 0.804,
+      "hellaswag": 0.84,
+      "human_eval": 0.5625,
+      "math": 0.586,
+      "mbpp": 0.658,
+      "mmlu": 0.77,
+      "mmlu_pro": 0.55,
+      "openbook_qa": 0.912,
+      "squad": 0.2563607299869387
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.43175113971574147,
+      "gpt-oss-120b": 0.21346205417001876,
+      "mistral-small-3-24b-instruct": 0.10404934298739608,
+      "rnj-1-instruct": 0.10351300616787343,
+      "gemma-2-9b-it": 0.08661839635290963,
+      "qwen2.5-7b-instruct": 0.049611155805846074,
+      "llama-3-8b-instruct-lite": 0.010190399570930545,
+      "qwen2.5-7b-instruct-turbo": 0.0008045052292839903
+    },
+    "notes": "LEARNED_LR deployable router with lambda=0.75."
+  },
+  {
+    "name": "LEARNED_LR (lambda=1.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 1.0,
+    "macro_quality": 0.6512969792297645,
+    "macro_quality_ci": [
+      0.6274259275659547,
+      0.6755873542396693
+    ],
+    "micro_quality": 0.7344644774736784,
+    "micro_quality_ci": [
+      0.7208898528458805,
+      0.7486650047033471
+    ],
+    "mean_cost_usd": 3.24778626977742e-05,
+    "cost_per_1k_usd": 0.0324778626977742,
+    "mean_cost_ci": [
+      3.0968894475730754e-05,
+      3.398784861893269e-05
+    ],
+    "mean_latency_sec": 3.189225261464199,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.932,
+      "boolq": 0.84,
+      "commonsense_qa": 0.78,
+      "gsm8k": 0.798,
+      "hellaswag": 0.84,
+      "human_eval": 0.5625,
+      "math": 0.594,
+      "mbpp": 0.642,
+      "mmlu": 0.76,
+      "mmlu_pro": 0.548,
+      "openbook_qa": 0.914,
+      "squad": 0.2563607299869387
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.5130061678734245,
+      "gpt-oss-120b": 0.13998390989541432,
+      "gemma-2-9b-it": 0.10592652185572539,
+      "mistral-small-3-24b-instruct": 0.09493161705551086,
+      "rnj-1-instruct": 0.08608205953338696,
+      "qwen2.5-7b-instruct": 0.04800214534727809,
+      "llama-3-8b-instruct-lite": 0.011799410029498525,
+      "qwen2.5-7b-instruct-turbo": 0.0002681684097613301
+    },
+    "notes": "LEARNED_LR deployable router with lambda=1.00."
+  },
+  {
+    "name": "LEARNED_LR (lambda=1.50)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 1.5,
+    "macro_quality": 0.6503739023066877,
+    "macro_quality_ci": [
+      0.6275643095466057,
+      0.6737319115057713
+    ],
+    "micro_quality": 0.7304419513272584,
+    "micro_quality_ci": [
+      0.7157713381018563,
+      0.7444014111438384
+    ],
+    "mean_cost_usd": 2.683841512469831e-05,
+    "cost_per_1k_usd": 0.02683841512469831,
+    "mean_cost_ci": [
+      2.5720441137034058e-05,
+      2.81939641995173e-05
+    ],
+    "mean_latency_sec": 3.1771303298471443,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.932,
+      "boolq": 0.84,
+      "commonsense_qa": 0.8,
+      "gsm8k": 0.8,
+      "hellaswag": 0.84,
+      "human_eval": 0.5625,
+      "math": 0.592,
+      "mbpp": 0.618,
+      "mmlu": 0.762,
+      "mmlu_pro": 0.534,
+      "openbook_qa": 0.918,
+      "squad": 0.2563607299869387
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.6242960579243765,
+      "gemma-2-9b-it": 0.13917940466613032,
+      "mistral-small-3-24b-instruct": 0.07508715473317243,
+      "rnj-1-instruct": 0.056851702869401985,
+      "gpt-oss-120b": 0.05095199785465272,
+      "qwen2.5-7b-instruct": 0.037275408956824886,
+      "llama-3-8b-instruct-lite": 0.016358272995441136
+    },
+    "notes": "LEARNED_LR deployable router with lambda=1.50."
+  },
+  {
+    "name": "LEARNED_LR (lambda=2.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 2.0,
+    "macro_quality": 0.650805274855707,
+    "macro_quality_ci": [
+      0.6286341164061409,
+      0.6725389815174484
+    ],
+    "micro_quality": 0.7244833544264441,
+    "micro_quality_ci": [
+      0.7097094907151065,
+      0.7380357386947088
+    ],
+    "mean_cost_usd": 2.284479753285063e-05,
+    "cost_per_1k_usd": 0.022844797532850628,
+    "mean_cost_ci": [
+      2.175640989541432e-05,
+      2.3953968892464465e-05
+    ],
+    "mean_latency_sec": 3.198320461249665,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.932,
+      "boolq": 0.84,
+      "commonsense_qa": 0.84,
+      "gsm8k": 0.778,
+      "hellaswag": 0.84,
+      "human_eval": 0.5625,
+      "math": 0.592,
+      "mbpp": 0.608,
+      "mmlu": 0.762,
+      "mmlu_pro": 0.516,
+      "openbook_qa": 0.918,
+      "squad": 0.27196857312419365
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.6870474658085277,
+      "gemma-2-9b-it": 0.15553767766157148,
+      "mistral-small-3-24b-instruct": 0.057924376508447305,
+      "rnj-1-instruct": 0.03378921962992759,
+      "qwen2.5-7b-instruct": 0.027621346205417,
+      "llama-3-8b-instruct-lite": 0.019844462322338427,
+      "gpt-oss-120b": 0.018235451863770447
+    },
+    "notes": "LEARNED_LR deployable router with lambda=2.00."
+  },
+  {
+    "name": "LEARNED_LR (lambda=3.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 3.0,
+    "macro_quality": 0.6505224909729234,
+    "macro_quality_ci": [
+      0.6272459655210143,
+      0.6723057569399852
+    ],
+    "micro_quality": 0.7210551405557523,
+    "micro_quality_ci": [
+      0.7062495137533722,
+      0.7356904408815541
+    ],
+    "mean_cost_usd": 1.7656637168141594e-05,
+    "cost_per_1k_usd": 0.017656637168141594,
+    "mean_cost_ci": [
+      1.677947070260123e-05,
+      1.850465406275141e-05
+    ],
+    "mean_latency_sec": 3.2268908554572273,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.934,
+      "boolq": 0.84,
+      "commonsense_qa": 0.86,
+      "gsm8k": 0.746,
+      "hellaswag": 0.84,
+      "human_eval": 0.5625,
+      "math": 0.588,
+      "mbpp": 0.614,
+      "mmlu": 0.762,
+      "mmlu_pro": 0.512,
+      "openbook_qa": 0.922,
+      "squad": 0.27629238264800315
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.7556985787074283,
+      "gemma-2-9b-it": 0.16680075087154733,
+      "mistral-small-3-24b-instruct": 0.03191204076159829,
+      "llama-3-8b-instruct-lite": 0.02547599892732636,
+      "qwen2.5-7b-instruct": 0.009385894341646554,
+      "rnj-1-instruct": 0.008581389112362564,
+      "gpt-oss-120b": 0.002145347278090641
+    },
+    "notes": "LEARNED_LR deployable router with lambda=3.00."
+  },
+  {
+    "name": "LEARNED_LR (lambda=5.00)",
+    "strategy_type": "deployable_policy",
+    "is_reference": false,
+    "router_family": "learned_lr",
+    "lambda_value": 5.0,
+    "macro_quality": 0.641070831521264,
+    "macro_quality_ci": [
+      0.6190759778353813,
+      0.6637744803427587
+    ],
+    "micro_quality": 0.7137693860254282,
+    "micro_quality_ci": [
+      0.6988029809372495,
+      0.7278986077558646
+    ],
+    "mean_cost_usd": 1.3559452936444088e-05,
+    "cost_per_1k_usd": 0.013559452936444089,
+    "mean_cost_ci": [
+      1.3067706154465004e-05,
+      1.4115662040761598e-05
+    ],
+    "mean_latency_sec": 3.2094397961920085,
+    "test_prompt_count": 3729,
+    "task_performance": {
+      "aime_2020_2024": 0.0,
+      "arc_challenge": 0.934,
+      "boolq": 0.84,
+      "commonsense_qa": 0.74,
+      "gsm8k": 0.728,
+      "hellaswag": 0.82,
+      "human_eval": 0.625,
+      "math": 0.566,
+      "mbpp": 0.618,
+      "mmlu": 0.764,
+      "mmlu_pro": 0.504,
+      "openbook_qa": 0.922,
+      "squad": 0.2729208097764303
+    },
+    "model_selection_distribution": {
+      "gpt-oss-20b": 0.8222043443282381,
+      "gemma-2-9b-it": 0.1434700992223116,
+      "llama-3-8b-instruct-lite": 0.02413515687851971,
+      "mistral-small-3-24b-instruct": 0.005095199785465273,
+      "qwen2.5-7b-instruct": 0.004290694556181282,
+      "rnj-1-instruct": 0.0008045052292839903
+    },
+    "notes": "LEARNED_LR deployable router with lambda=5.00."
+  }
+]

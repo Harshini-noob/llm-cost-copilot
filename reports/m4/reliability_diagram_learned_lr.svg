@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="500" viewBox="0 0 600 500" style="background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;">
+  <!-- Title -->
+  <text x="300.0" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#1f2937">Learned Logistic Regression (Uncalibrated)</text>
+  <text x="300.0" y="48" text-anchor="middle" font-size="12" fill="#4b5563">ECE: 0.0389 | Brier: 0.1734 | N: 67,122</text>
+  <!-- Background grid & axes -->
+  <rect x="60" y="60" width="480" height="380" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1" />
+  <line x1="60" y1="440" x2="540" y2="60" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,4" />
+  <line x1="60.0" y1="60" x2="60.0" y2="440" stroke="#e5e7eb" stroke-width="1" />
+  <line x1="60" y1="440.0" x2="540" y2="440.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="60.0" y="458" text-anchor="middle" font-size="11" fill="#6b7280">0.0</text>
+  <text x="50" y="444.0" text-anchor="end" font-size="11" fill="#6b7280">0.0</text>
+  <line x1="156.0" y1="60" x2="156.0" y2="440" stroke="#e5e7eb" stroke-width="1" />
+  <line x1="60" y1="364.0" x2="540" y2="364.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="156.0" y="458" text-anchor="middle" font-size="11" fill="#6b7280">0.2</text>
+  <text x="50" y="368.0" text-anchor="end" font-size="11" fill="#6b7280">0.2</text>
+  <line x1="252.0" y1="60" x2="252.0" y2="440" stroke="#e5e7eb" stroke-width="1" />
+  <line x1="60" y1="288.0" x2="540" y2="288.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="252.0" y="458" text-anchor="middle" font-size="11" fill="#6b7280">0.4</text>
+  <text x="50" y="292.0" text-anchor="end" font-size="11" fill="#6b7280">0.4</text>
+  <line x1="348.00000000000006" y1="60" x2="348.00000000000006" y2="440" stroke="#e5e7eb" stroke-width="1" />
+  <line x1="60" y1="211.99999999999997" x2="540" y2="211.99999999999997" stroke="#e5e7eb" stroke-width="1" />
+  <text x="348.00000000000006" y="458" text-anchor="middle" font-size="11" fill="#6b7280">0.6</text>
+  <text x="50" y="215.99999999999997" text-anchor="end" font-size="11" fill="#6b7280">0.6</text>
+  <line x1="444.0" y1="60" x2="444.0" y2="440" stroke="#e5e7eb" stroke-width="1" />
+  <line x1="60" y1="136.0" x2="540" y2="136.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="444.0" y="458" text-anchor="middle" font-size="11" fill="#6b7280">0.8</text>
+  <text x="50" y="140.0" text-anchor="end" font-size="11" fill="#6b7280">0.8</text>
+  <line x1="540.0" y1="60" x2="540.0" y2="440" stroke="#e5e7eb" stroke-width="1" />
+  <line x1="60" y1="60.0" x2="540" y2="60.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="540.0" y="458" text-anchor="middle" font-size="11" fill="#6b7280">1.0</text>
+  <text x="50" y="64.0" text-anchor="end" font-size="11" fill="#6b7280">1.0</text>
+  <rect x="62.0" y="419.83585270768634" width="44.0" height="20.16414729231366" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="87.50871895417188" cy="419.83585270768634" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="84.0" y="413.83585270768634" text-anchor="middle" font-size="9" fill="#374151">n=2335</text>
+  <rect x="110.0" y="388.3289730464761" width="44.0" height="51.67102695352389" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="133.250065732837" cy="388.3289730464761" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="132.0" y="382.3289730464761" text-anchor="middle" font-size="9" fill="#374151">n=2742</text>
+  <rect x="158.0" y="355.87776620191426" width="44.0" height="84.12223379808573" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="180.2330625007342" cy="355.8777662019143" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="180.0" y="349.87776620191426" text-anchor="middle" font-size="9" fill="#374151">n=3585</text>
+  <rect x="206.0" y="322.43038216288016" width="44.0" height="117.56961783711982" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="228.00787472203632" cy="322.43038216288016" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="228.0" y="316.43038216288016" text-anchor="middle" font-size="9" fill="#374151">n=3476</text>
+  <rect x="254.0" y="284.2170233376599" width="44.0" height="155.7829766623401" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="277.34149982014833" cy="284.2170233376599" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="276.0" y="278.2170233376599" text-anchor="middle" font-size="9" fill="#374151">n=3958</text>
+  <rect x="302.0" y="252.3625060161165" width="44.0" height="187.6374939838835" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="325.54772171646204" cy="252.36250601611653" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="324.0" y="246.3625060161165" text-anchor="middle" font-size="9" fill="#374151">n=5670</text>
+  <rect x="350.0" y="208.46144445802275" width="44.0" height="231.53855554197725" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="373.52181928192476" cy="208.46144445802275" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="372.0" y="202.46144445802275" text-anchor="middle" font-size="9" fill="#374151">n=8183</text>
+  <rect x="398.0" y="173.41588385994874" width="44.0" height="266.58411614005126" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="421.19453448011365" cy="173.41588385994876" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="420.0" y="167.41588385994874" text-anchor="middle" font-size="9" fill="#374151">n=11710</text>
+  <rect x="446.0" y="132.38458961474032" width="44.0" height="307.6154103852597" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="468.88615511793586" cy="132.38458961474035" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="468.0" y="126.38458961474032" text-anchor="middle" font-size="9" fill="#374151">n=14925</text>
+  <rect x="494.0" y="92.88669576769786" width="44.0" height="347.11330423230214" fill="#3b82f6" fill-opacity="0.35" stroke="#2563eb" stroke-width="1" />
+  <circle cx="508.2175889769051" cy="92.88669576769786" r="4" fill="#ef4444" stroke="#b91c1c" stroke-width="1" />
+  <text x="516.0" y="86.88669576769786" text-anchor="middle" font-size="9" fill="#374151">n=10538</text>
+  <text x="300.0" y="485" text-anchor="middle" font-size="13" font-weight="600" fill="#374151">Mean Predicted Confidence</text>
+  <text x="18" y="250.0" text-anchor="middle" font-size="13" font-weight="600" fill="#374151" transform="rotate(-90 18 250.0)">Observed Accuracy / Score</text>
+</svg>

@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="850" height="500" viewBox="0 0 850 500" style="background-color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, sans-serif;">
+  <!-- Title -->
+  <text x="425.0" y="32" text-anchor="middle" font-size="16" font-weight="bold" fill="#1f2937">Calibration Under Distribution Shift: Expected Calibration Error (ECE)</text>
+  <text x="425.0" y="50" text-anchor="middle" font-size="12" fill="#4b5563">Comparing In-Distribution (ID) ECE vs Out-of-Distribution (OOD) ECE</text>
+  <!-- Background grid & axes -->
+  <rect x="70" y="70" width="710" height="360" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1" />
+  <line x1="70" y1="430.0" x2="780" y2="430.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="60" y="434.0" text-anchor="end" font-size="11" fill="#6b7280">0%</text>
+  <line x1="70" y1="358.0" x2="780" y2="358.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="60" y="362.0" text-anchor="end" font-size="11" fill="#6b7280">11%</text>
+  <line x1="70" y1="286.0" x2="780" y2="286.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="60" y="290.0" text-anchor="end" font-size="11" fill="#6b7280">22%</text>
+  <line x1="70" y1="213.99999999999997" x2="780" y2="213.99999999999997" stroke="#e5e7eb" stroke-width="1" />
+  <text x="60" y="217.99999999999997" text-anchor="end" font-size="11" fill="#6b7280">33%</text>
+  <line x1="70" y1="142.0" x2="780" y2="142.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="60" y="146.0" text-anchor="end" font-size="11" fill="#6b7280">44%</text>
+  <line x1="70" y1="70.0" x2="780" y2="70.0" stroke="#e5e7eb" stroke-width="1" />
+  <text x="60" y="74.0" text-anchor="end" font-size="11" fill="#6b7280">55%</text>
+  <rect x="81.83333333333333" y="409.2596298589052" width="26.03333333333333" height="20.740370141094793" fill="#93c5fd" rx="2" />
+  <rect x="111.86666666666666" y="205.19697883016582" width="26.03333333333333" height="224.80302116983418" fill="#1d4ed8" rx="2" />
+  <rect x="141.89999999999998" y="237.5890157606218" width="26.03333333333333" height="192.4109842393782" fill="#fde68a" rx="2" />
+  <rect x="171.93333333333334" y="186.59455857076853" width="26.03333333333333" height="243.40544142923147" fill="#b45309" rx="2" />
+  <text x="129.16666666666666" y="450" text-anchor="middle" font-size="11" font-weight="500" fill="#374151">aime_2020_2024</text>
+  <rect x="200.16666666666666" y="406.76516687219794" width="26.03333333333333" height="23.23483312780207" fill="#93c5fd" rx="2" />
+  <rect x="230.2" y="255.72919549969106" width="26.03333333333333" height="174.27080450030894" fill="#1d4ed8" rx="2" />
+  <rect x="260.23333333333335" y="360.27042796069924" width="26.03333333333333" height="69.72957203930076" fill="#fde68a" rx="2" />
+  <rect x="290.26666666666665" y="292.50496200594034" width="26.03333333333333" height="137.49503799405966" fill="#b45309" rx="2" />
+  <text x="247.5" y="450" text-anchor="middle" font-size="11" font-weight="500" fill="#374151">gsm8k</text>
+  <rect x="318.49999999999994" y="389.211644272066" width="26.03333333333333" height="40.788355727934025" fill="#93c5fd" rx="2" />
+  <rect x="348.5333333333333" y="181.47571094249463" width="26.03333333333333" height="248.52428905750537" fill="#1d4ed8" rx="2" />
+  <rect x="378.5666666666666" y="361.3949454237114" width="26.03333333333333" height="68.60505457628858" fill="#fde68a" rx="2" />
+  <rect x="408.5999999999999" y="154.59559000351214" width="26.03333333333333" height="275.40440999648786" fill="#b45309" rx="2" />
+  <text x="365.8333333333333" y="450" text-anchor="middle" font-size="11" font-weight="500" fill="#374151">human_eval</text>
+  <rect x="436.8333333333333" y="411.1375129688616" width="26.03333333333333" height="18.86248703113842" fill="#93c5fd" rx="2" />
+  <rect x="466.8666666666667" y="276.5643337256868" width="26.03333333333333" height="153.43566627431318" fill="#1d4ed8" rx="2" />
+  <rect x="496.9" y="364.5497989057817" width="26.03333333333333" height="65.45020109421827" fill="#fde68a" rx="2" />
+  <rect x="526.9333333333333" y="167.61102277690725" width="26.03333333333333" height="262.38897722309275" fill="#b45309" rx="2" />
+  <text x="484.16666666666663" y="450" text-anchor="middle" font-size="11" font-weight="500" fill="#374151">mbpp</text>
+  <rect x="555.1666666666666" y="380.42848070534797" width="26.03333333333333" height="49.571519294652056" fill="#93c5fd" rx="2" />
+  <rect x="585.1999999999999" y="367.2648763887584" width="26.03333333333333" height="62.73512361124159" fill="#1d4ed8" rx="2" />
+  <rect x="615.2333333333333" y="319.52858266247944" width="26.03333333333333" height="110.47141733752056" fill="#fde68a" rx="2" />
+  <rect x="645.2666666666667" y="311.1596853550185" width="26.03333333333333" height="118.84031464498148" fill="#b45309" rx="2" />
+  <text x="602.5" y="450" text-anchor="middle" font-size="11" font-weight="500" fill="#374151">mmlu</text>
+  <rect x="673.5" y="394.59553490105003" width="26.03333333333333" height="35.404465098949984" fill="#93c5fd" rx="2" />
+  <rect x="703.5333333333333" y="194.04857947000053" width="26.03333333333333" height="235.95142052999947" fill="#1d4ed8" rx="2" />
+  <rect x="733.5666666666666" y="256.6452088731934" width="26.03333333333333" height="173.3547911268066" fill="#fde68a" rx="2" />
+  <rect x="763.6" y="101.49712970785123" width="26.03333333333333" height="328.50287029214877" fill="#b45309" rx="2" />
+  <text x="720.8333333333333" y="450" text-anchor="middle" font-size="11" font-weight="500" fill="#374151">squad</text>
+  <rect x="80" y="90" width="12" height="12" fill="#93c5fd" rx="2" />
+  <text x="98" y="100" font-size="11" fill="#374151">Learned LR - In-Distribution ECE</text>
+  <rect x="80" y="108" width="12" height="12" fill="#1d4ed8" rx="2" />
+  <text x="98" y="118" font-size="11" fill="#374151">Learned LR - Out-of-Distribution ECE</text>
+  <rect x="80" y="126" width="12" height="12" fill="#fde68a" rx="2" />
+  <text x="98" y="136" font-size="11" fill="#374151">kNN - In-Distribution ECE</text>
+  <rect x="80" y="144" width="12" height="12" fill="#b45309" rx="2" />
+  <text x="98" y="154" font-size="11" fill="#374151">kNN - Out-of-Distribution ECE</text>
+</svg>

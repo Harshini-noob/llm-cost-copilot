@@ -1,0 +1,352 @@
+strategy_name,strategy_type,router_family,lambda_value,task_name,metric,is_binary,performance
+Always-Cheapest,deployable_policy,baseline,,aime_2020_2024,GSM8K,True,0.0
+Always-Cheapest,deployable_policy,baseline,,arc_challenge,em_mc,True,0.934
+Always-Cheapest,deployable_policy,baseline,,boolq,em_mc,True,0.86
+Always-Cheapest,deployable_policy,baseline,,commonsense_qa,em_mc,True,0.76
+Always-Cheapest,deployable_policy,baseline,,gsm8k,GSM8K,True,0.65
+Always-Cheapest,deployable_policy,baseline,,hellaswag,em_mc,True,0.74
+Always-Cheapest,deployable_policy,baseline,,human_eval,code_eval,True,0.0
+Always-Cheapest,deployable_policy,baseline,,math,MATH,True,0.568
+Always-Cheapest,deployable_policy,baseline,,mbpp,code_eval,True,0.624
+Always-Cheapest,deployable_policy,baseline,,mmlu,em_mc,True,0.738
+Always-Cheapest,deployable_policy,baseline,,mmlu_pro,em_mc,True,0.506
+Always-Cheapest,deployable_policy,baseline,,openbook_qa,em_mc,True,0.922
+Always-Cheapest,deployable_policy,baseline,,squad,f1_score,False,0.2463855434874771
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,aime_2020_2024,GSM8K,True,0.0
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,arc_challenge,em_mc,True,0.964
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,boolq,em_mc,True,0.84
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,commonsense_qa,em_mc,True,0.86
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,gsm8k,GSM8K,True,0.82
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,hellaswag,em_mc,True,0.9
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,human_eval,code_eval,True,0.0
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,math,MATH,True,0.678
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,mbpp,code_eval,True,0.71
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,mmlu,em_mc,True,0.87
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,mmlu_pro,em_mc,True,0.74
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,openbook_qa,em_mc,True,0.948
+Best Single Model (Test-Set Reference),post_hoc_reference,baseline,,squad,f1_score,False,0.16621929435334398
+Random-Uniform,deployable_policy,baseline,,aime_2020_2024,GSM8K,True,0.0
+Random-Uniform,deployable_policy,baseline,,arc_challenge,em_mc,True,0.858
+Random-Uniform,deployable_policy,baseline,,boolq,em_mc,True,0.64
+Random-Uniform,deployable_policy,baseline,,commonsense_qa,em_mc,True,0.82
+Random-Uniform,deployable_policy,baseline,,gsm8k,GSM8K,True,0.77
+Random-Uniform,deployable_policy,baseline,,hellaswag,em_mc,True,0.52
+Random-Uniform,deployable_policy,baseline,,human_eval,code_eval,True,0.0625
+Random-Uniform,deployable_policy,baseline,,math,MATH,True,0.4
+Random-Uniform,deployable_policy,baseline,,mbpp,code_eval,True,0.522
+Random-Uniform,deployable_policy,baseline,,mmlu,em_mc,True,0.566
+Random-Uniform,deployable_policy,baseline,,mmlu_pro,em_mc,True,0.41
+Random-Uniform,deployable_policy,baseline,,openbook_qa,em_mc,True,0.856
+Random-Uniform,deployable_policy,baseline,,squad,f1_score,False,0.21698205528344322
+Static-Task-Table,deployable_policy,baseline,,aime_2020_2024,GSM8K,True,0.15384615384615385
+Static-Task-Table,deployable_policy,baseline,,arc_challenge,em_mc,True,0.96
+Static-Task-Table,deployable_policy,baseline,,boolq,em_mc,True,0.88
+Static-Task-Table,deployable_policy,baseline,,commonsense_qa,em_mc,True,0.86
+Static-Task-Table,deployable_policy,baseline,,gsm8k,GSM8K,True,0.938
+Static-Task-Table,deployable_policy,baseline,,hellaswag,em_mc,True,0.9
+Static-Task-Table,deployable_policy,baseline,,human_eval,code_eval,True,0.6875
+Static-Task-Table,deployable_policy,baseline,,math,MATH,True,0.576
+Static-Task-Table,deployable_policy,baseline,,mbpp,code_eval,True,0.71
+Static-Task-Table,deployable_policy,baseline,,mmlu,em_mc,True,0.87
+Static-Task-Table,deployable_policy,baseline,,mmlu_pro,em_mc,True,0.74
+Static-Task-Table,deployable_policy,baseline,,openbook_qa,em_mc,True,0.956
+Static-Task-Table,deployable_policy,baseline,,squad,f1_score,False,0.2857436428351567
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,aime_2020_2024,GSM8K,True,0.23076923076923078
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,arc_challenge,em_mc,True,0.992
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,boolq,em_mc,True,0.98
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,commonsense_qa,em_mc,True,1.0
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,gsm8k,GSM8K,True,0.982
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,hellaswag,em_mc,True,0.98
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,human_eval,code_eval,True,0.9375
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,math,MATH,True,0.836
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,mbpp,code_eval,True,0.874
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,mmlu,em_mc,True,0.972
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,mmlu_pro,em_mc,True,0.904
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,openbook_qa,em_mc,True,0.998
+Oracle (lambda=0.00),theoretical_reference,baseline,0.0,squad,f1_score,False,0.40630258884377546
+KNN (lambda=0.00),deployable_policy,knn,0.0,aime_2020_2024,GSM8K,True,0.07692307692307693
+KNN (lambda=0.00),deployable_policy,knn,0.0,arc_challenge,em_mc,True,0.926
+KNN (lambda=0.00),deployable_policy,knn,0.0,boolq,em_mc,True,0.82
+KNN (lambda=0.00),deployable_policy,knn,0.0,commonsense_qa,em_mc,True,0.84
+KNN (lambda=0.00),deployable_policy,knn,0.0,gsm8k,GSM8K,True,0.808
+KNN (lambda=0.00),deployable_policy,knn,0.0,hellaswag,em_mc,True,0.78
+KNN (lambda=0.00),deployable_policy,knn,0.0,human_eval,code_eval,True,0.6875
+KNN (lambda=0.00),deployable_policy,knn,0.0,math,MATH,True,0.556
+KNN (lambda=0.00),deployable_policy,knn,0.0,mbpp,code_eval,True,0.634
+KNN (lambda=0.00),deployable_policy,knn,0.0,mmlu,em_mc,True,0.69
+KNN (lambda=0.00),deployable_policy,knn,0.0,mmlu_pro,em_mc,True,0.5
+KNN (lambda=0.00),deployable_policy,knn,0.0,openbook_qa,em_mc,True,0.9
+KNN (lambda=0.00),deployable_policy,knn,0.0,squad,f1_score,False,0.24222553685641826
+KNN (lambda=0.05),deployable_policy,knn,0.05,aime_2020_2024,GSM8K,True,0.07692307692307693
+KNN (lambda=0.05),deployable_policy,knn,0.05,arc_challenge,em_mc,True,0.926
+KNN (lambda=0.05),deployable_policy,knn,0.05,boolq,em_mc,True,0.8
+KNN (lambda=0.05),deployable_policy,knn,0.05,commonsense_qa,em_mc,True,0.84
+KNN (lambda=0.05),deployable_policy,knn,0.05,gsm8k,GSM8K,True,0.806
+KNN (lambda=0.05),deployable_policy,knn,0.05,hellaswag,em_mc,True,0.76
+KNN (lambda=0.05),deployable_policy,knn,0.05,human_eval,code_eval,True,0.75
+KNN (lambda=0.05),deployable_policy,knn,0.05,math,MATH,True,0.558
+KNN (lambda=0.05),deployable_policy,knn,0.05,mbpp,code_eval,True,0.636
+KNN (lambda=0.05),deployable_policy,knn,0.05,mmlu,em_mc,True,0.684
+KNN (lambda=0.05),deployable_policy,knn,0.05,mmlu_pro,em_mc,True,0.498
+KNN (lambda=0.05),deployable_policy,knn,0.05,openbook_qa,em_mc,True,0.9
+KNN (lambda=0.05),deployable_policy,knn,0.05,squad,f1_score,False,0.24099880177519403
+KNN (lambda=0.10),deployable_policy,knn,0.1,aime_2020_2024,GSM8K,True,0.07692307692307693
+KNN (lambda=0.10),deployable_policy,knn,0.1,arc_challenge,em_mc,True,0.926
+KNN (lambda=0.10),deployable_policy,knn,0.1,boolq,em_mc,True,0.8
+KNN (lambda=0.10),deployable_policy,knn,0.1,commonsense_qa,em_mc,True,0.84
+KNN (lambda=0.10),deployable_policy,knn,0.1,gsm8k,GSM8K,True,0.806
+KNN (lambda=0.10),deployable_policy,knn,0.1,hellaswag,em_mc,True,0.76
+KNN (lambda=0.10),deployable_policy,knn,0.1,human_eval,code_eval,True,0.75
+KNN (lambda=0.10),deployable_policy,knn,0.1,math,MATH,True,0.56
+KNN (lambda=0.10),deployable_policy,knn,0.1,mbpp,code_eval,True,0.636
+KNN (lambda=0.10),deployable_policy,knn,0.1,mmlu,em_mc,True,0.686
+KNN (lambda=0.10),deployable_policy,knn,0.1,mmlu_pro,em_mc,True,0.502
+KNN (lambda=0.10),deployable_policy,knn,0.1,openbook_qa,em_mc,True,0.9
+KNN (lambda=0.10),deployable_policy,knn,0.1,squad,f1_score,False,0.24412810015621653
+KNN (lambda=0.25),deployable_policy,knn,0.25,aime_2020_2024,GSM8K,True,0.07692307692307693
+KNN (lambda=0.25),deployable_policy,knn,0.25,arc_challenge,em_mc,True,0.926
+KNN (lambda=0.25),deployable_policy,knn,0.25,boolq,em_mc,True,0.8
+KNN (lambda=0.25),deployable_policy,knn,0.25,commonsense_qa,em_mc,True,0.84
+KNN (lambda=0.25),deployable_policy,knn,0.25,gsm8k,GSM8K,True,0.806
+KNN (lambda=0.25),deployable_policy,knn,0.25,hellaswag,em_mc,True,0.76
+KNN (lambda=0.25),deployable_policy,knn,0.25,human_eval,code_eval,True,0.75
+KNN (lambda=0.25),deployable_policy,knn,0.25,math,MATH,True,0.55
+KNN (lambda=0.25),deployable_policy,knn,0.25,mbpp,code_eval,True,0.62
+KNN (lambda=0.25),deployable_policy,knn,0.25,mmlu,em_mc,True,0.682
+KNN (lambda=0.25),deployable_policy,knn,0.25,mmlu_pro,em_mc,True,0.49
+KNN (lambda=0.25),deployable_policy,knn,0.25,openbook_qa,em_mc,True,0.898
+KNN (lambda=0.25),deployable_policy,knn,0.25,squad,f1_score,False,0.2448219700949931
+KNN (lambda=0.50),deployable_policy,knn,0.5,aime_2020_2024,GSM8K,True,0.0
+KNN (lambda=0.50),deployable_policy,knn,0.5,arc_challenge,em_mc,True,0.922
+KNN (lambda=0.50),deployable_policy,knn,0.5,boolq,em_mc,True,0.82
+KNN (lambda=0.50),deployable_policy,knn,0.5,commonsense_qa,em_mc,True,0.8
+KNN (lambda=0.50),deployable_policy,knn,0.5,gsm8k,GSM8K,True,0.768
+KNN (lambda=0.50),deployable_policy,knn,0.5,hellaswag,em_mc,True,0.74
+KNN (lambda=0.50),deployable_policy,knn,0.5,human_eval,code_eval,True,0.75
+KNN (lambda=0.50),deployable_policy,knn,0.5,math,MATH,True,0.566
+KNN (lambda=0.50),deployable_policy,knn,0.5,mbpp,code_eval,True,0.616
+KNN (lambda=0.50),deployable_policy,knn,0.5,mmlu,em_mc,True,0.672
+KNN (lambda=0.50),deployable_policy,knn,0.5,mmlu_pro,em_mc,True,0.474
+KNN (lambda=0.50),deployable_policy,knn,0.5,openbook_qa,em_mc,True,0.896
+KNN (lambda=0.50),deployable_policy,knn,0.5,squad,f1_score,False,0.2505789918829746
+KNN (lambda=0.75),deployable_policy,knn,0.75,aime_2020_2024,GSM8K,True,0.0
+KNN (lambda=0.75),deployable_policy,knn,0.75,arc_challenge,em_mc,True,0.922
+KNN (lambda=0.75),deployable_policy,knn,0.75,boolq,em_mc,True,0.82
+KNN (lambda=0.75),deployable_policy,knn,0.75,commonsense_qa,em_mc,True,0.8
+KNN (lambda=0.75),deployable_policy,knn,0.75,gsm8k,GSM8K,True,0.764
+KNN (lambda=0.75),deployable_policy,knn,0.75,hellaswag,em_mc,True,0.74
+KNN (lambda=0.75),deployable_policy,knn,0.75,human_eval,code_eval,True,0.75
+KNN (lambda=0.75),deployable_policy,knn,0.75,math,MATH,True,0.576
+KNN (lambda=0.75),deployable_policy,knn,0.75,mbpp,code_eval,True,0.618
+KNN (lambda=0.75),deployable_policy,knn,0.75,mmlu,em_mc,True,0.67
+KNN (lambda=0.75),deployable_policy,knn,0.75,mmlu_pro,em_mc,True,0.474
+KNN (lambda=0.75),deployable_policy,knn,0.75,openbook_qa,em_mc,True,0.898
+KNN (lambda=0.75),deployable_policy,knn,0.75,squad,f1_score,False,0.2526941830298559
+KNN (lambda=1.00),deployable_policy,knn,1.0,aime_2020_2024,GSM8K,True,0.0
+KNN (lambda=1.00),deployable_policy,knn,1.0,arc_challenge,em_mc,True,0.922
+KNN (lambda=1.00),deployable_policy,knn,1.0,boolq,em_mc,True,0.82
+KNN (lambda=1.00),deployable_policy,knn,1.0,commonsense_qa,em_mc,True,0.8
+KNN (lambda=1.00),deployable_policy,knn,1.0,gsm8k,GSM8K,True,0.764
+KNN (lambda=1.00),deployable_policy,knn,1.0,hellaswag,em_mc,True,0.76
+KNN (lambda=1.00),deployable_policy,knn,1.0,human_eval,code_eval,True,0.75
+KNN (lambda=1.00),deployable_policy,knn,1.0,math,MATH,True,0.572
+KNN (lambda=1.00),deployable_policy,knn,1.0,mbpp,code_eval,True,0.614
+KNN (lambda=1.00),deployable_policy,knn,1.0,mmlu,em_mc,True,0.67
+KNN (lambda=1.00),deployable_policy,knn,1.0,mmlu_pro,em_mc,True,0.474
+KNN (lambda=1.00),deployable_policy,knn,1.0,openbook_qa,em_mc,True,0.898
+KNN (lambda=1.00),deployable_policy,knn,1.0,squad,f1_score,False,0.2720275163631892
+KNN (lambda=1.50),deployable_policy,knn,1.5,aime_2020_2024,GSM8K,True,0.0
+KNN (lambda=1.50),deployable_policy,knn,1.5,arc_challenge,em_mc,True,0.922
+KNN (lambda=1.50),deployable_policy,knn,1.5,boolq,em_mc,True,0.82
+KNN (lambda=1.50),deployable_policy,knn,1.5,commonsense_qa,em_mc,True,0.8
+KNN (lambda=1.50),deployable_policy,knn,1.5,gsm8k,GSM8K,True,0.762
+KNN (lambda=1.50),deployable_policy,knn,1.5,hellaswag,em_mc,True,0.76
+KNN (lambda=1.50),deployable_policy,knn,1.5,human_eval,code_eval,True,0.75
+KNN (lambda=1.50),deployable_policy,knn,1.5,math,MATH,True,0.572
+KNN (lambda=1.50),deployable_policy,knn,1.5,mbpp,code_eval,True,0.614
+KNN (lambda=1.50),deployable_policy,knn,1.5,mmlu,em_mc,True,0.672
+KNN (lambda=1.50),deployable_policy,knn,1.5,mmlu_pro,em_mc,True,0.474
+KNN (lambda=1.50),deployable_policy,knn,1.5,openbook_qa,em_mc,True,0.896
+KNN (lambda=1.50),deployable_policy,knn,1.5,squad,f1_score,False,0.27046907480474763
+KNN (lambda=2.00),deployable_policy,knn,2.0,aime_2020_2024,GSM8K,True,0.0
+KNN (lambda=2.00),deployable_policy,knn,2.0,arc_challenge,em_mc,True,0.922
+KNN (lambda=2.00),deployable_policy,knn,2.0,boolq,em_mc,True,0.82
+KNN (lambda=2.00),deployable_policy,knn,2.0,commonsense_qa,em_mc,True,0.8
+KNN (lambda=2.00),deployable_policy,knn,2.0,gsm8k,GSM8K,True,0.76
+KNN (lambda=2.00),deployable_policy,knn,2.0,hellaswag,em_mc,True,0.76
+KNN (lambda=2.00),deployable_policy,knn,2.0,human_eval,code_eval,True,0.75
+KNN (lambda=2.00),deployable_policy,knn,2.0,math,MATH,True,0.574
+KNN (lambda=2.00),deployable_policy,knn,2.0,mbpp,code_eval,True,0.616
+KNN (lambda=2.00),deployable_policy,knn,2.0,mmlu,em_mc,True,0.67
+KNN (lambda=2.00),deployable_policy,knn,2.0,mmlu_pro,em_mc,True,0.474
+KNN (lambda=2.00),deployable_policy,knn,2.0,openbook_qa,em_mc,True,0.896
+KNN (lambda=2.00),deployable_policy,knn,2.0,squad,f1_score,False,0.26832055442507147
+KNN (lambda=3.00),deployable_policy,knn,3.0,aime_2020_2024,GSM8K,True,0.0
+KNN (lambda=3.00),deployable_policy,knn,3.0,arc_challenge,em_mc,True,0.92
+KNN (lambda=3.00),deployable_policy,knn,3.0,boolq,em_mc,True,0.8
+KNN (lambda=3.00),deployable_policy,knn,3.0,commonsense_qa,em_mc,True,0.78
+KNN (lambda=3.00),deployable_policy,knn,3.0,gsm8k,GSM8K,True,0.754
+KNN (lambda=3.00),deployable_policy,knn,3.0,hellaswag,em_mc,True,0.76
+KNN (lambda=3.00),deployable_policy,knn,3.0,human_eval,code_eval,True,0.6875
+KNN (lambda=3.00),deployable_policy,knn,3.0,math,MATH,True,0.56
+KNN (lambda=3.00),deployable_policy,knn,3.0,mbpp,code_eval,True,0.61
+KNN (lambda=3.00),deployable_policy,knn,3.0,mmlu,em_mc,True,0.692
+KNN (lambda=3.00),deployable_policy,knn,3.0,mmlu_pro,em_mc,True,0.476
+KNN (lambda=3.00),deployable_policy,knn,3.0,openbook_qa,em_mc,True,0.902
+KNN (lambda=3.00),deployable_policy,knn,3.0,squad,f1_score,False,0.2477892038559447
+KNN (lambda=5.00),deployable_policy,knn,5.0,aime_2020_2024,GSM8K,True,0.0
+KNN (lambda=5.00),deployable_policy,knn,5.0,arc_challenge,em_mc,True,0.924
+KNN (lambda=5.00),deployable_policy,knn,5.0,boolq,em_mc,True,0.8
+KNN (lambda=5.00),deployable_policy,knn,5.0,commonsense_qa,em_mc,True,0.74
+KNN (lambda=5.00),deployable_policy,knn,5.0,gsm8k,GSM8K,True,0.718
+KNN (lambda=5.00),deployable_policy,knn,5.0,hellaswag,em_mc,True,0.76
+KNN (lambda=5.00),deployable_policy,knn,5.0,human_eval,code_eval,True,0.5625
+KNN (lambda=5.00),deployable_policy,knn,5.0,math,MATH,True,0.558
+KNN (lambda=5.00),deployable_policy,knn,5.0,mbpp,code_eval,True,0.602
+KNN (lambda=5.00),deployable_policy,knn,5.0,mmlu,em_mc,True,0.718
+KNN (lambda=5.00),deployable_policy,knn,5.0,mmlu_pro,em_mc,True,0.484
+KNN (lambda=5.00),deployable_policy,knn,5.0,openbook_qa,em_mc,True,0.898
+KNN (lambda=5.00),deployable_policy,knn,5.0,squad,f1_score,False,0.2332553311482856
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,aime_2020_2024,GSM8K,True,0.07692307692307693
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,arc_challenge,em_mc,True,0.96
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,boolq,em_mc,True,0.88
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,commonsense_qa,em_mc,True,0.84
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,gsm8k,GSM8K,True,0.93
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,hellaswag,em_mc,True,0.92
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,human_eval,code_eval,True,0.75
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,math,MATH,True,0.614
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,mbpp,code_eval,True,0.702
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,mmlu,em_mc,True,0.806
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,mmlu_pro,em_mc,True,0.682
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,openbook_qa,em_mc,True,0.952
+LEARNED_LR (lambda=0.00),deployable_policy,learned_lr,0.0,squad,f1_score,False,0.2568303727837057
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,aime_2020_2024,GSM8K,True,0.07692307692307693
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,arc_challenge,em_mc,True,0.956
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,boolq,em_mc,True,0.88
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,commonsense_qa,em_mc,True,0.8
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,gsm8k,GSM8K,True,0.92
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,hellaswag,em_mc,True,0.92
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,human_eval,code_eval,True,0.6875
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,math,MATH,True,0.598
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,mbpp,code_eval,True,0.692
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,mmlu,em_mc,True,0.798
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,mmlu_pro,em_mc,True,0.63
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,openbook_qa,em_mc,True,0.936
+LEARNED_LR (lambda=0.05),deployable_policy,learned_lr,0.05,squad,f1_score,False,0.2629899832087217
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,aime_2020_2024,GSM8K,True,0.07692307692307693
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,arc_challenge,em_mc,True,0.956
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,boolq,em_mc,True,0.88
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,commonsense_qa,em_mc,True,0.8
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,gsm8k,GSM8K,True,0.888
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,hellaswag,em_mc,True,0.88
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,human_eval,code_eval,True,0.625
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,math,MATH,True,0.594
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,mbpp,code_eval,True,0.676
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,mmlu,em_mc,True,0.798
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,mmlu_pro,em_mc,True,0.612
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,openbook_qa,em_mc,True,0.936
+LEARNED_LR (lambda=0.10),deployable_policy,learned_lr,0.1,squad,f1_score,False,0.25628446650320497
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,aime_2020_2024,GSM8K,True,0.0
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,arc_challenge,em_mc,True,0.946
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,boolq,em_mc,True,0.88
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,commonsense_qa,em_mc,True,0.82
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,gsm8k,GSM8K,True,0.816
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,hellaswag,em_mc,True,0.88
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,human_eval,code_eval,True,0.5625
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,math,MATH,True,0.586
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,mbpp,code_eval,True,0.662
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,mmlu,em_mc,True,0.8
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,mmlu_pro,em_mc,True,0.578
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,openbook_qa,em_mc,True,0.932
+LEARNED_LR (lambda=0.25),deployable_policy,learned_lr,0.25,squad,f1_score,False,0.26010102667460383
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,aime_2020_2024,GSM8K,True,0.0
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,arc_challenge,em_mc,True,0.936
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,boolq,em_mc,True,0.88
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,commonsense_qa,em_mc,True,0.82
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,gsm8k,GSM8K,True,0.814
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,hellaswag,em_mc,True,0.88
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,human_eval,code_eval,True,0.5625
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,math,MATH,True,0.58
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,mbpp,code_eval,True,0.652
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,mmlu,em_mc,True,0.796
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,mmlu_pro,em_mc,True,0.558
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,openbook_qa,em_mc,True,0.928
+LEARNED_LR (lambda=0.50),deployable_policy,learned_lr,0.5,squad,f1_score,False,0.2569899155634927
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,aime_2020_2024,GSM8K,True,0.0
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,arc_challenge,em_mc,True,0.934
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,boolq,em_mc,True,0.84
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,commonsense_qa,em_mc,True,0.78
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,gsm8k,GSM8K,True,0.804
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,hellaswag,em_mc,True,0.84
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,human_eval,code_eval,True,0.5625
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,math,MATH,True,0.586
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,mbpp,code_eval,True,0.658
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,mmlu,em_mc,True,0.77
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,mmlu_pro,em_mc,True,0.55
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,openbook_qa,em_mc,True,0.912
+LEARNED_LR (lambda=0.75),deployable_policy,learned_lr,0.75,squad,f1_score,False,0.2563607299869387
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,aime_2020_2024,GSM8K,True,0.0
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,arc_challenge,em_mc,True,0.932
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,boolq,em_mc,True,0.84
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,commonsense_qa,em_mc,True,0.78
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,gsm8k,GSM8K,True,0.798
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,hellaswag,em_mc,True,0.84
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,human_eval,code_eval,True,0.5625
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,math,MATH,True,0.594
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,mbpp,code_eval,True,0.642
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,mmlu,em_mc,True,0.76
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,mmlu_pro,em_mc,True,0.548
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,openbook_qa,em_mc,True,0.914
+LEARNED_LR (lambda=1.00),deployable_policy,learned_lr,1.0,squad,f1_score,False,0.2563607299869387
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,aime_2020_2024,GSM8K,True,0.0
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,arc_challenge,em_mc,True,0.932
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,boolq,em_mc,True,0.84
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,commonsense_qa,em_mc,True,0.8
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,gsm8k,GSM8K,True,0.8
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,hellaswag,em_mc,True,0.84
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,human_eval,code_eval,True,0.5625
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,math,MATH,True,0.592
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,mbpp,code_eval,True,0.618
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,mmlu,em_mc,True,0.762
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,mmlu_pro,em_mc,True,0.534
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,openbook_qa,em_mc,True,0.918
+LEARNED_LR (lambda=1.50),deployable_policy,learned_lr,1.5,squad,f1_score,False,0.2563607299869387
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,aime_2020_2024,GSM8K,True,0.0
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,arc_challenge,em_mc,True,0.932
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,boolq,em_mc,True,0.84
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,commonsense_qa,em_mc,True,0.84
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,gsm8k,GSM8K,True,0.778
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,hellaswag,em_mc,True,0.84
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,human_eval,code_eval,True,0.5625
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,math,MATH,True,0.592
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,mbpp,code_eval,True,0.608
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,mmlu,em_mc,True,0.762
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,mmlu_pro,em_mc,True,0.516
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,openbook_qa,em_mc,True,0.918
+LEARNED_LR (lambda=2.00),deployable_policy,learned_lr,2.0,squad,f1_score,False,0.27196857312419365
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,aime_2020_2024,GSM8K,True,0.0
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,arc_challenge,em_mc,True,0.934
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,boolq,em_mc,True,0.84
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,commonsense_qa,em_mc,True,0.86
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,gsm8k,GSM8K,True,0.746
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,hellaswag,em_mc,True,0.84
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,human_eval,code_eval,True,0.5625
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,math,MATH,True,0.588
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,mbpp,code_eval,True,0.614
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,mmlu,em_mc,True,0.762
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,mmlu_pro,em_mc,True,0.512
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,openbook_qa,em_mc,True,0.922
+LEARNED_LR (lambda=3.00),deployable_policy,learned_lr,3.0,squad,f1_score,False,0.27629238264800315
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,aime_2020_2024,GSM8K,True,0.0
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,arc_challenge,em_mc,True,0.934
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,boolq,em_mc,True,0.84
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,commonsense_qa,em_mc,True,0.74
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,gsm8k,GSM8K,True,0.728
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,hellaswag,em_mc,True,0.82
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,human_eval,code_eval,True,0.625
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,math,MATH,True,0.566
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,mbpp,code_eval,True,0.618
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,mmlu,em_mc,True,0.764
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,mmlu_pro,em_mc,True,0.504
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,openbook_qa,em_mc,True,0.922
+LEARNED_LR (lambda=5.00),deployable_policy,learned_lr,5.0,squad,f1_score,False,0.2729208097764303

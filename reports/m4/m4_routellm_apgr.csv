@@ -1,0 +1,8 @@
+strategy,micro_apgr,macro_apgr,micro_apgr_ci_low,micro_apgr_ci_high,p_value_vs_random,cpt_50,cpt_80,op_call_rate,op_micro_quality,op_macro_quality,op_cost_usd,op_pgr,op_cost_saved
+Oracle Two-Model Ceiling (Theoretical Reference),0.9065,0.9631,0.9065,0.9065,N/A (Reference),0.1561,0.2497,0.35,0.8351,0.6896,0.000181,1.0951,0.604
+RouteLLM Hybrid Ensemble,0.5906,0.5904,0.5761,0.6058,0.0010,0.3665,0.7196,0.3143,0.6329,0.5416,0.000183,0.4473,0.6008
+RouteLLM-Inspired kNN Router,0.5818,0.5772,0.567,0.5971,0.0010,0.3834,0.7339,0.3837,0.6494,0.5507,0.000213,0.5003,0.5346
+RouteLLM-Inspired Learned LR,0.581,0.5832,0.5648,0.5965,0.0010,0.3777,0.7353,0.3634,0.645,0.5518,0.000197,0.4862,0.5701
+Random Selection (Theoretical Baseline),0.5,0.5,0.5,0.5,N/A (Reference),0.5,0.8,0.5,0.6493,0.5529,0.000237,0.5,0.4814
+Always-Weak (llama-3-8b-instruct-lite),0.0,0.0,0.0,0.0,N/A (Baseline),1.0,1.0,0.0,0.4932,0.4523,1.7e-05,0.0,0.9628
+Always-Strong (cogito-v2-1-671b),1.0,1.0,1.0,1.0,N/A (Baseline),0.0,0.0,1.0,0.8054,0.6536,0.000458,1.0,0.0
