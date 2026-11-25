@@ -41,8 +41,64 @@ Evaluated offline on **xRouteBench** (`ulab-ai/xRouteBench`, **3,729** held-out 
   - **Calibration:** `Learned LR` achieves **0.0389 raw ECE** (**0.0283** after out-of-fold Platt scaling) with negligible downstream ranking drift; `kNN` improves from **0.1123** to **0.0490 ECE** via isotonic regression.
   - **OOD Generalization:** Leave-one-task-out across 6 unseen tasks yields a 3–3 split (`LR` leads on `gsm8k`, `mmlu`, `aime_2020_2024`; `kNN` leads on `mbpp`, `human_eval`, `squad`), with calibration degrading sharply on novel task shifts.
   - **Two-Model APGR (RouteLLM-Inspired):** On `cogito-v2-1-671b` vs. `llama-3-8b-instruct-lite`, Hybrid Ensemble achieves **0.5906** Micro APGR `[0.5761, 0.6058]` (**0.5904** Macro APGR, null-centered bootstrap $p = 1/1001 \approx 0.000999$, rounded to `0.0010` vs. 0.50 random boundary; overlapping CIs with `kNN` `0.5818` and `LR` `0.5810` do not establish between-router superiority).
+- **M5 — Production Serving & Runtime Routing:**
+  - Unified `RuntimeRouter.route(prompt, lam) -> RouteDecision` adapters (`routers/knn_runtime.py`, `routers/lr_runtime.py`) using cached local MiniLM weights.
+  - OpenAI-compatible `POST /v1/chat/completions` (`auto`, `auto:quality`, `auto:balanced`, `auto:cheap`, or explicit live model) with ranked fallback, `BudgetTracker` enforcement, SQLite decision logging (`telemetry/decision_log.py`), `POST /v1/feedback`, and leakage-safe retraining/shadow-eval/atomic promotion (`routers/lifecycle.py`, `docs/adding-a-model.md`).
+  - **M5 Serving Report:** [`reports/m5/M5_SERVING_REPORT.md`](reports/m5/M5_SERVING_REPORT.md)
 
 ---
+
+## M5 Serving & OpenAI-Compatible API
+
+### Lambda Presets
+
+| `model` Value | $\lambda$ | Behavior | Empirical Basis |
+| :--- | :---: | :--- | :--- |
+| `auto` / `auto:balanced` | `0.5` | Balanced quality-cost tradeoff | M4.2 xRouteBench (`0.6664` Macro, `\$0.040/1k`); provisional for live pool |
+| `auto:quality` | `0.0` | Quality-focused (zero cost penalty) | M4.2 xRouteBench (`0.7208` Macro, `\$0.283/1k`) |
+| `auto:cheap` | `2.0` | Cost-focused | M4.2 xRouteBench (`0.6508` Macro, `\$0.023/1k`); provisional for live pool |
+
+### Example `POST /v1/chat/completions` Request & Response
+
+```json
+// Request
+{
+  "model": "auto:balanced",
+  "messages": [{"role": "user", "content": "Explain binary search in Python."}],
+  "max_tokens": 512,
+  "temperature": 0.7
+}
+```
+
+```json
+// Response (OpenAI-compatible + routing metadata)
+{
+  "id": "chatcmpl-...",
+  "object": "chat.completion",
+  "model": "openai/gpt-oss-20b",
+  "choices": [{"index": 0, "message": {"role": "assistant", "content": "..."}, "finish_reason": "stop"}],
+  "usage": {"prompt_tokens": 12, "completion_tokens": 84, "total_tokens": 96},
+  "routing": {
+    "chosen_model": "openai/gpt-oss-20b",
+    "predicted_scores": {"openai/gpt-oss-20b": 0.84, "openai/gpt-oss-120b": 0.91},
+    "ranked_candidates": ["openai/gpt-oss-20b", "openai/gpt-oss-120b", "gemini-2.5-flash"],
+    "router_version": "lr-v1",
+    "lambda": 0.5,
+    "expected_cost_usd": 0.000015,
+    "actual_cost_usd": 0.000026,
+    "budget_accounted_cost_usd": 0.000026,
+    "input_tokens": 12,
+    "output_tokens": 84,
+    "latency_ms": 142.5,
+    "router_latency_ms": 18.2,
+    "fallback_attempts": [],
+    "quality_status": "unverified"
+  }
+}
+```
+
+- **Ranked Fallback:** On timeout, rate limit, or provider error, `serving/chat_completions.py` iterates through `ranked_candidates` in `model_registry.MODELS`, enforcing `BudgetTracker` per attempt without double-counting failures and reporting every failed attempt in `routing.fallback_attempts`.
+- **Feedback & Lifecycle:** `POST /v1/feedback` logs `judge_score`, `user_feedback`, or `downstream_task_success` to SQLite (`prompt_hash` only; raw prompts are not stored by default). `routers/lifecycle.py` handles leakage-checked retraining, `shadow_evaluate`, fail-closed `promote_router`, and `rollback()`. See [`docs/adding-a-model.md`](docs/adding-a-model.md).
 
 ## Architecture & Routing Modes
 
@@ -74,7 +130,7 @@ streamlit run query_console.py --server.port 8501
 streamlit run dashboard.py --server.port 8502
 ```
 
-### Offline M4 Reproduction & Tests (Zero API Calls)
+### Offline M4/M5 Reproduction & Tests (Zero API Calls)
 
 ```powershell
 $env:PYTHONPATH="."
@@ -82,7 +138,9 @@ $env:PYTHONPATH="."
 .venv\Scripts\python -m eval.m4_calibration
 .venv\Scripts\python -m eval.m4_ood_evaluation
 .venv\Scripts\python -m eval.m4_routellm_baseline
-.venv\Scripts\pytest tests_v2        # 300 passed (verified at M4.5.2)
+.venv\Scripts\python scripts/demo_m5.py --lam auto:balanced --prompts 50
+.venv\Scripts\pytest tests_v2/test_m5_serving.py -v
+.venv\Scripts\pytest tests_v2 -v
 ```
 
 ---
@@ -90,16 +148,22 @@ $env:PYTHONPATH="."
 ## Project Layout
 
 ```text
-main.py / routing_policy.py / budget.py   FastAPI routing service & Decimal budget tracker
+main.py / routing_policy.py / budget.py   FastAPI (/query, /v1/chat/completions, /v1/feedback) & Decimal budget tracker
+routers/                                  M5 RuntimeRouter adapters (kNN, LR), registry, retraining, shadow eval, promotion
+serving/                                  OpenAI-compatible handler & ranked fallback execution
+telemetry/                                SQLite decision logger & outcome feedback store
 providers/ / llm_cost_autopilot_client/   Groq & Gemini adapters, Python SDK
 dashboard.py / query_console.py           Streamlit telemetry dashboard & query UI
 eval/                                     M1–M4 benchmark, baseline, router, calibration & OOD modules
-reports/m4/                               M4 final research report, CSV/JSON results & SVG plots
-tests_v2/                                 Offline unit & integration test suite (300 tests)
+scripts/demo_m5.py                        50-prompt offline replay demonstration
+docs/adding-a-model.md                    Cold-start model onboarding procedure
+reports/m4/ & reports/m5/                 M4 & M5 research/serving reports, CSV/JSON results & SVG plots
+tests_v2/                                 Offline unit & integration test suite (M0–M5)
 ```
 
 ## Limitations
 
 - Budget limits are per-request, not shared global/monthly quotas; provider invoices may differ from estimates.
+- The live `model_registry.py` pool (`openai/gpt-oss-20b`, `openai/gpt-oss-120b`, `gemini-2.5-flash`) lacks a genuine held-out calibration dataset; `/v1/chat/completions` with `model="auto*"` returns HTTP `503` until a calibrated router bundle is trained and promoted.
 - `ulab-ai/xRouteBench` is licensed under **CC BY-NC-SA 4.0** (noncommercial research/evaluation only).
-- M4 results are offline replays on historical benchmark data and do not demonstrate live production readiness.
+- M4/M5 offline results do not demonstrate live production SLA readiness.

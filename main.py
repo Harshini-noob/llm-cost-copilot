@@ -231,3 +231,77 @@ async def query(prompt: str, routing_mode: str = "balanced",
     result["rejected_candidates"] = decision.get("rejected", [])
 
     return result
+
+
+def _get_runtime_router():
+    router = getattr(app.state, "runtime_router", None)
+    if router is not None:
+        return router
+    from routers.registry import RouterVersionManager
+
+    mgr = RouterVersionManager()
+    if mgr.get_active_version() is not None:
+        router = mgr.load_active()
+        app.state.runtime_router = router
+        return router
+    return None
+
+
+def _get_decision_logger():
+    dlog = getattr(app.state, "decision_logger", None)
+    if dlog is not None:
+        return dlog
+    from telemetry.decision_log import DecisionLogger
+
+    dlog = DecisionLogger()
+    app.state.decision_logger = dlog
+    return dlog
+
+
+@app.post("/v1/chat/completions")
+async def chat_completions(
+    payload: dict,
+    api_key_id: str = Depends(verify_api_key),
+):
+    from pydantic import ValidationError
+    from serving.chat_completions import ChatCompletionRequest, execute_chat_completion
+
+    try:
+        req = ChatCompletionRequest.model_validate(payload)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=e.errors()) from e
+
+    caller = getattr(app.state, "model_caller", call_model)
+    return await execute_chat_completion(
+        req,
+        runtime_router=_get_runtime_router(),
+        decision_logger=_get_decision_logger(),
+        model_caller=caller,
+    )
+
+
+@app.post("/v1/feedback")
+async def record_outcome_feedback(
+    payload: dict,
+    api_key_id: str = Depends(verify_api_key),
+):
+    from pydantic import ValidationError
+    from serving.chat_completions import FeedbackRequest
+
+    try:
+        req = FeedbackRequest.model_validate(payload)
+    except ValidationError as e:
+        raise HTTPException(status_code=422, detail=e.errors()) from e
+
+    dlog = _get_decision_logger()
+    try:
+        return dlog.record_feedback(
+            req.request_id,
+            feedback_type=req.feedback_type,
+            raw_value=req.raw_value,
+            notes=req.notes,
+        )
+    except KeyError as e:
+        raise HTTPException(status_code=404, detail=str(e)) from e
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e

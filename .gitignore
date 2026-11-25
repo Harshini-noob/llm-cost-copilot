@@ -11,3 +11,9 @@ wheels/
 venv/
 .env
 data/
+
+# M5 runtime databases and versioned router bundles
+*.db
+*.sqlite
+*.sqlite3
+artifacts/
