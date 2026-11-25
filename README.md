@@ -6,6 +6,32 @@ An adaptive LLM routing service that selects models by cost, quality, and latenc
 
 > This is an engineering prototype, not an absolute provider-billing cap. Cost estimates and provider-reported usage may differ from actual charges.
 
+## Benchmark Results (M4 — xRouteBench Offline Evaluation)
+
+Evaluated on **xRouteBench** (`ulab-ai/xRouteBench`, **3,729** held-out test prompts, **18** candidate LLMs, **13** tasks, zero live API calls; CC BY-NC-SA 4.0). Routers are swept over cost-penalty $\lambda \in [0.00, 5.00]$ with **95% prompt-cluster bootstrap confidence intervals**; baselines are single operating points and the Oracle (`λ=0.00`) marks the theoretical upper bound.
+
+![Cost vs quality — routers as λ-sweep curves, baselines as points](reports/m4/hero_cost_vs_quality.svg)
+
+### Multi-Model Routing Summary (18 Candidates, $n = 3,729$ Test Prompts)
+
+| Strategy | Role | Macro Quality [95% CI] | Micro Quality [95% CI] | Cost / 1k Queries | Historical LLM Latency* |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Always-Cheapest** (`gpt-oss-20b`) | Deployable baseline | 0.5806 [0.5627, 0.5965] | 0.6976 [0.6810, 0.7113] | \$0.014 | 3.21s |
+| **Random-Uniform** (18 models) | Deployable baseline | 0.5109 [0.4897, 0.5292] | 0.6173 [0.6004, 0.6343] | \$0.181 | 2.76s |
+| **Static-Task-Table** | Deployable (needs `task_name`) | 0.7321 [0.7041, 0.7570] | 0.8137 [0.8020, 0.8258] | \$0.315 | 3.15s |
+| **kNN ($\lambda = 0.10$)** | Deployable learned router | 0.6529 [0.6251, 0.6739] | 0.7115 [0.6956, 0.7246] | \$0.072 | 2.95s |
+| **Learned LR ($\lambda = 0.75$)** | Deployable (quality parity) | **0.6533** [0.6305, 0.6761] | 0.7380 [0.7234, 0.7518] | **\$0.036** | 3.22s |
+| **Learned LR ($\lambda = 0.00$)** | Deployable (max quality) | **0.7208** [0.6994, 0.7478] | 0.7994 [0.7848, 0.8121] | \$0.283 | 3.44s |
+| **Best Single Model** (`qwen3-next-80b-a3b-instruct`) | Post-hoc test reference | 0.6536 [0.6368, 0.6650] | 0.8054 [0.7931, 0.8188] | \$0.458 | 2.52s |
+| **Oracle ($\lambda = 0.00$)** | Theoretical upper bound | 0.8533 [0.8325, 0.8760] | 0.9293 [0.9218, 0.9377] | \$0.032 | 2.64s |
+
+\* *Historical LLM Latency reflects downstream provider response times recorded in xRouteBench, not local router CPU decision overhead (sub-millisecond).*
+
+- **Calibration (M4.3):** Raw Logistic Regression achieves **0.0389 ECE** / **0.1734 Brier** (improved to **0.0283 ECE** via out-of-fold Platt scaling); kNN ($k=5$) improves from **0.1123** to **0.0490 ECE** via isotonic regression.
+- **Out-of-Distribution (M4.4):** Leave-one-task-out across 6 unseen tasks yields a 3–3 split (`LEARNED_LR` wins `gsm8k`, `mmlu`, `aime_2020_2024`; `kNN` wins `mbpp`, `human_eval`, `squad`), with calibration degrading sharply on novel domains.
+- **Two-Model APGR (M4.5):** On `cogito-v2-1-671b` vs. `llama-3-8b-instruct-lite`, RouteLLM Hybrid Ensemble achieves **0.5906** Micro APGR `[0.5761, 0.6058]` (**0.5904** Macro APGR, null-centered bootstrap $p = 1/1001 \approx 0.000999$, rounded to `0.0010` vs. 0.50 random boundary; overlapping CIs with kNN `0.5818` and LR `0.5810` do not establish between-router superiority).
+- **Full Research Report:** See [`reports/m4/M4_FINAL_RESEARCH_REPORT.md`](reports/m4/M4_FINAL_RESEARCH_REPORT.md) for complete methodology, audits, reliability diagrams, and reproducibility commands.
+
 ## Features
 
 - Classifies prompts as simple, medium, or complex with a deterministic rule-based classifier.
